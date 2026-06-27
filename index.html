@@ -81,6 +81,7 @@
     }
 
     function handleCredentialResponse(response) {
+      if (currentUser.email) return;
       localStorage.setItem('google_token', response.credential);
       processLogin(response.credential);
     }
@@ -159,23 +160,26 @@ tsTime = new TomSelect("#time", {
     }
 
     function callAPI(payload, callback) {
-  if (payload.action === "getData") {
-    // GET request for loading data (bypasses CORS)
-    const url = `${APPS_SCRIPT_URL}?action=getData&email=${payload.email}`;
-    fetch(url)
-      .then(res => res.json())
-      .then(data => callback(data))
-      .catch(err => alert("Data Load Error: " + err));
-  } else {
-    // POST request for submitting/requesting
-    fetch(APPS_SCRIPT_URL, { 
-      method: 'POST', 
-      body: JSON.stringify(payload) 
-    })
+  const options = {
+    method: payload.action === "getData" ? 'GET' : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  if (payload.action !== "getData") {
+    options.body = JSON.stringify(payload);
+  }
+
+  const url = payload.action === "getData" 
+    ? `${APPS_SCRIPT_URL}?action=getData&email=${payload.email}` 
+    : APPS_SCRIPT_URL;
+
+  fetch(url, options)
     .then(res => res.json())
     .then(data => callback(data))
-    .catch(err => alert("API Error: " + err));
-  }
+    .catch(err => {
+      console.error("Fetch Error:", err);
+      alert("API Error: Check browser console (F12)");
+    });
 }
   </script>
 </body>
