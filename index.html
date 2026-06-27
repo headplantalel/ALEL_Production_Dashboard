@@ -107,9 +107,27 @@
         const lineSelect = document.getElementById('line'); data.lines.forEach(l => lineSelect.add(new Option(l, l)));
         const timeSelect = document.getElementById('time'); data.times.forEach(t => timeSelect.add(new Option(t, t)));
         
-        tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false, placeholder: "Select or search item..." });
-        tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false, placeholder: "Select line..." });
-        tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false, placeholder: "Select time..." });
+        // Change your initialization to explicitly use 'null' as the starting value
+tsItem = new TomSelect("#item", { 
+  allowEmptyOption: true, 
+  create: false, 
+  placeholder: "Select or search item...",
+  items: [] // Force empty initial selection
+});
+
+tsLine = new TomSelect("#line", { 
+  allowEmptyOption: true, 
+  create: false, 
+  placeholder: "Select line...",
+  items: []
+});
+
+tsTime = new TomSelect("#time", { 
+  allowEmptyOption: true, 
+  create: false, 
+  placeholder: "Select time...",
+  items: []
+});
       });
     }
 
