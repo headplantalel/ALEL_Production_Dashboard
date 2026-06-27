@@ -127,26 +127,39 @@
     
     async function submitForm(e) {
       e.preventDefault();
+      
+      // Get values directly from the TomSelect objects, not the DOM elements
+      const itemVal = tsItem.getValue();
+      const lineVal = tsLine.getValue();
+      const timeVal = tsTime.getValue();
+      const manpowerVal = document.getElementById('manpower').value;
+      const productionVal = document.getElementById('production').value;
+      
+      // Manual Validation check
+      if (!itemVal || !lineVal || !timeVal) {
+        alert("Please select Item, Line, and Time Slot before submitting.");
+        return; // Stops submission
+      }
+
       if (!confirm("Submit this production data?")) return;
       const btn = document.getElementById('submitBtn');
       btn.innerText = 'Submitting...';
-
-      const itemVal = document.getElementById('item').value;
-      const lineVal = document.getElementById('line').value;
-      const timeVal = document.getElementById('time').value;
       
-      if (!itemVal || !lineVal || !timeVal) {
-        alert("Please select Item, Line, and Time Slot before submitting.");
-        btn.innerText = 'Submit Entry';
-        return;
-      }
-      
-      const payload = { action: "submit", email: currentUser.email, formData: { item: itemVal, line: lineVal, time: timeVal, manpower: document.getElementById('manpower').value, production: document.getElementById('production').value } };
+      const payload = { 
+        action: "submit", 
+        email: currentUser.email, 
+        formData: { 
+          item: itemVal, 
+          line: lineVal, 
+          time: timeVal, 
+          manpower: manpowerVal, 
+          production: productionVal 
+        } 
+      };
       
       callAPI(payload, function(data) {
         btn.innerText = 'Submit Entry';
         
-        // Bulletproof success check that handles both backend formats
         if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
           document.getElementById('manpower').value = '';
           document.getElementById('production').value = '';
@@ -155,7 +168,6 @@
           document.getElementById('successMsg').classList.remove('hidden');
           setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3500);
         } else {
-          // If there is an actual error from Google, it will print it here now
           alert("Submission failed: " + (data.error || "Check your backend setup."));
         }
       });
