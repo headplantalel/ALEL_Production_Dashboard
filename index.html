@@ -145,7 +145,7 @@
       
       callAPI(payload, function(data) {
         btn.innerText = 'Submit Entry';
-        if (data && data.status && data.status.status === "Success") {
+        if (data && data.status === "Success") {
           document.getElementById('manpower').value = '';
           document.getElementById('production').value = '';
           tsItem.clear(); tsLine.clear(); tsTime.clear();
