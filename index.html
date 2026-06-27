@@ -25,7 +25,7 @@
 
   <div id="loader" class="hidden text-center text-gray-500 font-medium tracking-wide">
     <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-    Authenticating...
+    Connecting to Database...
   </div>
   
   <div id="denied" class="hidden bg-white p-8 rounded-2xl shadow-sm text-center max-w-md w-full border border-red-100">
@@ -108,31 +108,14 @@
         const lineSelect = document.getElementById('line'); data.lines.forEach(l => lineSelect.add(new Option(l, l)));
         const timeSelect = document.getElementById('time'); data.times.forEach(t => timeSelect.add(new Option(t, t)));
         
-        // Change your initialization to explicitly use 'null' as the starting value
-tsItem = new TomSelect("#item", { 
-  allowEmptyOption: true, 
-  create: false, 
-  placeholder: "Select or search item...",
-  items: [] // Force empty initial selection
-});
-
-tsLine = new TomSelect("#line", { 
-  allowEmptyOption: true, 
-  create: false, 
-  placeholder: "Select line...",
-  items: []
-});
-
-tsTime = new TomSelect("#time", { 
-  allowEmptyOption: true, 
-  create: false, 
-  placeholder: "Select time...",
-  items: []
-});
+        tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false, placeholder: "Select or search item...", items: [] });
+        tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false, placeholder: "Select line...", items: [] });
+        tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false, placeholder: "Select time...", items: [] });
       });
     }
 
     function logout() { localStorage.removeItem('google_token'); location.reload(); }
+    
     function requestAccess() {
       const btn = document.getElementById('requestBtn');
       btn.innerText = "Sending...";
@@ -149,58 +132,45 @@ tsTime = new TomSelect("#time", {
       btn.innerText = 'Submitting...';
 
       const itemVal = document.getElementById('item').value;
-const lineVal = document.getElementById('line').value;
-const timeVal = document.getElementById('time').value;
-if (!itemVal || !lineVal || !timeVal) {
-  alert("Please select Item, Line, and Time Slot before submitting.");
-  btn.innerText = 'Submit Entry';
-  return;
-}
+      const lineVal = document.getElementById('line').value;
+      const timeVal = document.getElementById('time').value;
       
-      const payload = { action: "submit", email: currentUser.email, formData: { item: document.getElementById('item').value, line: document.getElementById('line').value, time: document.getElementById('time').value, manpower: document.getElementById('manpower').value, production: document.getElementById('production').value } };
+      if (!itemVal || !lineVal || !timeVal) {
+        alert("Please select Item, Line, and Time Slot before submitting.");
+        btn.innerText = 'Submit Entry';
+        return;
+      }
+      
+      const payload = { action: "submit", email: currentUser.email, formData: { item: itemVal, line: lineVal, time: timeVal, manpower: document.getElementById('manpower').value, production: document.getElementById('production').value } };
       
       callAPI(payload, function(data) {
-  btn.innerText = 'Submit Entry';
-  if (data && data.status === "Success") {
-    document.getElementById('manpower').value = '';
-    document.getElementById('production').value = '';
-    tsItem.clear(); tsLine.clear(); tsTime.clear();
-    document.getElementById('successMsg').classList.remove('hidden');
-    setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3500);
-  } else {
-    alert("Submission failed: " + (data?.error || "Unknown error"));
-  }
-});
+        btn.innerText = 'Submit Entry';
+        if (data && data.status && data.status.status === "Success") {
+          document.getElementById('manpower').value = '';
+          document.getElementById('production').value = '';
+          tsItem.clear(); tsLine.clear(); tsTime.clear();
+          document.getElementById('successMsg').classList.remove('hidden');
+          setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3500);
+        } else {
+          alert("Submission failed: " + (data?.error || "Check your backend setup."));
+        }
+      });
     }
 
-function callAPI(payload, callback) {
-  const isGet = payload.action === "getData";
-  const url = isGet 
-    ? `${APPS_SCRIPT_URL}?action=getData&email=${encodeURIComponent(payload.email)}` 
-    : APPS_SCRIPT_URL;
-
-  if (isGet) {
-    fetch(url, { method: 'GET', mode: 'cors' })
+    // UNIFIED callAPI: We only use POST now to bypass the GET Redirect failure
+    function callAPI(payload, callback) {
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      })
       .then(res => res.json())
       .then(data => callback(data))
       .catch(err => {
-        console.error("GET Error:", err);
-        alert("API Error: Please check your connection.");
+        console.error("API Error:", err);
+        alert("Connection Error. Please check your internet or redeploy your script.");
       });
-  } else {
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' }, // ← Key trick for Apps Script
-      body: JSON.stringify(payload)
-    })
-      .then(res => res.json())
-      .then(data => callback(data))
-      .catch(err => {
-        console.error("POST Error:", err);
-        alert("API Error: Please check your connection.");
-      });
-  }
-}
+    }
   </script>
 </body>
 </html>
