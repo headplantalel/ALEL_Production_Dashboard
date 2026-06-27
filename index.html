@@ -159,29 +159,33 @@ tsTime = new TomSelect("#time", {
       });
     }
 
-    function callAPI(payload, callback) {
+function callAPI(payload, callback) {
   const isGet = payload.action === "getData";
   const url = isGet 
     ? `${APPS_SCRIPT_URL}?action=getData&email=${encodeURIComponent(payload.email)}` 
     : APPS_SCRIPT_URL;
 
-  const options = isGet ? { method: 'GET' } : {
-    method: 'POST',
-    mode: 'no-cors', // Essential for Google Apps Script POST
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  };
-
-  fetch(url, options)
-    .then(res => {
-      if (isGet) return res.json();
-      else return { status: "Success" }; // Since no-cors hides the response
+  if (isGet) {
+    fetch(url)
+      .then(res => res.json())
+      .then(data => callback(data))
+      .catch(err => {
+        console.error("GET Error:", err);
+        alert("API Error: Please check your connection.");
+      });
+  } else {
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' }, // ← Key trick for Apps Script
+      body: JSON.stringify(payload)
     })
-    .then(data => callback(data))
-    .catch(err => {
-      console.error("Fetch Error:", err);
-      alert("API Error: Please check your internet connection.");
-    });
+      .then(res => res.json())
+      .then(data => callback(data))
+      .catch(err => {
+        console.error("POST Error:", err);
+        alert("API Error: Please check your connection.");
+      });
+  }
 }
   </script>
 </body>
