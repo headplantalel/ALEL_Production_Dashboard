@@ -180,7 +180,7 @@ function callAPI(payload, callback) {
     : APPS_SCRIPT_URL;
 
   if (isGet) {
-    fetch(url)
+    fetch(url, { method: 'GET', mode: 'cors' })
       .then(res => res.json())
       .then(data => callback(data))
       .catch(err => {
