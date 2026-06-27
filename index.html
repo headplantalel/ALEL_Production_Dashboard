@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Production Data Input</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body { background-color: #F8FAFC; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    .ts-control { padding: 0.875rem 1rem; border-radius: 0.5rem; border: 1px solid #E2E8F0; background-color: #FFFFFF; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
+    .ts-control.focus { border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 relative">
+  
+  <div id="login-screen" class="bg-white p-8 sm:p-12 rounded-2xl shadow-sm text-center max-w-md w-full border border-gray-100 flex flex-col items-center">
+    <img src="https://akijresource.com/wp-content/uploads/al_opt_content/IMAGE/akijresource.com/wp-content/uploads/2024/05/Light-Engineering.png.bv.webp?bv_host=akijresource.com" alt="Akij Logo" class="h-12 mb-4 object-cover" style="clip-path: inset(40% 5% 40% 5%); transform: scale(3);">
+    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight mt-2">Production Data Input</h1>
+    <p class="text-sm text-gray-500 mb-8 mt-2">Please log in to submit factory data.</p>
+    
+    <div id="g_id_onload"
+         data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"></div>
+  </div>
+
+  <div id="loader" class="hidden text-center text-gray-500 font-medium tracking-wide">
+    <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    Connecting to Database...
+  </div>
+  
+  <div id="denied" class="hidden bg-white p-8 rounded-2xl shadow-sm text-center max-w-md w-full border border-red-100">
+    <h2 class="text-xl font-bold text-gray-900 mb-2">Access Denied</h2>
+    <p class="text-gray-500 text-sm mb-6">User: <span id="user-email" class="font-semibold text-gray-800"></span> does not have access.</p>
+    <button id="requestBtn" onclick="requestAccess()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-sm mb-3">Request Access</button>
+    <button onclick="location.reload()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-xl transition-all shadow-sm">Switch Account</button>
+    <div id="requestSuccess" class="hidden mt-4 text-green-600 font-semibold bg-green-50 p-3 rounded-xl border border-green-200 text-sm">Request sent to Admin!</div>
+  </div>
+  
+  <div id="app" class="hidden bg-white p-6 sm:p-10 rounded-2xl shadow-sm max-w-xl w-full border border-gray-100">
+    <div class="text-center mb-8 pb-6 border-b border-gray-100 flex flex-col items-center">
+      <img src="https://akijresource.com/wp-content/uploads/al_opt_content/IMAGE/akijresource.com/wp-content/uploads/2024/05/Light-Engineering.png.bv.webp?bv_host=akijresource.com" alt="Akij Logo" class="h-10 mb-3 object-cover" style="clip-path: inset(40% 5% 40% 5%); transform: scale(3);">
+      <h2 class="text-sm sm:text-base text-gray-500 font-medium mt-1 uppercase tracking-wide">Production Data Input</h2>
+    </div>
+    
+    <form id="prodForm" onsubmit="submitForm(event)" class="space-y-6">
+      <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Select Item</label><select id="item" required></select></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Line Name</label><select id="line" required></select></div>
+        <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Time Slot</label><select id="time" required></select></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Manpower</label><input type="number" id="manpower" required class="w-full p-3 rounded-lg border border-gray-300"></div>
+        <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Actual Production</label><input type="number" id="production" required class="w-full p-3 rounded-lg border border-gray-300"></div>
+      </div>
+      <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl mt-4">Submit Entry</button>
+      <div id="successMsg" class="hidden bg-green-50 text-green-700 text-center font-semibold py-3 rounded-xl mt-4">Data logged successfully</div>
+    </form>
+
+    <div class="mt-8 pt-6 border-t border-gray-100 flex flex-col items-center">
+      <img id="display-pic" class="w-10 h-10 rounded-full shadow-sm mb-2" src="" alt="Profile">
+      <span id="display-name" class="font-bold text-gray-800">Name</span>
+      <span id="display-email" class="text-sm text-gray-500 mb-4">email@domain.com</span>
+      <button onclick="location.reload()" class="text-sm text-red-500 hover:text-red-700 font-semibold underline">Log out / Switch Account</button>
+    </div>
+  </div>
+
+  <script>
+    // *** PUT YOUR WEB APP URL HERE ***
+    const APPS_SCRIPT_URL = "YOUR_WEB_APP_URL_HERE"; 
+    
+    let tsItem, tsLine, tsTime;
+    let currentUser = {};
+
+    // Decodes the Google JWT Token safely on the frontend
+    function parseJwt(token) {
+      var base64Url = token.split('.')[1];
+      var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    }
+
+    // Triggered when Google Login is successful
+    function handleCredentialResponse(response) {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('loader').classList.remove('hidden');
+      
+      const responsePayload = parseJwt(response.credential);
+      currentUser = {
+        name: responsePayload.name,
+        email: responsePayload.email,
+        picture: responsePayload.picture
+      };
+
+      // Call Apps Script API
+      callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, function(data) {
+        document.getElementById('loader').classList.add('hidden');
+        
+        if (!data.authorized) {
+          document.getElementById('user-email').innerText = currentUser.email;
+          document.getElementById('denied').classList.remove('hidden');
+          return;
+        }
+        
+        // Populate Native Google Profile Picture!
+        document.getElementById('display-pic').src = currentUser.picture;
+        document.getElementById('display-name').innerText = currentUser.name;
+        document.getElementById('display-email').innerText = currentUser.email;
+        document.getElementById('app').classList.remove('hidden');
+        
+        const itemSelect = document.getElementById('item'); data.items.forEach(i => itemSelect.add(new Option(i, i)));
+        const lineSelect = document.getElementById('line'); data.lines.forEach(l => lineSelect.add(new Option(l, l)));
+        const timeSelect = document.getElementById('time'); data.times.forEach(t => timeSelect.add(new Option(t, t)));
+        
+        tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false });
+        tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false });
+        tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false });
+      });
+    }
+
+    function requestAccess() {
+      const btn = document.getElementById('requestBtn');
+      btn.innerText = "Sending..."; btn.disabled = true; btn.classList.add('opacity-50');
+      callAPI({ action: "requestAccess", email: currentUser.email, name: currentUser.name }, function() {
+        btn.classList.add('hidden');
+        document.getElementById('requestSuccess').classList.remove('hidden');
+      });
+    }
+    
+    function submitForm(e) {
+      e.preventDefault();
+      if (!confirm("Submit this production data?")) return;
+
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = 'Submitting...'; btn.disabled = true; btn.classList.add('opacity-80');
+      
+      const payload = {
+        action: "submit",
+        email: currentUser.email,
+        formData: {
+          item: document.getElementById('item').value,
+          line: document.getElementById('line').value,
+          time: document.getElementById('time').value,
+          manpower: document.getElementById('manpower').value,
+          production: document.getElementById('production').value
+        }
+      };
+      
+      callAPI(payload, function() {
+        btn.innerText = 'Submit Entry'; btn.disabled = false; btn.classList.remove('opacity-80');
+        document.getElementById('manpower').value = ''; document.getElementById('production').value = '';
+        tsItem.clear(); tsLine.clear(); tsTime.clear();
+        
+        const msg = document.getElementById('successMsg');
+        msg.classList.remove('hidden'); setTimeout(() => msg.classList.add('hidden'), 3500);
+      });
+    }
+
+    // Helper Function to communicate securely with Apps Script API
+    function callAPI(payload, callback) {
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => callback(data))
+      .catch(error => alert("Connection Error: " + error));
+    }
+  </script>
+</body>
+</html>
