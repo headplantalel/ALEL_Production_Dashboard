@@ -240,10 +240,13 @@
                 <span class="bg-white px-2 py-1 rounded border shadow-sm">${entry.line}</span>
                 <span class="bg-white px-2 py-1 rounded border shadow-sm">${entry.time}</span>
               </div>
-              <p class="mt-2 text-sm font-semibold text-blue-700">Production Qty: <span id="qty-${entry.rowIndex}">${entry.qty}</span></p>
+              <p class="mt-2 text-sm font-semibold text-blue-700">
+                Qty: <span class="text-gray-900">${entry.qty}</span> | 
+                MP: <span class="text-gray-900">${entry.manpower}</span>
+              </p>
             </div>
             <div class="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
-              <button onclick="handleEdit(${entry.rowIndex}, ${entry.qty})" class="flex-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 text-xs font-bold py-2 px-4 rounded-lg shadow-sm">Edit Qty</button>
+              <button onclick="handleEdit(${entry.rowIndex}, ${entry.qty}, ${entry.manpower})" class="flex-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 text-xs font-bold py-2 px-4 rounded-lg shadow-sm">Edit Data</button>
               <button onclick="handleDelete(${entry.rowIndex})" class="flex-1 bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 text-xs font-bold py-2 px-4 rounded-lg shadow-sm">Delete</button>
             </div>
           `;
@@ -270,21 +273,28 @@
       });
     }
 
-    function handleEdit(rowIndex, currentQty) {
-      const newQty = prompt("Enter new Production Quantity:", currentQty);
+    function handleEdit(rowIndex, currentQty, currentManpower) {
+      // First prompt for Quantity
+      const newQty = prompt("Edit Production Quantity:", currentQty);
+      if (newQty === null) return; // User clicked Cancel
       
-      // If user cancels or enters empty/same value, do nothing
-      if (newQty === null || newQty === "" || newQty == currentQty) return; 
+      // Second prompt for Manpower
+      const newManpower = prompt("Edit Manpower:", currentManpower);
+      if (newManpower === null) return; // User clicked Cancel
+      
+      // If user just hit 'OK' without changing anything, skip the database update
+      if (newQty == currentQty && newManpower == currentManpower) return; 
       
       document.getElementById('loader').classList.remove('hidden');
       document.getElementById('history-view').classList.add('hidden');
       
-      callAPI({ action: "editEntry", rowIndex: rowIndex, newQty: newQty }, function(data) {
+      // Send both values to the back-end
+      callAPI({ action: "editEntry", rowIndex: rowIndex, newQty: newQty, newManpower: newManpower }, function(data) {
         document.getElementById('loader').classList.add('hidden');
         document.getElementById('history-view').classList.remove('hidden');
         
         if (data.status === "Success") {
-          fetchEntriesForDate(); // Refresh the list
+          fetchEntriesForDate(); // Refresh the list to show new numbers
         } else {
           alert("Failed to update.");
         }
