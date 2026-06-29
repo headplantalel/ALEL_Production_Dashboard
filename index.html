@@ -19,8 +19,8 @@
 <body class="min-h-screen flex flex-col items-center justify-center p-4 relative">
   
   <div id="login-screen" class="bg-white p-8 sm:p-10 rounded-2xl shadow-md text-center max-w-md w-full border border-gray-100 flex flex-col items-center">
-    <img src="https://akijresource.com/wp-content/uploads/al_opt_content/IMAGE/akijresource.com/wp-content/uploads/2024/05/Light-Engineering.png.bv.webp?bv_host=akijresource.com" alt="Akij Logo" class="h-12 mb-3 object-cover" style="clip-path: inset(40% 5% 40% 5%); transform: scale(3);">
-    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight mt-1">Production Data</h1>
+    <img src="alel.png" alt="Akij Light Engineering" class="h-12 sm:h-16 mb-4 object-contain">
+    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight mt-1">ALEL Production Dashboard</h1>
     <div id="g_id_onload" data-client_id="537235659462-je47c211i8eqatakdl4sr08kq0kle8fq.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
     <div class="g_id_signin mt-6" data-type="standard" data-size="large" data-theme="outline"></div>
   </div>
@@ -41,7 +41,7 @@
   <div id="app" class="hidden bg-white p-6 sm:p-8 rounded-2xl shadow-md max-w-xl w-full border border-gray-100">
     
     <div class="text-center mb-5 pb-4 border-b border-gray-100 flex flex-col items-center">
-      <img src="https://akijresource.com/wp-content/uploads/al_opt_content/IMAGE/akijresource.com/wp-content/uploads/2024/05/Light-Engineering.png.bv.webp?bv_host=akijresource.com" alt="Akij Logo" class="h-8 mb-2 object-cover" style="clip-path: inset(40% 5% 40% 5%); transform: scale(3);">
+      <img src="alel.png" alt="Akij Light Engineering" class="h-8 sm:h-10 mb-2 object-contain">
       <h2 class="text-sm text-gray-500 font-semibold mt-1 uppercase tracking-wider">Production Data Input</h2>
     </div>
     
@@ -159,7 +159,7 @@
 
     function setupAppUI(data) {
       document.getElementById('display-pic').src = currentUser.picture;
-      // FIX: Force it to use the exact Google Account name first.
+      // Fixed: Using Google Account name primarily
       document.getElementById('display-name').innerText = currentUser.name || data.displayName;
       document.getElementById('display-email').innerText = currentUser.email;
       document.getElementById('app').classList.remove('hidden');
