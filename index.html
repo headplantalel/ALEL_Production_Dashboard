@@ -1,217 +1,341 @@
-var SHEET_ID = "1HeKJ0XueH0WeAxLrJpNaNz_pvPuxRDElQmHcPd7QfOQ";
-var ADMIN_EMAIL = "head.plant@akijlightengineering.com";
-
-// BULLETPROOF HELPER: Safely extracts data even if columns are moved or missing
-function getColVal(row, map, k1, k2, k3) {
-  if (k1 && map[k1] !== undefined) return row[map[k1]];
-  if (k2 && map[k2] !== undefined) return row[map[k2]];
-  if (k3 && map[k3] !== undefined) return row[map[k3]];
-  return "";
-}
-
-function doPost(e) {
-  try {
-    var data = JSON.parse(e.postData.contents);
-    var result;
-    
-    if (data.action === "getData") result = getInitialData(data.email);
-    else if (data.action === "submit") result = submitData(data.formData, data.email);
-    else if (data.action === "requestAccess") {
-      requestAdminAccess(data.email, data.name);
-      result = { status: "Success" };
-    }
-    else if (data.action === "getHistory") result = getUserHistory(data.email);
-    else if (data.action === "deleteEntry") result = deleteEntry(data.rowIndex);
-    else if (data.action === "editEntry") result = editEntryData(data.rowIndex, data.newQty, data.newManpower);
-    else result = { error: "Unknown action sent to server." };
-    
-    return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({error: err.toString()})).setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-function getInitialData(email) {
-  var cache = CacheService.getScriptCache();
-  var cachedMaster = cache.get("masterDataCache");
-  var parsedData;
-
-  if (cachedMaster) {
-    parsedData = JSON.parse(cachedMaster);
-  } else {
-    var ss = SpreadsheetApp.openById(SHEET_ID);
-    var sheet = ss.getSheetByName("Master_Data");
-    var data = sheet.getDataRange().getValues();
-    
-    var authEmails = [], items = [], lines = [], times = [];
-    var headers = data[0];
-    var colAuth = -1, colCode = -1, colName = -1, colLine = -1, colTime = -1;
-    
-    for (var c = 0; c < headers.length; c++) {
-      var h = headers[c].toString().toLowerCase().trim();
-      if (h === "entry authorized mail address") colAuth = c;
-      else if (h === "item code") colCode = c;
-      else if (h === "item name") colName = c;
-      else if (h === "line name") colLine = c;
-      else if (h === "time" || h === "time slots") colTime = c; 
-    }
-    
-    for (var i = 1; i < data.length; i++) {
-      var row = data[i];
-      if (colAuth > -1 && row[colAuth]) {
-        var e = row[colAuth].toString().toLowerCase().trim();
-        if (authEmails.indexOf(e) === -1 && e !== "") authEmails.push(e);
-      }
-      if (colCode > -1 && colName > -1 && row[colCode] && row[colName]) {
-        var itemStr = "[" + row[colCode] + "] - " + row[colName];
-        if (items.indexOf(itemStr) === -1) items.push(itemStr);
-      }
-      if (colLine > -1 && row[colLine] && lines.indexOf(row[colLine]) === -1 && row[colLine] !== "") lines.push(row[colLine]);
-      if (colTime > -1 && row[colTime] && times.indexOf(row[colTime]) === -1 && row[colTime] !== "") times.push(row[colTime]);
-    }
-    
-    parsedData = { authEmails: authEmails, items: items.sort(), lines: lines.sort(), times: times };
-    cache.put("masterDataCache", JSON.stringify(parsedData), 21600);
-  }
-
-  var authorized = parsedData.authEmails.indexOf(email.toLowerCase()) > -1;
-  var nameParts = email.split('@')[0].split('.');
-  var displayName = nameParts.map(function(part) { return part.charAt(0).toUpperCase() + part.slice(1); }).join(' ');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Production Data Input</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body { background-color: #F8FAFC; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    .ts-control { padding: 0.875rem 1rem; border-radius: 0.5rem; border: 1px solid #E2E8F0; background-color: #FFFFFF; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
+    .ts-control.focus { border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 relative">
   
-  return { authorized: authorized, email: email, displayName: displayName, items: parsedData.items, lines: parsedData.lines, times: parsedData.times };
-}
+  <div id="login-screen" class="bg-white p-8 sm:p-12 rounded-2xl shadow-sm text-center max-w-md w-full border border-gray-100 flex flex-col items-center">
+    <img src="https://akijresource.com/wp-content/uploads/al_opt_content/IMAGE/akijresource.com/wp-content/uploads/2024/05/Light-Engineering.png.bv.webp?bv_host=akijresource.com" alt="Akij Logo" class="h-12 mb-4 object-cover" style="clip-path: inset(40% 5% 40% 5%); transform: scale(3);">
+    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight mt-2">Production Data</h1>
+    <div id="g_id_onload" data-client_id="537235659462-je47c211i8eqatakdl4sr08kq0kle8fq.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+    <div class="g_id_signin mt-6" data-type="standard" data-size="large" data-theme="outline"></div>
+  </div>
 
-function requestAdminAccess(reqEmail, reqName) {
-  GmailApp.sendEmail(ADMIN_EMAIL, "Dashboard Access Request from: " + reqName, "User Email: " + reqEmail + "\n\nThis user is requesting access to input data on the Production Dashboard.");
-}
-
-function submitData(formData, email) {
-  var dateStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd-MMM-yyyy");
-  var ss = SpreadsheetApp.openById(SHEET_ID);
-  var sheet = ss.getSheetByName("Production_Data");
+  <div id="loader" class="hidden text-center text-gray-500 font-medium tracking-wide">
+    <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    Working...
+  </div>
   
-  if (!sheet) return { status: "Error", error: "Could not find 'Production_Data' sheet." };
+  <div id="denied" class="hidden bg-white p-8 rounded-2xl shadow-sm text-center max-w-md w-full border border-red-100">
+    <h2 class="text-xl font-bold text-gray-900 mb-2">Access Denied</h2>
+    <p class="text-gray-500 text-sm mb-6">User: <span id="user-email" class="font-semibold text-gray-800"></span> does not have access.</p>
+    <button id="requestBtn" onclick="requestAccess()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-sm mb-3">Request Access</button>
+    <button onclick="logout()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-xl transition-all shadow-sm">Switch Account</button>
+    <div id="requestSuccess" class="hidden mt-4 text-green-600 font-semibold bg-green-50 p-3 rounded-xl border border-green-200 text-sm">Request sent to Admin!</div>
+  </div>
   
-  var lastRow = sheet.getLastRow();
-  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  var headerMap = {};
-  for (var i = 0; i < headers.length; i++) headerMap[headers[i].toString().toLowerCase().trim()] = i;
-  
-  var itemCode = "", itemName = formData.item;
-  if (formData.item && formData.item.indexOf('] - ') !== -1) {
-    var parts = formData.item.split('] - '); 
-    itemCode = parts[0].replace('[', '').trim(); 
-    itemName = parts[1].trim(); 
-  }
-
-  // UPDATED DUPLICATE CHECK: Only verifies Date, Line, and Time Slot
-  var checkStartRow = Math.max(2, lastRow - 500);
-  var checkNumRows = (lastRow >= 2) ? lastRow - checkStartRow + 1 : 0;
-  
-  if (checkNumRows > 0) {
-    var checkData = sheet.getRange(checkStartRow, 1, checkNumRows, headers.length).getValues();
-    for (var r = checkData.length - 1; r >= 0; r--) {
-      var rowDate = getColVal(checkData[r], headerMap, "date");
-      if (!rowDate) continue; 
+  <div id="app" class="hidden bg-white p-6 sm:p-10 rounded-2xl shadow-sm max-w-xl w-full border border-gray-100">
+    <div class="text-center mb-8 pb-6 border-b border-gray-100 flex flex-col items-center">
+      <img src="https://akijresource.com/wp-content/uploads/al_opt_content/IMAGE/akijresource.com/wp-content/uploads/2024/05/Light-Engineering.png.bv.webp?bv_host=akijresource.com" alt="Akij Logo" class="h-10 mb-3 object-cover" style="clip-path: inset(40% 5% 40% 5%); transform: scale(3);">
+      <h2 class="text-sm sm:text-base text-gray-500 font-medium mt-1 uppercase tracking-wide">Production Data Input</h2>
+    </div>
+    
+    <form id="prodForm" onsubmit="submitForm(event)" class="space-y-6">
+      <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Select Item</label><select id="item" required></select></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Line Name</label><select id="line" required></select></div>
+        <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Time Slot</label><select id="time" required></select></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Manpower</label><input type="number" id="manpower" required class="w-full p-3 rounded-lg border border-gray-300"></div>
+        <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Actual Production</label><input type="number" id="production" required class="w-full p-3 rounded-lg border border-gray-300"></div>
+      </div>
       
-      var parsedRowDate = (rowDate instanceof Date) ? Utilities.formatDate(rowDate, Session.getScriptTimeZone(), "dd-MMM-yyyy") : rowDate.toString();
-      var rowLine = getColVal(checkData[r], headerMap, "line name", "line").toString().trim();
-      var rowTime = getColVal(checkData[r], headerMap, "time", "time slots").toString().trim();
+      <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl mt-4 transition-colors">Submit Entry</button>
       
-      if (parsedRowDate === dateStr && rowLine === formData.line.trim() && rowTime === formData.time.trim()) {
-        return { status: "Error", error: "Duplicate Entry! Data for this Line and Time Slot has already been submitted today." };
-      }
+      <button type="button" onclick="openHistory()" class="w-full bg-white hover:bg-gray-50 text-blue-600 border border-blue-200 font-semibold py-3 rounded-xl mt-2 transition-colors">
+        View My Past Entries
+      </button>
+
+      <div id="successMsg" class="hidden bg-green-50 text-green-700 text-center font-semibold py-3 rounded-xl mt-4">Data logged successfully</div>
+    </form>
+
+    <div class="mt-8 pt-6 border-t border-gray-100 flex flex-col items-center">
+      <img id="display-pic" class="w-10 h-10 rounded-full shadow-sm mb-2" src="" alt="Profile">
+      <span id="display-name" class="font-bold text-gray-800">Name</span>
+      <span id="display-email" class="text-sm text-gray-500 mb-4">email@domain.com</span>
+      <button onclick="logout()" class="text-sm text-red-500 hover:text-red-700 font-semibold underline">Log out / Switch Account</button>
+    </div>
+  </div>
+
+  <div id="history-view" class="hidden bg-white p-6 sm:p-10 rounded-2xl shadow-sm max-w-2xl w-full border border-gray-100">
+    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+      <h2 class="text-xl font-bold text-gray-800">My Entries</h2>
+      <button onclick="closeHistory()" class="text-sm text-gray-500 hover:text-gray-800 font-semibold px-3 py-1 bg-gray-100 rounded-lg">Back to Input</button>
+    </div>
+    
+    <div class="mb-6">
+      <label class="block text-sm font-semibold text-gray-700 mb-2">Select Date</label>
+      <select id="date-selector" onchange="renderEntriesFromCache()" class="w-full p-3 rounded-lg border border-gray-300 font-medium"></select>
+    </div>
+
+    <div id="entries-container" class="space-y-4 max-h-96 overflow-y-auto pr-2"></div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5cZBzzZOjcrKDpuq0TKh0rDf5ExBL45F6FA0c13a1ayOpZMQHLbIVh65LAktUFP9J6g/exec"; 
+    let tsItem, tsLine, tsTime;
+    let currentUser = {};
+    let historyCache = {}; // MERGED SPEED FIX: Global cache for history data
+
+    window.onload = function() {
+      const savedToken = localStorage.getItem('google_token');
+      if (savedToken) processLogin(savedToken);
+    };
+
+    function parseJwt(token) {
+      var base64Url = token.split('.')[1];
+      var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     }
-  }
 
-  var rowData = new Array(headers.length).fill("");
-  if (headerMap["date"] !== undefined) rowData[headerMap["date"]] = dateStr;
-  if (headerMap["item code"] !== undefined) rowData[headerMap["item code"]] = itemCode;
-  if (headerMap["item name"] !== undefined) rowData[headerMap["item name"]] = itemName;
-  if (headerMap["line name"] !== undefined) rowData[headerMap["line name"]] = formData.line;
-  else if (headerMap["line"] !== undefined) rowData[headerMap["line"]] = formData.line;
-  if (headerMap["time"] !== undefined) rowData[headerMap["time"]] = formData.time;
-  else if (headerMap["time slots"] !== undefined) rowData[headerMap["time slots"]] = formData.time;
-  if (headerMap["manpower"] !== undefined) rowData[headerMap["manpower"]] = formData.manpower;
-  else if (headerMap["man power"] !== undefined) rowData[headerMap["man power"]] = formData.manpower;
-  if (headerMap["production"] !== undefined) rowData[headerMap["production"]] = formData.production;
-  else if (headerMap["actual production"] !== undefined) rowData[headerMap["actual production"]] = formData.production;
-  else if (headerMap["production qty"] !== undefined) rowData[headerMap["production qty"]] = formData.production;
-  if (headerMap["user mail"] !== undefined) rowData[headerMap["user mail"]] = email;
-  else if (headerMap["email"] !== undefined) rowData[headerMap["email"]] = email;
-  
-  var colA = sheet.getRange("A:A").getValues();
-  var trueLastRow = 0;
-  for (var r = colA.length - 1; r >= 0; r--) {
-    if (colA[r][0] !== "") { trueLastRow = r + 1; break; }
-  }
-  
-  sheet.getRange(trueLastRow + 1, 1, 1, rowData.length).setValues([rowData]);
-  return { status: "Success" };
-}
+    function handleCredentialResponse(response) {
+      if (currentUser.email) return;
+      localStorage.setItem('google_token', response.credential);
+      processLogin(response.credential);
+    }
 
-function getUserHistory(email) {
-  var ss = SpreadsheetApp.openById(SHEET_ID);
-  var sheet = ss.getSheetByName("Production_Data");
-  var lastRow = sheet.getLastRow();
-  
-  if (lastRow < 2) return { dates: [], entriesByDate: {} };
-
-  var startRow = Math.max(2, lastRow - 2000);
-  var numRows = lastRow - startRow + 1;
-  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  var data = sheet.getRange(startRow, 1, numRows, headers.length).getValues();
-  
-  var cols = {};
-  for (var i = 0; i < headers.length; i++) cols[headers[i].toString().toLowerCase().trim()] = i;
-  
-  var dates = [];
-  var entriesByDate = {};
-  
-  for (var r = data.length - 1; r >= 0; r--) {
-    var rowEmail = getColVal(data[r], cols, "user mail", "email").toString().trim();
-    if (rowEmail === email.trim()) {
-      var rowDate = getColVal(data[r], cols, "date");
-      if (!rowDate) continue;
+    // MERGED SPEED FIX: Check local storage for instant login rendering
+    function processLogin(token) {
+      document.getElementById('login-screen').classList.add('hidden');
+      const responsePayload = parseJwt(token);
+      currentUser = { name: responsePayload.name, email: responsePayload.email, picture: responsePayload.picture };
       
-      var dateStr = (typeof rowDate === 'object') ? Utilities.formatDate(rowDate, Session.getScriptTimeZone(), "dd-MMM-yyyy") : rowDate.toString();
-      
-      if (dates.indexOf(dateStr) === -1) {
-        dates.push(dateStr);
-        entriesByDate[dateStr] = [];
+      const localCache = localStorage.getItem('master_data_cache_' + currentUser.email);
+      if (localCache) {
+         setupAppUI(JSON.parse(localCache)); 
+      } else {
+         document.getElementById('loader').classList.remove('hidden');
       }
       
-      entriesByDate[dateStr].push({
-        rowIndex: startRow + r,
-        itemName: getColVal(data[r], cols, "item name"),
-        line: getColVal(data[r], cols, "line name", "line"),
-        time: getColVal(data[r], cols, "time", "time slots"),
-        qty: getColVal(data[r], cols, "production", "actual production", "production qty"),
-        manpower: getColVal(data[r], cols, "manpower", "man power")
+      callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, function(data) {
+        document.getElementById('loader').classList.add('hidden');
+        if (!data.authorized) {
+          document.getElementById('app').classList.add('hidden');
+          document.getElementById('user-email').innerText = currentUser.email;
+          document.getElementById('denied').classList.remove('hidden');
+          return;
+        }
+        localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
+        setupAppUI(data);
       });
     }
-  }
-  return { dates: dates, entriesByDate: entriesByDate };
-}
 
-function deleteEntry(rowIndex) {
-  SpreadsheetApp.openById(SHEET_ID).getSheetByName("Production_Data").deleteRow(rowIndex);
-  return { status: "Success" };
-}
+    function setupAppUI(data) {
+      document.getElementById('display-pic').src = currentUser.picture;
+      document.getElementById('display-name').innerText = data.displayName || currentUser.name;
+      document.getElementById('display-email').innerText = currentUser.email;
+      document.getElementById('app').classList.remove('hidden');
+      
+      if(tsItem) { tsItem.destroy(); tsLine.destroy(); tsTime.destroy(); }
+      
+      const itemSelect = document.getElementById('item'); itemSelect.innerHTML = ''; data.items.forEach(i => itemSelect.add(new Option(i, i)));
+      const lineSelect = document.getElementById('line'); lineSelect.innerHTML = ''; data.lines.forEach(l => lineSelect.add(new Option(l, l)));
+      const timeSelect = document.getElementById('time'); timeSelect.innerHTML = ''; data.times.forEach(t => timeSelect.add(new Option(t, t)));
+      
+      tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false, placeholder: "Select or search item...", items: [] });
+      tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false, placeholder: "Select line...", items: [] });
+      tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false, placeholder: "Select time...", items: [] });
+    }
 
-function editEntryData(rowIndex, newQty, newManpower) {
-  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName("Production_Data");
-  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  var qtyColIndex = -1, mpColIndex = -1;
-  
-  for (var i = 0; i < headers.length; i++) {
-    var h = headers[i].toString().toLowerCase().trim();
-    if (h === "production" || h === "actual production" || h === "production qty") qtyColIndex = i + 1;
-    if (h === "manpower" || h === "man power") mpColIndex = i + 1;
-  }
-  
-  if (qtyColIndex > -1 && newQty !== null && newQty !== "") sheet.getRange(rowIndex, qtyColIndex).setValue(newQty);
-  if (mpColIndex > -1 && newManpower !== null && newManpower !== "") sheet.getRange(rowIndex, mpColIndex).setValue(newManpower);
-  
-  return { status: "Success" };
-}
+    function logout() { localStorage.removeItem('google_token'); location.reload(); }
+    
+    function requestAccess() {
+      const btn = document.getElementById('requestBtn');
+      btn.innerText = "Sending...";
+      callAPI({ action: "requestAccess", email: currentUser.email, name: currentUser.name }, function() {
+        btn.classList.add('hidden');
+        document.getElementById('requestSuccess').classList.remove('hidden');
+      });
+    }
+    
+    async function submitForm(e) {
+      e.preventDefault();
+      
+      const itemVal = tsItem.getValue();
+      const lineVal = tsLine.getValue();
+      const timeVal = tsTime.getValue();
+      const manpowerVal = document.getElementById('manpower').value;
+      const productionVal = document.getElementById('production').value;
+      
+      if (!itemVal || !lineVal || !timeVal) {
+        alert("Please select Item, Line, and Time Slot before submitting.");
+        return; 
+      }
+
+      if (!confirm("Submit this production data?")) return;
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = 'Submitting...';
+      
+      const payload = { 
+        action: "submit", 
+        email: currentUser.email, 
+        formData: { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal } 
+      };
+      
+      callAPI(payload, function(data) {
+        btn.innerText = 'Submit Entry';
+        
+        if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
+          document.getElementById('manpower').value = '';
+          document.getElementById('production').value = '';
+          tsItem.clear(); tsLine.clear(); tsTime.clear();
+          
+          document.getElementById('successMsg').classList.remove('hidden');
+          setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3500);
+        } else {
+          alert("Submission failed: " + (data.error || "Check your backend setup."));
+        }
+      });
+    }
+
+    // --- MERGED SPEED FIX: Optimistic UI & Single Call History ---
+
+    function openHistory() {
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('loader').classList.remove('hidden');
+      
+      // One fast call replaces getDates + getEntries
+      callAPI({ action: "getHistory", email: currentUser.email }, function(data) {
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('history-view').classList.remove('hidden');
+        
+        historyCache = data.entriesByDate;
+        
+        const dateSelect = document.getElementById('date-selector');
+        dateSelect.innerHTML = ''; 
+        
+        if (data.dates.length === 0) {
+          dateSelect.add(new Option("No entries found", ""));
+          document.getElementById('entries-container').innerHTML = '<p class="text-gray-500 text-center py-4">You have no recorded entries.</p>';
+        } else {
+          data.dates.forEach(d => dateSelect.add(new Option(d, d)));
+          renderEntriesFromCache(); // Load instantly from memory
+        }
+      });
+    }
+
+    function closeHistory() {
+      document.getElementById('history-view').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+    }
+
+    function renderEntriesFromCache() {
+      const selectedDate = document.getElementById('date-selector').value;
+      const container = document.getElementById('entries-container');
+      container.innerHTML = '';
+      
+      if (!selectedDate || !historyCache[selectedDate] || historyCache[selectedDate].length === 0) {
+         container.innerHTML = '<p class="text-gray-500 text-center py-4">No data found for this date.</p>';
+         return;
+      }
+
+      historyCache[selectedDate].forEach((entry, index) => {
+        const card = document.createElement('div');
+        card.id = `entry-card-${entry.rowIndex}`;
+        card.className = "p-4 border border-gray-200 rounded-xl bg-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all duration-300";
+        
+        card.innerHTML = `
+          <div class="flex-1">
+            <p class="font-bold text-gray-800 text-sm mb-1">${entry.itemName}</p>
+            <div class="text-xs text-gray-500 space-x-2">
+              <span class="bg-white px-2 py-1 rounded border shadow-sm">${entry.line}</span>
+              <span class="bg-white px-2 py-1 rounded border shadow-sm">${entry.time}</span>
+            </div>
+            <p class="mt-2 text-sm font-semibold text-blue-700">
+              Qty: <span id="qty-val-${entry.rowIndex}" class="text-gray-900">${entry.qty}</span> | 
+              MP: <span id="mp-val-${entry.rowIndex}" class="text-gray-900">${entry.manpower}</span>
+            </p>
+          </div>
+          <div class="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
+            <button onclick="handleEdit(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 text-xs font-bold py-2 px-4 rounded-lg shadow-sm">Edit Data</button>
+            <button onclick="handleDelete(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 text-xs font-bold py-2 px-4 rounded-lg shadow-sm">Delete</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function handleDelete(rowIndex, cacheIndex, dateStr) {
+      if (!confirm("Are you sure you want to delete this entry? This cannot be undone.")) return;
+      
+      // OPTIMISTIC UI: Instant visual feedback
+      const card = document.getElementById(`entry-card-${rowIndex}`);
+      card.style.opacity = '0.5';
+      card.innerText = 'Deleting...';
+      
+      // Update memory cache
+      historyCache[dateStr].splice(cacheIndex, 1); 
+      
+      // Background Server call
+      callAPI({ action: "deleteEntry", rowIndex: rowIndex }, function(data) {
+        if (data.status === "Success") {
+          card.remove(); 
+        } else {
+          alert("Failed to delete from database. Refreshing view.");
+          openHistory(); // Reload from server on failure
+        }
+      });
+    }
+
+    function handleEdit(rowIndex, cacheIndex, dateStr) {
+      const entry = historyCache[dateStr][cacheIndex];
+      
+      const newQty = prompt("Edit Production Quantity:", entry.qty);
+      if (newQty === null) return; 
+      
+      const newManpower = prompt("Edit Manpower:", entry.manpower);
+      if (newManpower === null) return; 
+      
+      if (newQty == entry.qty && newManpower == entry.manpower) return; 
+      
+      // OPTIMISTIC UI: Instant DOM Update
+      document.getElementById(`qty-val-${rowIndex}`).innerText = newQty;
+      document.getElementById(`mp-val-${rowIndex}`).innerText = newManpower;
+      document.getElementById(`entry-card-${rowIndex}`).classList.add('bg-blue-50');
+      
+      // Update local memory
+      historyCache[dateStr][cacheIndex].qty = newQty;
+      historyCache[dateStr][cacheIndex].manpower = newManpower;
+      
+      // Background Server call
+      callAPI({ action: "editEntry", rowIndex: rowIndex, newQty: newQty, newManpower: newManpower }, function(data) {
+        if (data.status === "Success") {
+          setTimeout(() => { document.getElementById(`entry-card-${rowIndex}`).classList.remove('bg-blue-50'); }, 1500);
+        } else {
+          alert("Failed to update database. Refreshing view.");
+          openHistory();
+        }
+      });
+    }
+
+    // UNIFIED API CALL
+    function callAPI(payload, callback) {
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => callback(data))
+      .catch(err => {
+        console.error("API Error:", err);
+        alert("Connection Error. Please check your internet or redeploy your script.");
+        document.getElementById('loader').classList.add('hidden');
+      });
+    }
+  </script>
+</body>
+</html>
