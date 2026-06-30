@@ -214,37 +214,41 @@
     <div id="entries-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
   </div>
 
-  <div id="dashboard-app" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-10 rounded-2xl shadow-2xl w-full max-w-[98vw] sm:max-w-[96vw] min-h-[90vh] border border-white text-center z-20 flex flex-col">
+  <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-[#F4F7F6] z-50 flex flex-col">
     
-    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100 w-full">
-      <div class="flex items-center gap-4">
-        <img src="alel.png" alt="ALEL" class="h-6 sm:h-8 object-contain">
-        <div class="w-px h-6 bg-gray-300 hidden sm:block"></div>
-        <img src="enovar.png" alt="Enovar" class="h-4 sm:h-5 object-contain hidden sm:block">
+    <div class="flex justify-between items-center px-4 py-2 bg-white shadow-sm border-b border-gray-200 w-full z-10">
+      
+      <div class="flex items-center gap-3 sm:gap-4">
+        <img src="alel.png" alt="ALEL" class="h-5 sm:h-6 object-contain">
+        <div class="w-px h-5 bg-gray-300 hidden sm:block"></div>
+        <img src="enovar.png" alt="Enovar" class="h-3 sm:h-4 object-contain hidden sm:block">
+        <span class="text-xs font-bold text-gray-800 ml-1 hidden md:block tracking-wide">Executive Dashboard</span>
       </div>
-      <div class="flex items-center gap-3">
-        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Data Entry</button>
-        <span class="text-[10px] sm:text-xs font-bold text-enovar bg-enovar/10 px-3 py-1.5 rounded-md uppercase tracking-widest">Dashboard</span>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">
+          Data Entry
+        </button>
+        <button onclick="logout()" class="text-[10px] sm:text-xs font-bold px-3 py-1.5 bg-white hover:bg-red-50 text-red-500 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-md transition-all shadow-sm uppercase tracking-wider flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          <span class="hidden sm:block">Logout</span>
+        </button>
       </div>
     </div>
 
-    <div class="flex-1 flex flex-col items-center justify-center relative z-10 w-full">
-      <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">Executive Dashboard</h2>
+    <div class="flex-1 w-full flex flex-col items-center justify-center relative bg-transparent p-4 sm:p-8">
       
-      <div class="bg-gray-50/50 border border-gray-100 rounded-2xl p-10 mb-8 shadow-sm w-full max-w-3xl">
-        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200 shadow-sm">
-          <svg class="w-8 h-8 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+      <div class="bg-white border border-gray-200 rounded-2xl p-8 sm:p-12 shadow-sm w-full max-w-2xl text-center animate-fade-up">
+        <div class="w-14 h-14 bg-enovar/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-enovar/10 shadow-sm">
+          <svg class="w-7 h-7 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
         </div>
         <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-2 uppercase tracking-wide">Analytics Pending</h3>
-        <p class="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">Welcome to the authorized dashboard space. This area dynamically expands to fit your screen. Data visualization and reporting modules will be integrated here shortly.</p>
+        <p class="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
+          Welcome to the authorized dashboard space. This area is optimized to expand to fit your screen width seamlessly. Data visualization panels and operational metrics will be deployed here shortly.
+        </p>
       </div>
-      
-      <button onclick="logout()" class="text-xs font-bold px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-all shadow-md mt-auto">Secure Logout</button>
-    </div>
-  </div>
 
-  <div id="footer-logo" class="w-full py-4 flex justify-center z-10 transition-opacity">
-    <img src="enovar.png" alt="Enovar" class="h-10 sm:h-12 object-contain opacity-90 hover:opacity-100 transition-opacity">
+    </div>
   </div>
 
   <script>
