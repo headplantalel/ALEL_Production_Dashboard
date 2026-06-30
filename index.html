@@ -69,13 +69,13 @@
     </div>
   </div>
 
-  <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-center z-10 relative pt-2 pb-6">
+  <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-between z-10 relative pt-6 pb-6 md:pt-10 md:pb-10">
     
-    <div class="fixed top-9 left-1/2 transform -translate-x-1/2 animate-fade-up opacity-0 z-20">
-      <img src="alel.png" alt="Akij Light Engineering" class="h-12 md:h-[65px] object-contain drop-shadow-sm">
+    <div class="w-full flex justify-center animate-fade-up opacity-0">
+      <img src="alel.png" alt="Akij Light Engineering" class="h-[50px] md:h-[65px] object-contain drop-shadow-sm">
     </div>
 
-    <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto pt-24 pb-24">
+    <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto py-8">
       
       <div class="text-center mb-10 animate-fade-up opacity-0 delay-100">
         <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-3">
@@ -109,8 +109,8 @@
       </div>
     </div>
 
-    <div class="fixed bottom-10 left-1/2 transform -translate-x-1/2 animate-fade-up opacity-0 delay-200 z-20">
-      <img src="enovar.png" alt="Enovar" class="h-[18px] md:h-[22px] object-contain drop-shadow-sm">
+    <div class="w-full flex justify-center animate-fade-up opacity-0 delay-200">
+      <img src="enovar.png" alt="Enovar" class="h-[20px] md:h-[24px] object-contain drop-shadow-sm">
     </div>
 
   </div>
@@ -262,20 +262,11 @@
 
     window.onload = function() {
       const savedToken = localStorage.getItem('google_token');
-      const savedPortal = localStorage.getItem('active_portal');
-      
       if (savedToken) {
         const payload = parseJwt(savedToken);
         currentUser = { name: payload.name, email: payload.email, picture: payload.picture };
         const localCache = localStorage.getItem('master_data_cache_' + currentUser.email);
         if (localCache) masterAuthData = JSON.parse(localCache);
-        
-        // Auto-reroute user on browser refresh if portal state exists
-        if (savedPortal) {
-          targetPortal = savedPortal;
-          document.getElementById('landing-view').classList.add('hidden');
-          verifyAndRoute();
-        }
       }
     };
 
@@ -295,7 +286,6 @@
 
     function togglePortalTarget() {
       targetPortal = targetPortal === 'entry' ? 'dashboard' : 'entry';
-      localStorage.setItem('active_portal', targetPortal);
       updatePortalUI();
       if(currentUser.email && !document.getElementById('denied').classList.contains('hidden')) {
         document.getElementById('denied').classList.add('hidden');
@@ -308,13 +298,11 @@
       document.getElementById('dashboard-app').classList.add('hidden');
       document.getElementById('history-view').classList.add('hidden');
       targetPortal = portalType;
-      localStorage.setItem('active_portal', portalType);
       routeUser(masterAuthData);
     }
 
     function openLogin(portalType) {
       targetPortal = portalType;
-      localStorage.setItem('active_portal', portalType);
       updatePortalUI();
       document.getElementById('landing-view').classList.add('hidden');
 
@@ -330,7 +318,6 @@
       document.getElementById('landing-view').classList.remove('hidden');
       document.getElementById('bg-elements').classList.remove('hidden');
       targetPortal = null;
-      localStorage.removeItem('active_portal');
     }
 
     function handleCredentialResponse(response) {
@@ -405,11 +392,7 @@
       else document.getElementById('btn-goto-entry').classList.add('hidden');
     }
 
-    function logout() { 
-      localStorage.removeItem('google_token'); 
-      localStorage.removeItem('active_portal');
-      location.reload(); 
-    }
+    function logout() { localStorage.removeItem('google_token'); location.reload(); }
     
     function requestAccess() {
       const btn = document.getElementById('requestBtn');
