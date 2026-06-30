@@ -50,14 +50,23 @@
     .delay-200 { animation-delay: 200ms; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
+<body class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
   
-  <div class="fixed bottom-4 right-5 z-0 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
-    <img src="enovar.png" alt="Enovar" class="h-4 sm:h-5 object-contain grayscale hover:grayscale-0 transition-all">
-  </div>
-
-  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+  <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
     <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px); background-size: 20px 20px; opacity: 0.04;"></div>
+    
+    <div class="absolute top-10 left-10 hidden md:block max-w-[200px] opacity-30">
+      <p class="font-serif italic text-sm leading-relaxed">"Focus on being productive instead of busy."</p>
+    </div>
+    <div class="absolute top-10 right-10 hidden md:block max-w-[200px] text-right opacity-30">
+      <p class="font-serif italic text-sm leading-relaxed">"Efficiency is doing things right; effectiveness is doing the right things."</p>
+    </div>
+    <div class="absolute bottom-10 left-10 hidden md:block max-w-[220px] opacity-30">
+      <p class="font-serif italic text-sm leading-relaxed">"Improved productivity means less human sweat, not more."</p>
+    </div>
+    <div class="absolute bottom-10 right-10 hidden md:block max-w-[220px] text-right opacity-30">
+      <p class="font-serif italic text-sm leading-relaxed">"Success is the sum of small efforts, repeated day in and day out."</p>
+    </div>
   </div>
 
   <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-center z-10 relative pt-2 pb-6">
@@ -89,7 +98,7 @@
 
         <button onclick="openLogin('dashboard')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(13,92,88,0.1)] hover:-translate-y-1">
           <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors border border-gray-100/50">
-            <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           </div>
           <h3 class="text-xl font-bold text-gray-900 mb-2">Dashboard</h3>
           <p class="text-xs text-gray-500 font-medium mb-5 leading-relaxed">View executive analytics, reports, and master data overview.</p>
@@ -105,11 +114,12 @@
     <button onclick="returnToLanding()" class="absolute top-4 left-4 text-gray-400 hover:text-enovar transition-colors p-2 bg-gray-50/50 hover:bg-enovar/10 rounded-full">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
     </button>
-    <div class="w-14 h-14 bg-enovar/5 rounded-2xl flex items-center justify-center mb-5 border border-enovar/10 shadow-sm">
+    <div class="w-14 h-14 bg-enovar/5 rounded-2xl flex items-center justify-center mb-4 border border-enovar/10 shadow-sm">
       <svg class="w-7 h-7 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
     </div>
     <h1 id="login-title" class="text-xl font-extrabold text-gray-900 tracking-tight">System Login</h1>
-    <p id="login-subtitle" class="text-xs text-gray-500 mt-1.5 mb-6">Authenticate with your Google Workspace account.</p>
+    <p id="login-subtitle" class="text-xs text-gray-500 mt-1.5 mb-4">Authenticate with your Google Workspace account.</p>
+    <button onclick="togglePortalTarget()" id="login-switch-btn" class="mb-6 text-[10px] font-bold text-enovar bg-enovar/10 hover:bg-enovar/20 px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Switch to Dashboard</button>
     <div id="g_id_onload" data-client_id="537235659462-je47c211i8eqatakdl4sr08kq0kle8fq.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
     <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"></div>
   </div>
@@ -126,6 +136,7 @@
     <h2 class="text-lg font-bold text-gray-900 mb-1">Access Denied</h2>
     <p class="text-gray-500 text-xs mb-6">User <span id="user-email" class="font-bold text-gray-800"></span> lacks authorization.</p>
     <button id="requestBtn" onclick="requestAccess()" class="w-full bg-enovar hover:bg-enovar-light text-white font-medium text-sm py-2.5 rounded-xl transition-all shadow-sm mb-2.5">Request Admin Access</button>
+    <button onclick="togglePortalTarget()" id="denied-switch-btn" class="w-full bg-enovar/10 hover:bg-enovar/20 text-enovar font-medium text-sm py-2.5 rounded-xl transition-all mb-2.5">Switch to Other Portal</button>
     <button onclick="logout()" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium text-sm py-2.5 rounded-xl transition-all border border-gray-200">Switch Account / Back</button>
     <div id="requestSuccess" class="hidden mt-4 text-green-700 font-medium bg-green-50 p-3 rounded-xl border border-green-200 text-xs">Request sent to Administration.</div>
   </div>
@@ -203,11 +214,16 @@
     <div id="entries-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
   </div>
 
-  <div id="dashboard-app" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-10 rounded-2xl shadow-2xl w-[96vw] min-h-[85vh] border border-white z-20 flex flex-col">
+  <div id="dashboard-app" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-10 rounded-2xl shadow-2xl w-full max-w-[98vw] sm:max-w-[96vw] min-h-[90vh] border border-white text-center z-20 flex flex-col">
+    
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100 w-full">
-      <img src="alel.png" alt="ALEL" class="h-6 sm:h-8 object-contain">
+      <div class="flex items-center gap-4">
+        <img src="alel.png" alt="ALEL" class="h-6 sm:h-8 object-contain">
+        <div class="w-px h-6 bg-gray-300 hidden sm:block"></div>
+        <img src="enovar.png" alt="Enovar" class="h-4 sm:h-5 object-contain hidden sm:block">
+      </div>
       <div class="flex items-center gap-3">
-        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Data Entry</button>
+        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Data Entry</button>
         <span class="text-[10px] sm:text-xs font-bold text-enovar bg-enovar/10 px-3 py-1.5 rounded-md uppercase tracking-widest">Dashboard</span>
       </div>
     </div>
@@ -215,8 +231,8 @@
     <div class="flex-1 flex flex-col items-center justify-center relative z-10 w-full">
       <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">Executive Dashboard</h2>
       
-      <div class="bg-gray-50/50 border border-gray-100 rounded-2xl p-10 mb-8 shadow-sm w-full max-w-2xl text-center">
-        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-5 border border-gray-200 shadow-sm">
+      <div class="bg-gray-50/50 border border-gray-100 rounded-2xl p-10 mb-8 shadow-sm w-full max-w-3xl">
+        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200 shadow-sm">
           <svg class="w-8 h-8 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
         </div>
         <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-2 uppercase tracking-wide">Analytics Pending</h3>
@@ -225,6 +241,10 @@
       
       <button onclick="logout()" class="text-xs font-bold px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-all shadow-md mt-auto">Secure Logout</button>
     </div>
+  </div>
+
+  <div id="footer-logo" class="w-full py-4 flex justify-center z-10 transition-opacity">
+    <img src="enovar.png" alt="Enovar" class="h-10 sm:h-12 object-contain opacity-90 hover:opacity-100 transition-opacity">
   </div>
 
   <script>
@@ -251,11 +271,38 @@
       return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     }
 
+    // Dynamic UI Update for Login/Denied Screens
+    function updatePortalUI() {
+      const title = targetPortal === 'dashboard' ? 'Executive Dashboard' : 'Data Entry Portal';
+      const switchText = targetPortal === 'dashboard' ? 'Switch to Data Entry' : 'Switch to Dashboard';
+      document.getElementById('login-title').innerText = title;
+      if(document.getElementById('login-switch-btn')) document.getElementById('login-switch-btn').innerText = switchText;
+      if(document.getElementById('denied-switch-btn')) document.getElementById('denied-switch-btn').innerText = switchText;
+    }
+
+    // Toggle logic for Login/Denied screen buttons
+    function togglePortalTarget() {
+      targetPortal = targetPortal === 'entry' ? 'dashboard' : 'entry';
+      updatePortalUI();
+      // Instantly reroute if already verified but on the denied screen
+      if(currentUser.email && !document.getElementById('denied').classList.contains('hidden')) {
+        document.getElementById('denied').classList.add('hidden');
+        verifyAndRoute();
+      }
+    }
+
+    // Seamless in-app switching without logout
+    function switchPortal(portalType) {
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('dashboard-app').classList.add('hidden');
+      document.getElementById('history-view').classList.add('hidden');
+      targetPortal = portalType;
+      routeUser(masterAuthData);
+    }
+
     function openLogin(portalType) {
       targetPortal = portalType;
-      const title = portalType === 'dashboard' ? 'Executive Dashboard' : 'Data Entry Portal';
-      document.getElementById('login-title').innerText = title;
-      
+      updatePortalUI();
       document.getElementById('landing-view').classList.add('hidden');
 
       if (currentUser.email) {
@@ -265,19 +312,11 @@
       }
     }
 
-    // New Seamless Switch Function
-    function switchPortal(portalType) {
-      document.getElementById('app').classList.add('hidden');
-      document.getElementById('dashboard-app').classList.add('hidden');
-      document.getElementById('history-view').classList.add('hidden');
-      
-      targetPortal = portalType;
-      routeUser(masterAuthData);
-    }
-
     function returnToLanding() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('landing-view').classList.remove('hidden');
+      document.getElementById('bg-elements').classList.remove('hidden');
+      document.getElementById('footer-logo').classList.remove('hidden');
       targetPortal = null;
     }
 
@@ -295,13 +334,13 @@
         routeUser(masterAuthData);
         callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
           localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
-          masterAuthData = data; // Update local memory
+          masterAuthData = data;
         });
       } else {
         document.getElementById('loader').classList.remove('hidden');
         callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, function(data) {
           localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
-          masterAuthData = data; // Save to local memory
+          masterAuthData = data;
           routeUser(data);
         });
       }
@@ -325,13 +364,15 @@
     }
 
     function setupEntryAppUI(data) {
+      document.getElementById('bg-elements').classList.remove('hidden');
+      document.getElementById('footer-logo').classList.remove('hidden');
       document.getElementById('display-pic').src = currentUser.picture;
       document.getElementById('display-name').innerText = currentUser.name || data.displayName;
       document.getElementById('display-email').innerText = currentUser.email;
       document.getElementById('app').classList.remove('hidden');
       
-      // Show/Hide seamless jump button based on authority
-      if (data.authorizedDashboard) document.getElementById('btn-goto-dash').classList.remove('hidden');
+      // Determine if they can switch to dashboard
+      if (data && data.authorizedDashboard) document.getElementById('btn-goto-dash').classList.remove('hidden');
       else document.getElementById('btn-goto-dash').classList.add('hidden');
       
       if(tsItem) { tsItem.destroy(); tsLine.destroy(); tsTime.destroy(); }
@@ -346,9 +387,11 @@
     }
 
     function setupDashboardUI(data) {
+      document.getElementById('bg-elements').classList.add('hidden');
+      document.getElementById('footer-logo').classList.add('hidden');
       document.getElementById('dashboard-app').classList.remove('hidden');
       
-      // Show/Hide seamless jump button based on authority
+      // Determine if they can switch to entry
       if (data && data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
       else document.getElementById('btn-goto-entry').classList.add('hidden');
     }
