@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALEL Production Hub</title>
+  <title>ALEL Productivity Tracker</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
@@ -50,47 +50,32 @@
     .delay-200 { animation-delay: 200ms; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
+<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
   
-  <!-- SOOTHING BACKGROUND ELEMENTS -->
-  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-    <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px); background-size: 20px 20px; opacity: 0.04;"></div>
-    
-    <div class="absolute top-10 left-10 hidden md:block max-w-[200px] opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Focus on being productive instead of busy."</p>
-    </div>
-    <div class="absolute top-10 right-10 hidden md:block max-w-[200px] text-right opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Efficiency is doing things right; effectiveness is doing the right things."</p>
-    </div>
-    <div class="absolute bottom-10 left-10 hidden md:block max-w-[220px] opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Improved productivity means less human sweat, not more."</p>
-    </div>
-    <div class="absolute bottom-10 right-10 hidden md:block max-w-[220px] text-right opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Productivity is never an accident. It is the result of a commitment to excellence."</p>
-    </div>
+  <div class="fixed bottom-4 right-5 z-0 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
+    <img src="enovar.png" alt="Enovar" class="h-4 sm:h-5 object-contain grayscale hover:grayscale-0 transition-all">
   </div>
 
-  <!-- 1. LANDING PAGE VIEW -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px); background-size: 20px 20px; opacity: 0.04;"></div>
+  </div>
+
   <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-center z-10 relative pt-2 pb-6">
     
     <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto">
-      <!-- Top ALEL Logo -->
       <div class="mb-6 animate-fade-up opacity-0">
-        <img src="alel.png" alt="Akij Light Engineering" class="h-16 md:h-20 object-contain mx-auto drop-shadow-sm">
+        <img src="alel.png" alt="Akij Light Engineering" class="h-14 md:h-[72px] object-contain mx-auto drop-shadow-sm">
       </div>
       
-      <!-- Headline -->
       <div class="text-center mb-10 animate-fade-up opacity-0 delay-100">
         <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-3">
-          Production <span class="text-transparent bg-clip-text bg-gradient-to-r from-enovar to-enovar-light">Hub</span>
+          Productivity <span class="text-transparent bg-clip-text bg-gradient-to-r from-enovar to-enovar-light">Tracker</span>
         </h1>
         <p class="text-base text-gray-500 font-medium max-w-xl mx-auto">Select your authorized workspace to continue.</p>
       </div>
 
-      <!-- Compact Portal Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full px-2 animate-fade-up opacity-0 delay-200">
         
-        <!-- Data Entry Card -->
         <button onclick="openLogin('entry')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(13,92,88,0.1)] hover:-translate-y-1">
           <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors border border-gray-100/50">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
@@ -102,7 +87,6 @@
           </div>
         </button>
 
-        <!-- Dashboard Card -->
         <button onclick="openLogin('dashboard')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(13,92,88,0.1)] hover:-translate-y-1">
           <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors border border-gray-100/50">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
@@ -117,7 +101,6 @@
     </div>
   </div>
 
-  <!-- 2. LOGIN SCREEN (Dynamic) -->
   <div id="login-screen" class="hidden bg-white/80 backdrop-blur-xl p-8 sm:p-10 rounded-2xl shadow-xl text-center max-w-md w-full border border-white flex flex-col items-center relative z-20">
     <button onclick="returnToLanding()" class="absolute top-4 left-4 text-gray-400 hover:text-enovar transition-colors p-2 bg-gray-50/50 hover:bg-enovar/10 rounded-full">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
@@ -131,13 +114,11 @@
     <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"></div>
   </div>
 
-  <!-- 3. LOADER -->
   <div id="loader" class="hidden text-center text-enovar font-medium text-sm tracking-wide flex flex-col items-center bg-white/90 p-8 rounded-2xl shadow-xl backdrop-blur-md border border-white z-20">
     <svg class="animate-spin h-8 w-8 text-enovar mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
     Authenticating...
   </div>
   
-  <!-- 4. DENIED SCREEN -->
   <div id="denied" class="hidden bg-white/90 backdrop-blur-lg p-8 rounded-2xl shadow-xl text-center max-w-md w-full border-t-4 border-red-500 z-20">
     <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100">
       <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -149,11 +130,13 @@
     <div id="requestSuccess" class="hidden mt-4 text-green-700 font-medium bg-green-50 p-3 rounded-xl border border-green-200 text-xs">Request sent to Administration.</div>
   </div>
   
-  <!-- 5. MAIN ENTRY APP SCREEN (Tighter layout) -->
   <div id="app" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-xl w-full border border-white z-20">
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
       <img src="alel.png" alt="ALEL" class="h-6 object-contain">
-      <span class="text-[10px] font-bold text-enovar bg-enovar/10 px-2.5 py-1 rounded-md uppercase tracking-widest">Data Entry</span>
+      <div class="flex items-center gap-3">
+        <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Dashboard</button>
+        <span class="text-[10px] font-bold text-enovar bg-enovar/10 px-2.5 py-1.5 rounded-md uppercase tracking-widest">Data Entry</span>
+      </div>
     </div>
     
     <form id="prodForm" onsubmit="submitForm(event)" class="space-y-4">
@@ -192,7 +175,6 @@
       <div id="successMsg" class="hidden bg-green-50 text-green-700 text-center font-medium text-sm py-2.5 rounded-xl mt-3 border border-green-200">Data logged successfully</div>
     </form>
 
-    <!-- Compact Footer -->
     <div class="mt-6 pt-5 border-t border-gray-100 flex flex-row items-center justify-between -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 p-5 sm:p-6 bg-gray-50/30 rounded-b-2xl">
       <div class="flex items-center gap-3 overflow-hidden">
         <img id="display-pic" class="w-9 h-9 rounded-full shadow-sm border border-gray-200 flex-shrink-0" src="" alt="Profile">
@@ -207,7 +189,6 @@
     </div>
   </div>
 
-  <!-- 6. HISTORY VIEW -->
   <div id="history-view" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-2xl w-full border border-white z-20">
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
       <h2 class="text-lg font-bold text-gray-900">Entry History</h2>
@@ -222,26 +203,28 @@
     <div id="entries-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
   </div>
 
-  <!-- 7. DASHBOARD DUMMY VIEW -->
-  <div id="dashboard-app" class="hidden bg-white/95 backdrop-blur-xl p-8 sm:p-12 rounded-2xl shadow-2xl max-w-4xl w-full border border-white text-center z-20">
-    <div class="relative z-10">
-      <img src="alel.png" alt="ALEL" class="h-10 mx-auto mb-6 object-contain">
-      <h2 class="text-2xl font-extrabold text-gray-900 mb-5 tracking-tight">Executive Dashboard</h2>
+  <div id="dashboard-app" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-10 rounded-2xl shadow-2xl w-[96vw] min-h-[85vh] border border-white z-20 flex flex-col">
+    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100 w-full">
+      <img src="alel.png" alt="ALEL" class="h-6 sm:h-8 object-contain">
+      <div class="flex items-center gap-3">
+        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Data Entry</button>
+        <span class="text-[10px] sm:text-xs font-bold text-enovar bg-enovar/10 px-3 py-1.5 rounded-md uppercase tracking-widest">Dashboard</span>
+      </div>
+    </div>
+
+    <div class="flex-1 flex flex-col items-center justify-center relative z-10 w-full">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">Executive Dashboard</h2>
       
-      <div class="bg-gray-50/50 border border-gray-100 rounded-2xl p-8 mb-8 shadow-sm">
-        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200 shadow-sm">
+      <div class="bg-gray-50/50 border border-gray-100 rounded-2xl p-10 mb-8 shadow-sm w-full max-w-2xl text-center">
+        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-5 border border-gray-200 shadow-sm">
           <svg class="w-8 h-8 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
         </div>
-        <h3 class="text-sm font-bold text-gray-800 mb-2 uppercase tracking-wide">Analytics Pending</h3>
-        <p class="text-xs text-gray-500 max-w-sm mx-auto leading-relaxed">Welcome to the authorized dashboard space. Data visualization and reporting modules will be integrated here shortly.</p>
+        <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-2 uppercase tracking-wide">Analytics Pending</h3>
+        <p class="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">Welcome to the authorized dashboard space. This area dynamically expands to fit your screen. Data visualization and reporting modules will be integrated here shortly.</p>
       </div>
       
-      <button onclick="logout()" class="text-xs font-bold px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-all shadow-md">Secure Logout</button>
+      <button onclick="logout()" class="text-xs font-bold px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-all shadow-md mt-auto">Secure Logout</button>
     </div>
-  </div>
-
-  <div id="footer-logo" class="w-full py-4 flex justify-center z-10">
-    <img src="enovar.png" alt="Enovar" class="h-8 sm:h-10 object-contain opacity-90 hover:opacity-100 transition-opacity">
   </div>
 
   <script>
@@ -282,6 +265,16 @@
       }
     }
 
+    // New Seamless Switch Function
+    function switchPortal(portalType) {
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('dashboard-app').classList.add('hidden');
+      document.getElementById('history-view').classList.add('hidden');
+      
+      targetPortal = portalType;
+      routeUser(masterAuthData);
+    }
+
     function returnToLanding() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('landing-view').classList.remove('hidden');
@@ -302,11 +295,13 @@
         routeUser(masterAuthData);
         callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
           localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
+          masterAuthData = data; // Update local memory
         });
       } else {
         document.getElementById('loader').classList.remove('hidden');
         callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, function(data) {
           localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
+          masterAuthData = data; // Save to local memory
           routeUser(data);
         });
       }
@@ -319,7 +314,7 @@
         if (data.authorizedEntry) setupEntryAppUI(data);
         else showDenied();
       } else if (targetPortal === 'dashboard') {
-        if (data.authorizedDashboard) setupDashboardUI();
+        if (data.authorizedDashboard) setupDashboardUI(data);
         else showDenied();
       }
     }
@@ -335,6 +330,10 @@
       document.getElementById('display-email').innerText = currentUser.email;
       document.getElementById('app').classList.remove('hidden');
       
+      // Show/Hide seamless jump button based on authority
+      if (data.authorizedDashboard) document.getElementById('btn-goto-dash').classList.remove('hidden');
+      else document.getElementById('btn-goto-dash').classList.add('hidden');
+      
       if(tsItem) { tsItem.destroy(); tsLine.destroy(); tsTime.destroy(); }
       
       const itemSelect = document.getElementById('item'); itemSelect.innerHTML = ''; data.items.forEach(i => itemSelect.add(new Option(i, i)));
@@ -346,8 +345,12 @@
       tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false, placeholder: "Select time...", items: [] });
     }
 
-    function setupDashboardUI() {
+    function setupDashboardUI(data) {
       document.getElementById('dashboard-app').classList.remove('hidden');
+      
+      // Show/Hide seamless jump button based on authority
+      if (data && data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
+      else document.getElementById('btn-goto-entry').classList.add('hidden');
     }
 
     function logout() { localStorage.removeItem('google_token'); location.reload(); }
