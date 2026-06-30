@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ALEL Production Hub</title>
   
-  <!-- Setup Tailwind with Enovar Brand Color -->
+  <!-- Setup Tailwind with Enovar Brand Color & Artistic Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,700;1,900&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
@@ -20,7 +21,7 @@
           },
           fontFamily: {
             sans: ['Inter', 'system-ui', 'sans-serif'],
-            serif: ['Georgia', 'serif']
+            serif: ['Playfair Display', 'Georgia', 'serif']
           }
         }
       }
@@ -32,185 +33,228 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
   <style>
-    body { background-color: #F4F7F6; }
+    body { background-color: #F8FAFC; }
+    
+    /* Sleeker TomSelect Inputs */
     .ts-control { padding: 0.625rem 0.875rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; background-color: #FFFFFF; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); transition: all 0.2s ease; }
     .ts-control.focus { border-color: #0D5C58; box-shadow: 0 0 0 3px rgba(13, 92, 88, 0.15); }
     .ts-dropdown { border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #E5E7EB; }
     
-    /* Background Pattern for Landing */
-    .bg-pattern {
-      background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px), radial-gradient(#0D5C58 0.5px, #F4F7F6 0.5px);
-      background-size: 20px 20px;
-      background-position: 0 0, 10px 10px;
-      opacity: 0.05;
-      position: absolute; inset: 0; z-index: -1;
+    /* Custom Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
+    .animate-fade-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .delay-100 { animation-delay: 100ms; }
+    .delay-200 { animation-delay: 200ms; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden">
-  <div class="bg-pattern"></div>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white">
+  
+  <!-- ARTISTIC BACKGROUND LAYER -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <!-- Subtle Grid -->
+    <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px); background-size: 24px 24px; opacity: 0.03;"></div>
+    
+    <!-- Giant Enovar Watermark (Cleverly integrated, slightly cropped at bottom right) -->
+    <img src="enovar.png" alt="" class="absolute -bottom-10 -right-20 w-[90vw] max-w-[900px] opacity-[0.025] -rotate-6 grayscale select-none">
+    
+    <!-- Typography Art Quotes -->
+    <div class="absolute top-12 left-10 md:top-24 md:left-24 opacity-[0.03] select-none">
+      <p class="font-serif italic font-black text-5xl md:text-8xl text-enovar leading-[0.9] tracking-tighter">
+        Precision<br>in every<br>process.
+      </p>
+    </div>
+    <div class="absolute bottom-32 left-10 md:bottom-40 md:left-24 opacity-[0.03] select-none">
+      <p class="font-serif italic font-black text-4xl md:text-7xl text-gray-900 leading-[0.9] tracking-tighter">
+        Data-driven<br>excellence.
+      </p>
+    </div>
+  </div>
 
   <!-- 1. LANDING PAGE VIEW -->
-  <div id="landing-view" class="w-full max-w-4xl mx-auto text-center flex flex-col items-center animate-fade-in">
-    <!-- Logos -->
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 mb-8 w-full">
-      <img src="alel.png" alt="Akij Light Engineering" class="h-16 object-contain">
-      <div class="hidden sm:block w-px h-12 bg-gray-300"></div>
-      <img src="enovar.png" alt="Enovar" class="h-14 object-contain">
-    </div>
+  <div id="landing-view" class="w-full min-h-[90vh] flex flex-col items-center justify-between z-10 relative">
     
-    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">ALEL Production Hub</h1>
-    
-    <!-- Artistic Quotes -->
-    <div class="mb-12 relative max-w-2xl mx-auto">
-      <p class="text-lg text-gray-600 font-serif italic text-center">
-        "Efficiency is doing things right; effectiveness is doing the right things."
-      </p>
-      <div class="w-16 h-1 bg-enovar mx-auto mt-4 rounded-full opacity-50"></div>
+    <div class="flex-1 flex flex-col items-center justify-center w-full max-w-5xl mx-auto w-full">
+      <!-- Top ALEL Logo (Symmetrical & Clean) -->
+      <div class="mb-12 animate-fade-up opacity-0">
+        <img src="alel.png" alt="Akij Light Engineering" class="h-20 md:h-24 object-contain mx-auto drop-shadow-sm">
+      </div>
+      
+      <!-- Headline -->
+      <div class="text-center mb-16 animate-fade-up opacity-0 delay-100">
+        <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-4">
+          Production <span class="text-transparent bg-clip-text bg-gradient-to-r from-enovar to-enovar-light">Hub</span>
+        </h1>
+        <p class="text-lg md:text-xl text-gray-500 font-medium max-w-2xl mx-auto">Select your authorized workspace to continue.</p>
+      </div>
+
+      <!-- Symmetrical Portal Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 w-full max-w-3xl px-4 animate-fade-up opacity-0 delay-200">
+        
+        <!-- Data Entry Card -->
+        <button onclick="openLogin('entry')" class="group relative bg-white/80 backdrop-blur-md rounded-2xl p-8 sm:p-10 text-center border border-gray-200 hover:border-enovar/40 transition-all duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(13,92,88,0.08)] hover:-translate-y-1 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="w-14 h-14 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-6 transition-colors border border-gray-100">
+            <svg class="w-6 h-6 text-gray-600 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3 relative z-10">Data Entry</h3>
+          <p class="text-sm text-gray-500 font-medium relative z-10 mb-6">Input shift details, manpower, and realtime production yields.</p>
+          <div class="inline-flex items-center text-xs font-bold tracking-widest uppercase text-gray-400 group-hover:text-enovar transition-colors relative z-10">
+            Access Portal <span class="ml-2 transform group-hover:translate-x-1 transition-transform">→</span>
+          </div>
+        </button>
+
+        <!-- Dashboard Card -->
+        <button onclick="openLogin('dashboard')" class="group relative bg-white/80 backdrop-blur-md rounded-2xl p-8 sm:p-10 text-center border border-gray-200 hover:border-enovar/40 transition-all duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(13,92,88,0.08)] hover:-translate-y-1 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="w-14 h-14 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-6 transition-colors border border-gray-100">
+            <svg class="w-6 h-6 text-gray-600 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-3 relative z-10">Dashboard</h3>
+          <p class="text-sm text-gray-500 font-medium relative z-10 mb-6">View executive analytics, reports, and master data overview.</p>
+          <div class="inline-flex items-center text-xs font-bold tracking-widest uppercase text-gray-400 group-hover:text-enovar transition-colors relative z-10">
+            Access Portal <span class="ml-2 transform group-hover:translate-x-1 transition-transform">→</span>
+          </div>
+        </button>
+      </div>
     </div>
 
-    <!-- Portal Selection Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl px-4">
-      
-      <!-- Entry Card -->
-      <button onclick="openLogin('entry')" class="group relative bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl hover:border-enovar/30 transition-all duration-300 text-left overflow-hidden">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-enovar/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-125"></div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-2 group-hover:text-enovar transition-colors">Data Entry</h3>
-        <p class="text-sm text-gray-500 font-medium relative z-10">Input shift details, manpower, and production yields.</p>
-        <div class="mt-6 flex items-center text-enovar font-bold text-sm tracking-wide uppercase">
-          Enter Portal <span class="ml-2 transition-transform group-hover:translate-x-1">→</span>
-        </div>
-      </button>
-
-      <!-- Dashboard Card -->
-      <button onclick="openLogin('dashboard')" class="group relative bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl hover:border-enovar/30 transition-all duration-300 text-left overflow-hidden">
-        <div class="absolute top-0 left-0 w-24 h-24 bg-enovar/5 rounded-br-full -ml-8 -mt-8 transition-transform group-hover:scale-125"></div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-2 group-hover:text-enovar transition-colors">Dashboard</h3>
-        <p class="text-sm text-gray-500 font-medium relative z-10">Executive analytics, reports, and master data overview.</p>
-        <div class="mt-6 flex items-center text-enovar font-bold text-sm tracking-wide uppercase">
-          Enter Portal <span class="ml-2 transition-transform group-hover:translate-x-1">→</span>
-        </div>
-      </button>
-      
+    <!-- Artistic Enovar Attribution Footer -->
+    <div class="mt-12 pb-4 flex flex-col items-center justify-center opacity-40 hover:opacity-100 transition-opacity duration-300 animate-fade-up delay-200">
+      <span class="text-[10px] font-bold tracking-widest uppercase text-gray-500 mb-2.5">System Architecture By</span>
+      <img src="enovar.png" alt="Enovar" class="h-[18px] object-contain grayscale hover:grayscale-0 transition-all duration-500">
     </div>
   </div>
 
   <!-- 2. LOGIN SCREEN (Dynamic) -->
-  <div id="login-screen" class="hidden bg-white p-8 sm:p-12 rounded-2xl shadow-xl text-center max-w-md w-full border border-gray-100 flex flex-col items-center relative">
-    <button onclick="returnToLanding()" class="absolute top-4 left-4 text-gray-400 hover:text-gray-800 transition-colors p-2">
+  <div id="login-screen" class="hidden bg-white/90 backdrop-blur-xl p-8 sm:p-12 rounded-2xl shadow-2xl text-center max-w-md w-full border border-gray-100 flex flex-col items-center relative z-20">
+    <button onclick="returnToLanding()" class="absolute top-5 left-5 text-gray-400 hover:text-enovar transition-colors p-2 bg-gray-50 hover:bg-enovar/10 rounded-full">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
     </button>
-    <img src="enovar.png" alt="Enovar" class="h-10 mb-5 object-contain">
+    <div class="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-6 border border-gray-100 shadow-sm">
+      <svg class="w-8 h-8 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+    </div>
     <h1 id="login-title" class="text-2xl font-extrabold text-gray-900 tracking-tight mt-1">System Login</h1>
-    <p id="login-subtitle" class="text-sm text-gray-500 mt-2 mb-6">Authenticate to access the portal.</p>
+    <p id="login-subtitle" class="text-sm text-gray-500 mt-2 mb-8">Authenticate with your Google Workspace account.</p>
     <div id="g_id_onload" data-client_id="537235659462-je47c211i8eqatakdl4sr08kq0kle8fq.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
     <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"></div>
   </div>
 
   <!-- 3. LOADER -->
-  <div id="loader" class="hidden text-center text-enovar font-semibold tracking-wide flex flex-col items-center bg-white/80 p-8 rounded-2xl backdrop-blur-sm">
+  <div id="loader" class="hidden text-center text-enovar font-semibold tracking-wide flex flex-col items-center bg-white/90 p-10 rounded-2xl shadow-xl backdrop-blur-md border border-gray-100 z-20">
     <svg class="animate-spin h-10 w-10 text-enovar mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
     Verifying Credentials...
   </div>
   
   <!-- 4. DENIED SCREEN -->
-  <div id="denied" class="hidden bg-white p-8 rounded-2xl shadow-xl text-center max-w-md w-full border-t-4 border-red-500">
-    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-      <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+  <div id="denied" class="hidden bg-white p-8 sm:p-10 rounded-2xl shadow-2xl text-center max-w-md w-full border-t-4 border-red-500 z-20">
+    <div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5 border border-red-100">
+      <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
     </div>
-    <h2 class="text-xl font-bold text-gray-900 mb-2">Access Denied</h2>
-    <p class="text-gray-500 text-sm mb-6">User: <span id="user-email" class="font-semibold text-gray-800"></span> does not have authorization for this portal.</p>
-    <button id="requestBtn" onclick="requestAccess()" class="w-full bg-enovar hover:bg-enovar-light text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-md mb-3">Request Admin Access</button>
-    <button onclick="logout()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-xl transition-all shadow-sm">Switch Account / Go Back</button>
-    <div id="requestSuccess" class="hidden mt-4 text-green-700 font-semibold bg-green-50 p-3 rounded-xl border border-green-200 text-sm">Request sent to Admin!</div>
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
+    <p class="text-gray-500 text-sm mb-8">User <span id="user-email" class="font-bold text-gray-800"></span> does not have authorization for this portal.</p>
+    <button id="requestBtn" onclick="requestAccess()" class="w-full bg-enovar hover:bg-enovar-light text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-md mb-3">Request Admin Access</button>
+    <button onclick="logout()" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold py-3.5 px-4 rounded-xl transition-all shadow-sm border border-gray-200">Switch Account / Go Back</button>
+    <div id="requestSuccess" class="hidden mt-4 text-green-700 font-semibold bg-green-50 p-4 rounded-xl border border-green-200 text-sm">Request sent to Administration.</div>
   </div>
   
   <!-- 5. MAIN ENTRY APP SCREEN -->
-  <div id="app" class="hidden bg-white p-6 sm:p-8 rounded-2xl shadow-xl max-w-xl w-full border border-gray-100">
-    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-      <img src="alel.png" alt="ALEL" class="h-6 object-contain">
-      <span class="text-xs font-bold text-enovar bg-enovar/10 px-3 py-1 rounded-full uppercase tracking-widest">Data Entry</span>
+  <div id="app" class="hidden bg-white p-6 sm:p-10 rounded-3xl shadow-xl max-w-xl w-full border border-gray-100 z-20">
+    <div class="flex justify-between items-center mb-8 pb-5 border-b border-gray-100">
+      <img src="alel.png" alt="ALEL" class="h-7 object-contain">
+      <span class="text-[11px] font-black text-enovar bg-enovar/10 px-3 py-1.5 rounded-lg uppercase tracking-widest">Data Entry</span>
     </div>
     
     <form id="prodForm" onsubmit="submitForm(event)" class="space-y-5">
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Select Item</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Select Item</label>
         <select id="item" required></select>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Line Name</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Line Name</label>
           <select id="line" required></select>
         </div>
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Time Slot</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Time Slot</label>
           <select id="time" required></select>
         </div>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Manpower</label>
-          <input type="number" id="manpower" required class="w-full p-2.5 rounded-lg border border-gray-300 focus:border-enovar focus:ring-4 focus:ring-enovar/10 outline-none transition-all shadow-sm">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Manpower</label>
+          <input type="number" id="manpower" required class="w-full p-3 rounded-xl border border-gray-300 focus:border-enovar focus:ring-4 focus:ring-enovar/10 outline-none transition-all shadow-sm bg-gray-50 focus:bg-white">
         </div>
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Actual Production</label>
-          <input type="number" id="production" required class="w-full p-2.5 rounded-lg border border-gray-300 focus:border-enovar focus:ring-4 focus:ring-enovar/10 outline-none transition-all shadow-sm">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Actual Production</label>
+          <input type="number" id="production" required class="w-full p-3 rounded-xl border border-gray-300 focus:border-enovar focus:ring-4 focus:ring-enovar/10 outline-none transition-all shadow-sm bg-gray-50 focus:bg-white">
         </div>
       </div>
       
-      <div class="pt-3">
-        <button type="submit" id="submitBtn" class="w-full bg-enovar hover:bg-enovar-dark text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg">Submit Entry</button>
-        <button type="button" onclick="openHistory()" class="w-full bg-white hover:bg-gray-50 text-enovar border border-enovar/30 font-semibold py-3 rounded-xl mt-3 transition-colors shadow-sm">View My Past Entries</button>
+      <div class="pt-4">
+        <button type="submit" id="submitBtn" class="w-full bg-enovar hover:bg-enovar-dark text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">Submit Entry</button>
+        <button type="button" onclick="openHistory()" class="w-full bg-white hover:bg-gray-50 text-enovar border border-gray-200 font-bold py-3.5 rounded-xl mt-3 transition-all shadow-sm hover:border-enovar/30">View My Past Entries</button>
       </div>
       
-      <div id="successMsg" class="hidden bg-green-50 text-green-700 text-center font-bold py-3 rounded-xl mt-3 border border-green-200 shadow-sm">Data logged successfully</div>
+      <div id="successMsg" class="hidden bg-green-50 text-green-700 text-center font-bold py-3.5 rounded-xl mt-4 border border-green-200 shadow-sm">Data logged successfully</div>
     </form>
 
-    <!-- FOOTER PROFILE -->
-    <div class="mt-8 pt-5 border-t border-gray-100 flex flex-row items-center justify-between bg-gray-50/50 -mx-6 -mb-6 p-6 rounded-b-2xl">
-      <div class="flex items-center gap-3 overflow-hidden">
-        <img id="display-pic" class="w-10 h-10 rounded-full shadow-sm border border-gray-200 flex-shrink-0" src="" alt="Profile">
+    <div class="mt-10 pt-6 border-t border-gray-100 flex flex-row items-center justify-between bg-gray-50/50 -mx-6 sm:-mx-10 -mb-6 sm:-mb-10 p-6 sm:p-8 rounded-b-3xl">
+      <div class="flex items-center gap-4 overflow-hidden">
+        <img id="display-pic" class="w-12 h-12 rounded-full shadow-sm border border-gray-200 flex-shrink-0" src="" alt="Profile">
         <div class="flex flex-col truncate">
-          <span id="display-name" class="font-bold text-gray-800 text-sm truncate">Name</span>
-          <span id="display-email" class="text-xs text-gray-500 truncate">email@domain.com</span>
+          <span id="display-name" class="font-bold text-gray-900 text-sm truncate">Name</span>
+          <span id="display-email" class="text-xs text-gray-500 font-medium truncate">email@domain.com</span>
         </div>
       </div>
-      <button onclick="logout()" class="ml-2 flex-shrink-0 text-xs font-bold px-3 py-2 bg-white hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-lg transition-colors shadow-sm">
+      <button onclick="logout()" class="ml-2 flex-shrink-0 text-xs font-bold px-4 py-2.5 bg-white hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-xl transition-colors shadow-sm">
         Log Out
       </button>
     </div>
   </div>
 
   <!-- 6. HISTORY VIEW -->
-  <div id="history-view" class="hidden bg-white p-6 sm:p-8 rounded-2xl shadow-xl max-w-2xl w-full border border-gray-100">
-    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-      <h2 class="text-xl font-bold text-gray-900">Entry History</h2>
-      <button onclick="closeHistory()" class="text-sm text-enovar font-bold px-4 py-2 bg-enovar/10 hover:bg-enovar/20 rounded-lg transition-colors shadow-sm">Back to Input</button>
+  <div id="history-view" class="hidden bg-white p-6 sm:p-10 rounded-3xl shadow-xl max-w-2xl w-full border border-gray-100 z-20">
+    <div class="flex justify-between items-center mb-8 pb-5 border-b border-gray-100">
+      <h2 class="text-2xl font-extrabold text-gray-900">Entry History</h2>
+      <button onclick="closeHistory()" class="text-sm text-enovar font-bold px-4 py-2 bg-gray-50 hover:bg-enovar/10 border border-gray-200 hover:border-enovar/20 rounded-xl transition-all shadow-sm">Back to Input</button>
     </div>
     
     <div class="mb-6">
       <label class="block text-sm font-semibold text-gray-700 mb-2">Select Date</label>
-      <select id="date-selector" onchange="renderEntriesFromCache()" class="w-full p-3 rounded-lg border border-gray-300 font-medium outline-none focus:border-enovar focus:ring-2 focus:ring-enovar/20 shadow-sm"></select>
+      <select id="date-selector" onchange="renderEntriesFromCache()" class="w-full p-3.5 rounded-xl border border-gray-300 font-medium outline-none focus:border-enovar focus:ring-4 focus:ring-enovar/10 shadow-sm bg-gray-50 focus:bg-white"></select>
     </div>
 
-    <div id="entries-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
+    <div id="entries-container" class="space-y-4 max-h-96 overflow-y-auto pr-2"></div>
   </div>
 
   <!-- 7. DASHBOARD DUMMY VIEW -->
-  <div id="dashboard-app" class="hidden bg-white p-8 sm:p-12 rounded-2xl shadow-xl max-w-3xl w-full border-t-4 border-enovar text-center">
-    <img src="enovar.png" alt="Enovar" class="h-10 mx-auto mb-6 object-contain">
-    <h2 class="text-3xl font-extrabold text-gray-900 mb-4">Executive Dashboard</h2>
-    <div class="w-16 h-1 bg-enovar mx-auto mb-8 rounded-full"></div>
+  <div id="dashboard-app" class="hidden bg-white p-10 sm:p-16 rounded-3xl shadow-2xl max-w-4xl w-full border-t-8 border-enovar text-center z-20 relative overflow-hidden">
+    <!-- Abstract design inside dashboard dummy -->
+    <div class="absolute top-0 right-0 w-64 h-64 bg-enovar/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+    <div class="absolute bottom-0 left-0 w-64 h-64 bg-enovar/5 rounded-full blur-3xl -ml-20 -mb-20"></div>
     
-    <div class="bg-gray-50 border border-gray-200 rounded-xl p-10 mb-8 shadow-inner">
-      <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-      <h3 class="text-lg font-bold text-gray-700 mb-2">Analytics Framework Pending</h3>
-      <p class="text-sm text-gray-500 max-w-md mx-auto">Welcome to the dashboard. The data visualization, charts, and reporting modules will be integrated into this space shortly.</p>
+    <div class="relative z-10">
+      <img src="alel.png" alt="ALEL" class="h-12 mx-auto mb-8 object-contain">
+      <h2 class="text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">Executive Dashboard</h2>
+      
+      <div class="bg-white border border-gray-200 rounded-2xl p-12 mb-10 shadow-lg relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-50 to-white opacity-50"></div>
+        <div class="relative z-10">
+          <div class="w-20 h-20 bg-enovar/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-enovar/20">
+            <svg class="w-10 h-10 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">Analytics Framework Pending</h3>
+          <p class="text-base text-gray-500 max-w-lg mx-auto leading-relaxed">Welcome to the authorized dashboard space. Data visualization, real-time charts, and advanced reporting modules will be integrated here shortly.</p>
+        </div>
+      </div>
+      
+      <button onclick="logout()" class="text-sm font-bold px-8 py-3.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl transition-all shadow-md hover:shadow-lg">Secure Logout</button>
     </div>
-    
-    <button onclick="logout()" class="text-sm font-bold px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors shadow-sm">Log Out / Switch Account</button>
   </div>
 
   <script>
@@ -218,14 +262,12 @@
     let tsItem, tsLine, tsTime;
     let currentUser = {};
     let historyCache = {}; 
-    let targetPortal = null; // Tracks if user wants 'entry' or 'dashboard'
-    let masterAuthData = null; // Stores permissions
+    let targetPortal = null; 
+    let masterAuthData = null; 
 
     window.onload = function() {
-      // By default, stay on landing page. Do not auto-route unless they click a portal.
       const savedToken = localStorage.getItem('google_token');
       if (savedToken) {
-        // Silently prep logic in background so it's fast when they click
         const payload = parseJwt(savedToken);
         currentUser = { name: payload.name, email: payload.email, picture: payload.picture };
         const localCache = localStorage.getItem('master_data_cache_' + currentUser.email);
@@ -239,17 +281,16 @@
       return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     }
 
-    // Triggered when user clicks a button on the Landing Page
     function openLogin(portalType) {
       targetPortal = portalType;
-      
-      // Update UI text based on choice
       const title = portalType === 'dashboard' ? 'Executive Dashboard' : 'Data Entry Portal';
       document.getElementById('login-title').innerText = title + ' Login';
       
       document.getElementById('landing-view').classList.add('hidden');
+      
+      // Hide the background art to keep forms clean
+      document.querySelector('.fixed.inset-0').classList.add('hidden');
 
-      // If already silently logged in, jump straight to verification
       if (currentUser.email) {
         verifyAndRoute();
       } else {
@@ -260,10 +301,10 @@
     function returnToLanding() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('landing-view').classList.remove('hidden');
+      document.querySelector('.fixed.inset-0').classList.remove('hidden');
       targetPortal = null;
     }
 
-    // Triggered by Google Sign In button
     function handleCredentialResponse(response) {
       localStorage.setItem('google_token', response.credential);
       const payload = parseJwt(response.credential);
@@ -276,7 +317,6 @@
       
       if (masterAuthData) {
         routeUser(masterAuthData);
-        // Refresh silently in background
         callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
           localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
         });
@@ -338,35 +378,21 @@
       });
     }
     
-    // --- Data Entry Specific Functions Below ---
     async function submitForm(e) {
       e.preventDefault();
       
-      const itemVal = tsItem.getValue();
-      const lineVal = tsLine.getValue();
-      const timeVal = tsTime.getValue();
-      const manpowerVal = document.getElementById('manpower').value;
-      const productionVal = document.getElementById('production').value;
+      const itemVal = tsItem.getValue(), lineVal = tsLine.getValue(), timeVal = tsTime.getValue();
+      const manpowerVal = document.getElementById('manpower').value, productionVal = document.getElementById('production').value;
       
-      if (!itemVal || !lineVal || !timeVal) {
-        alert("Please select Item, Line, and Time Slot before submitting.");
-        return; 
-      }
+      if (!itemVal || !lineVal || !timeVal) { alert("Please select Item, Line, and Time Slot."); return; }
       if (!confirm("Submit this production data?")) return;
-      const btn = document.getElementById('submitBtn');
-      btn.innerText = 'Submitting...';
       
-      const payload = { 
-        action: "submit", 
-        email: currentUser.email, 
-        formData: { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal } 
-      };
+      const btn = document.getElementById('submitBtn'); btn.innerText = 'Submitting...';
       
-      callAPI(payload, function(data) {
+      callAPI({ action: "submit", email: currentUser.email, formData: { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal } }, function(data) {
         btn.innerText = 'Submit Entry';
         if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
-          document.getElementById('manpower').value = '';
-          document.getElementById('production').value = '';
+          document.getElementById('manpower').value = ''; document.getElementById('production').value = '';
           tsItem.clear(); tsLine.clear(); tsTime.clear();
           document.getElementById('successMsg').classList.remove('hidden');
           setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3500);
@@ -384,8 +410,7 @@
         document.getElementById('loader').classList.add('hidden');
         document.getElementById('history-view').classList.remove('hidden');
         historyCache = data.entriesByDate;
-        const dateSelect = document.getElementById('date-selector');
-        dateSelect.innerHTML = ''; 
+        const dateSelect = document.getElementById('date-selector'); dateSelect.innerHTML = ''; 
         if (data.dates.length === 0) {
           dateSelect.add(new Option("No entries found", ""));
           document.getElementById('entries-container').innerHTML = '<p class="text-gray-500 text-center py-4">You have no recorded entries.</p>';
@@ -403,32 +428,29 @@
 
     function renderEntriesFromCache() {
       const selectedDate = document.getElementById('date-selector').value;
-      const container = document.getElementById('entries-container');
-      container.innerHTML = '';
+      const container = document.getElementById('entries-container'); container.innerHTML = '';
       if (!selectedDate || !historyCache[selectedDate] || historyCache[selectedDate].length === 0) {
-         container.innerHTML = '<p class="text-gray-500 text-sm text-center py-4">No data found for this date.</p>';
-         return;
+         container.innerHTML = '<p class="text-gray-500 text-sm text-center py-4">No data found for this date.</p>'; return;
       }
-
       historyCache[selectedDate].forEach((entry, index) => {
         const card = document.createElement('div');
         card.id = `entry-card-${entry.rowIndex}`;
-        card.className = "p-4 border border-gray-200 rounded-xl bg-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all duration-300 shadow-sm hover:border-enovar/30";
+        card.className = "p-5 border border-gray-200 rounded-2xl bg-gray-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all duration-300 shadow-sm hover:border-enovar/30 hover:bg-white";
         card.innerHTML = `
           <div class="flex-1 w-full">
-            <p class="font-bold text-gray-900 text-sm mb-2 leading-tight">${entry.itemName}</p>
-            <div class="text-xs text-gray-600 flex gap-2 mb-2">
-              <span class="bg-white px-2.5 py-1.5 rounded-md border border-gray-200 shadow-sm font-semibold">${entry.line}</span>
-              <span class="bg-white px-2.5 py-1.5 rounded-md border border-gray-200 shadow-sm font-semibold">${entry.time}</span>
+            <p class="font-extrabold text-gray-900 text-sm mb-2.5 leading-tight">${entry.itemName}</p>
+            <div class="text-xs text-gray-600 flex gap-2.5 mb-3">
+              <span class="bg-white px-2.5 py-1.5 rounded-lg border border-gray-200 shadow-sm font-semibold">${entry.line}</span>
+              <span class="bg-white px-2.5 py-1.5 rounded-lg border border-gray-200 shadow-sm font-semibold">${entry.time}</span>
             </div>
-            <div class="mt-2 text-sm font-bold text-enovar bg-enovar/5 px-3 py-1.5 rounded-lg inline-block border border-enovar/20">
-              Qty: <span id="qty-val-${entry.rowIndex}" class="text-gray-900">${entry.qty}</span> <span class="mx-2 text-gray-300">|</span> 
-              MP: <span id="mp-val-${entry.rowIndex}" class="text-gray-900">${entry.manpower}</span>
+            <div class="mt-1 text-xs font-bold text-enovar bg-enovar/5 px-3.5 py-2 rounded-xl inline-block border border-enovar/10">
+              Qty: <span id="qty-val-${entry.rowIndex}" class="text-gray-900 text-sm">${entry.qty}</span> <span class="mx-2 text-enovar/30">|</span> 
+              MP: <span id="mp-val-${entry.rowIndex}" class="text-gray-900 text-sm">${entry.manpower}</span>
             </div>
           </div>
-          <div class="flex flex-row sm:flex-col gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-            <button onclick="handleEdit(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 sm:flex-none bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-enovar text-xs font-bold py-2 px-4 rounded-lg shadow-sm transition-colors">Edit</button>
-            <button onclick="handleDelete(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 sm:flex-none bg-white text-red-600 hover:bg-red-50 border border-red-200 text-xs font-bold py-2 px-4 rounded-lg shadow-sm transition-colors">Delete</button>
+          <div class="flex flex-row sm:flex-col gap-2.5 w-full sm:w-auto mt-2 sm:mt-0">
+            <button onclick="handleEdit(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 sm:flex-none bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-enovar hover:border-enovar/40 text-xs font-bold py-2.5 px-5 rounded-xl shadow-sm transition-all">Edit Data</button>
+            <button onclick="handleDelete(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 sm:flex-none bg-white text-red-600 hover:bg-red-50 border border-red-200 text-xs font-bold py-2.5 px-5 rounded-xl shadow-sm transition-all">Delete</button>
           </div>
         `;
         container.appendChild(card);
@@ -442,39 +464,31 @@
       historyCache[dateStr].splice(cacheIndex, 1); 
       callAPI({ action: "deleteEntry", rowIndex: rowIndex }, function(data) {
         if (data.status === "Success") {
-          card.remove(); 
-          if(historyCache[dateStr].length === 0) renderEntriesFromCache();
-        } else {
-          alert("Failed to delete from database. Refreshing view.");
-          openHistory(); 
-        }
+          card.remove(); if(historyCache[dateStr].length === 0) renderEntriesFromCache();
+        } else { alert("Failed to delete. Refreshing view."); openHistory(); }
       });
     }
 
     function handleEdit(rowIndex, cacheIndex, dateStr) {
       const entry = historyCache[dateStr][cacheIndex];
-      const newQty = prompt("Edit Production Quantity:", entry.qty);
-      if (newQty === null) return; 
-      const newManpower = prompt("Edit Manpower:", entry.manpower);
-      if (newManpower === null) return; 
+      const newQty = prompt("Edit Production Quantity:", entry.qty); if (newQty === null) return; 
+      const newManpower = prompt("Edit Manpower:", entry.manpower); if (newManpower === null) return; 
       if (newQty == entry.qty && newManpower == entry.manpower) return; 
       
-      document.getElementById(`qty-val-${rowIndex}`).innerText = newQty;
-      document.getElementById(`mp-val-${rowIndex}`).innerText = newManpower;
+      document.getElementById(`qty-val-${rowIndex}`).innerText = newQty; document.getElementById(`mp-val-${rowIndex}`).innerText = newManpower;
       document.getElementById(`entry-card-${rowIndex}`).classList.add('ring-2', 'ring-enovar', 'bg-white');
       
       historyCache[dateStr][cacheIndex].qty = newQty; historyCache[dateStr][cacheIndex].manpower = newManpower;
-      
       callAPI({ action: "editEntry", rowIndex: rowIndex, newQty: newQty, newManpower: newManpower }, function(data) {
         if (data.status === "Success") setTimeout(() => { document.getElementById(`entry-card-${rowIndex}`).classList.remove('ring-2', 'ring-enovar', 'bg-white'); }, 1000);
-        else { alert("Failed to update database. Refreshing view."); openHistory(); }
+        else { alert("Update failed. Refreshing view."); openHistory(); }
       });
     }
 
     function callAPI(payload, callback) {
       fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
       .then(res => res.json()).then(data => callback(data)).catch(err => {
-        console.error("API Error:", err); alert("Connection Error. Please check your internet."); document.getElementById('loader').classList.add('hidden');
+        console.error("API Error:", err); alert("Connection Error. Check your internet."); document.getElementById('loader').classList.add('hidden');
       });
     }
   </script>
