@@ -69,20 +69,25 @@
     </div>
   </div>
 
-  <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-center z-10 relative pt-2 pb-6">
-    <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto">
-      <div class="mb-6 animate-fade-up opacity-0">
-        <img src="alel.png" alt="Akij Light Engineering" class="h-14 md:h-[72px] object-contain mx-auto drop-shadow-sm">
-      </div>
+  <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-center z-10 relative pt-2 pb-6 min-h-[85vh]">
+    
+    <div class="absolute top-10 left-1/2 transform -translate-x-1/2 animate-fade-up opacity-0 z-20">
+      <img src="alel.png" alt="Akij Light Engineering" class="h-10 md:h-12 object-contain drop-shadow-sm">
+    </div>
+
+    <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto py-12 z-10">
       
-      <div class="text-center mb-10 animate-fade-up opacity-0 delay-100">
-        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-3">
+      <div class="text-center mb-12 animate-fade-up opacity-0 delay-100 relative">
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-32 bg-enovar/5 rounded-full blur-3xl -z-10"></div>
+        
+        <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-4">
           Productivity <span class="text-transparent bg-clip-text bg-gradient-to-r from-enovar to-enovar-light">Tracker</span>
         </h1>
-        <p class="text-base text-gray-500 font-medium max-w-xl mx-auto">Select your authorized workspace to continue.</p>
+        <p class="text-base md:text-lg text-gray-500 font-medium max-w-xl mx-auto">Select your authorized workspace to continue.</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full px-2 animate-fade-up opacity-0 delay-200">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full px-4 animate-fade-up opacity-0 delay-200">
+        
         <button onclick="openLogin('entry')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(13,92,88,0.1)] hover:-translate-y-1">
           <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors border border-gray-100/50">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
@@ -104,6 +109,13 @@
             Access Portal <span class="ml-2 transform group-hover:translate-x-1 transition-transform">→</span>
           </div>
         </button>
+      </div>
+    </div>
+
+    <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-fade-up opacity-0 delay-200 z-20">
+      <div class="flex flex-col items-center gap-1 opacity-60 hover:opacity-100 transition-opacity cursor-default">
+        <span class="text-[9px] uppercase tracking-widest text-gray-400 font-bold">Powered by</span>
+        <img src="enovar.png" alt="Enovar" class="h-4 md:h-5 object-contain drop-shadow-sm">
       </div>
     </div>
   </div>
@@ -212,38 +224,36 @@
     <div id="entries-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
   </div>
 
-  <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-[#F4F7F6] z-50 flex flex-col">
-    <div class="flex justify-between items-center px-4 py-2 bg-white shadow-sm border-b border-gray-200 w-full z-10">
-      <div class="flex items-center gap-3 sm:gap-4">
-        <img src="alel.png" alt="ALEL" class="h-5 sm:h-6 object-contain">
-        <div class="w-px h-5 bg-gray-300 hidden sm:block"></div>
-        <img src="enovar.png" alt="Enovar" class="h-3 sm:h-4 object-contain hidden sm:block">
-        <span class="text-xs font-bold text-gray-800 ml-1 hidden md:block tracking-wide">Dashboard</span>
+  <div id="dashboard-app" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-10 rounded-2xl shadow-2xl w-full max-w-[98vw] sm:max-w-[96vw] min-h-[90vh] border border-white text-center z-20 flex flex-col">
+    
+    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100 w-full">
+      <div class="flex items-center gap-4">
+        <img src="alel.png" alt="ALEL" class="h-6 sm:h-8 object-contain">
+        <div class="w-px h-6 bg-gray-300 hidden sm:block"></div>
+        <img src="enovar.png" alt="Enovar" class="h-4 sm:h-5 object-contain hidden sm:block">
       </div>
-
-      <div class="flex items-center gap-2 sm:gap-3">
-        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">
-          Data Entry
-        </button>
-        <button onclick="logout()" class="text-[10px] sm:text-xs font-bold px-3 py-1.5 bg-white hover:bg-red-50 text-red-500 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-md transition-all shadow-sm uppercase tracking-wider flex items-center gap-1">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-          <span class="hidden sm:block">Logout</span>
-        </button>
+      <div class="flex items-center gap-3">
+        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Data Entry</button>
+        <span class="text-[10px] sm:text-xs font-bold text-enovar bg-enovar/10 px-3 py-1.5 rounded-md uppercase tracking-widest">Dashboard</span>
       </div>
     </div>
 
-    <div class="flex-1 w-full flex flex-col items-center justify-center relative bg-transparent p-4 sm:p-8">
-      <div class="bg-white border border-gray-200 rounded-2xl p-8 sm:p-12 shadow-sm w-full max-w-2xl text-center animate-fade-up">
-        <div class="w-14 h-14 bg-enovar/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-enovar/10 shadow-sm">
-          <svg class="w-7 h-7 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+    <div class="flex-1 flex flex-col items-center justify-center relative z-10 w-full">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">Executive Dashboard</h2>
+      
+      <div class="bg-gray-50/50 border border-gray-100 rounded-2xl p-10 mb-8 shadow-sm w-full max-w-3xl">
+        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200 shadow-sm">
+          <svg class="w-8 h-8 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
         </div>
         <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-2 uppercase tracking-wide">Analytics Pending</h3>
-        <p class="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
-          Welcome to the authorized dashboard space. This area is optimized to expand to fit your screen width seamlessly. Data visualization panels and operational metrics will be deployed here shortly.
-        </p>
+        <p class="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">Welcome to the authorized dashboard space. This area dynamically expands to fit your screen. Data visualization and reporting modules will be integrated here shortly.</p>
       </div>
+      
+      <button onclick="logout()" class="text-xs font-bold px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-all shadow-md mt-auto">Secure Logout</button>
     </div>
   </div>
+
+  <div id="footer-logo" class="hidden"></div>
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5cZBzzZOjcrKDpuq0TKh0rDf5ExBL45F6FA0c13a1ayOpZMQHLbIVh65LAktUFP9J6g/exec"; 
@@ -253,13 +263,23 @@
     let targetPortal = null; 
     let masterAuthData = null; 
 
+    // Fixed Refresh Persistence Strategy
     window.onload = function() {
       const savedToken = localStorage.getItem('google_token');
+      const savedPortal = localStorage.getItem('active_portal');
+      
       if (savedToken) {
         const payload = parseJwt(savedToken);
         currentUser = { name: payload.name, email: payload.email, picture: payload.picture };
         const localCache = localStorage.getItem('master_data_cache_' + currentUser.email);
         if (localCache) masterAuthData = JSON.parse(localCache);
+        
+        // Auto-route on reload if an active session portal state exists
+        if (savedPortal) {
+          targetPortal = savedPortal;
+          document.getElementById('landing-view').classList.add('hidden');
+          verifyAndRoute();
+        }
       }
     };
 
@@ -269,6 +289,7 @@
       return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     }
 
+    // Dynamic UI Update for Login/Denied Screens
     function updatePortalUI() {
       const title = targetPortal === 'dashboard' ? 'Executive Dashboard' : 'Data Entry Portal';
       const switchText = targetPortal === 'dashboard' ? 'Switch to Data Entry' : 'Switch to Dashboard';
@@ -277,25 +298,31 @@
       if(document.getElementById('denied-switch-btn')) document.getElementById('denied-switch-btn').innerText = switchText;
     }
 
+    // Toggle logic for Login/Denied screen buttons
     function togglePortalTarget() {
       targetPortal = targetPortal === 'entry' ? 'dashboard' : 'entry';
+      localStorage.setItem('active_portal', targetPortal);
       updatePortalUI();
+      // Instantly reroute if already verified but on the denied screen
       if(currentUser.email && !document.getElementById('denied').classList.contains('hidden')) {
         document.getElementById('denied').classList.add('hidden');
         verifyAndRoute();
       }
     }
 
+    // Seamless in-app switching without logout
     function switchPortal(portalType) {
       document.getElementById('app').classList.add('hidden');
       document.getElementById('dashboard-app').classList.add('hidden');
       document.getElementById('history-view').classList.add('hidden');
       targetPortal = portalType;
+      localStorage.setItem('active_portal', portalType);
       routeUser(masterAuthData);
     }
 
     function openLogin(portalType) {
       targetPortal = portalType;
+      localStorage.setItem('active_portal', portalType);
       updatePortalUI();
       document.getElementById('landing-view').classList.add('hidden');
 
@@ -311,6 +338,7 @@
       document.getElementById('landing-view').classList.remove('hidden');
       document.getElementById('bg-elements').classList.remove('hidden');
       targetPortal = null;
+      localStorage.removeItem('active_portal');
     }
 
     function handleCredentialResponse(response) {
@@ -363,6 +391,7 @@
       document.getElementById('display-email').innerText = currentUser.email;
       document.getElementById('app').classList.remove('hidden');
       
+      // Determine if they can switch to dashboard
       if (data && data.authorizedDashboard) document.getElementById('btn-goto-dash').classList.remove('hidden');
       else document.getElementById('btn-goto-dash').classList.add('hidden');
       
@@ -381,11 +410,16 @@
       document.getElementById('bg-elements').classList.add('hidden');
       document.getElementById('dashboard-app').classList.remove('hidden');
       
+      // Determine if they can switch to entry
       if (data && data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
       else document.getElementById('btn-goto-entry').classList.add('hidden');
     }
 
-    function logout() { localStorage.removeItem('google_token'); location.reload(); }
+    function logout() { 
+      localStorage.removeItem('google_token'); 
+      localStorage.removeItem('active_portal');
+      location.reload(); 
+    }
     
     function requestAccess() {
       const btn = document.getElementById('requestBtn');
@@ -506,7 +540,7 @@
     function callAPI(payload, callback) {
       fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
       .then(res => res.json()).then(data => callback(data)).catch(err => {
-        console.error(err); alert("Network or Server error.");
+        console.error("API Error:", err); alert("Connection Error."); document.getElementById('loader').classList.add('hidden');
       });
     }
   </script>
