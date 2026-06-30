@@ -70,7 +70,6 @@
   </div>
 
   <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-center z-10 relative pt-2 pb-6">
-    
     <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto">
       <div class="mb-6 animate-fade-up opacity-0">
         <img src="alel.png" alt="Akij Light Engineering" class="h-14 md:h-[72px] object-contain mx-auto drop-shadow-sm">
@@ -84,7 +83,6 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full px-2 animate-fade-up opacity-0 delay-200">
-        
         <button onclick="openLogin('entry')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(13,92,88,0.1)] hover:-translate-y-1">
           <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors border border-gray-100/50">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
@@ -215,9 +213,7 @@
   </div>
 
   <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-[#F4F7F6] z-50 flex flex-col">
-    
     <div class="flex justify-between items-center px-4 py-2 bg-white shadow-sm border-b border-gray-200 w-full z-10">
-      
       <div class="flex items-center gap-3 sm:gap-4">
         <img src="alel.png" alt="ALEL" class="h-5 sm:h-6 object-contain">
         <div class="w-px h-5 bg-gray-300 hidden sm:block"></div>
@@ -237,7 +233,6 @@
     </div>
 
     <div class="flex-1 w-full flex flex-col items-center justify-center relative bg-transparent p-4 sm:p-8">
-      
       <div class="bg-white border border-gray-200 rounded-2xl p-8 sm:p-12 shadow-sm w-full max-w-2xl text-center animate-fade-up">
         <div class="w-14 h-14 bg-enovar/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-enovar/10 shadow-sm">
           <svg class="w-7 h-7 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
@@ -247,7 +242,6 @@
           Welcome to the authorized dashboard space. This area is optimized to expand to fit your screen width seamlessly. Data visualization panels and operational metrics will be deployed here shortly.
         </p>
       </div>
-
     </div>
   </div>
 
@@ -275,7 +269,6 @@
       return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     }
 
-    // Dynamic UI Update for Login/Denied Screens
     function updatePortalUI() {
       const title = targetPortal === 'dashboard' ? 'Executive Dashboard' : 'Data Entry Portal';
       const switchText = targetPortal === 'dashboard' ? 'Switch to Data Entry' : 'Switch to Dashboard';
@@ -284,18 +277,15 @@
       if(document.getElementById('denied-switch-btn')) document.getElementById('denied-switch-btn').innerText = switchText;
     }
 
-    // Toggle logic for Login/Denied screen buttons
     function togglePortalTarget() {
       targetPortal = targetPortal === 'entry' ? 'dashboard' : 'entry';
       updatePortalUI();
-      // Instantly reroute if already verified but on the denied screen
       if(currentUser.email && !document.getElementById('denied').classList.contains('hidden')) {
         document.getElementById('denied').classList.add('hidden');
         verifyAndRoute();
       }
     }
 
-    // Seamless in-app switching without logout
     function switchPortal(portalType) {
       document.getElementById('app').classList.add('hidden');
       document.getElementById('dashboard-app').classList.add('hidden');
@@ -320,7 +310,6 @@
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('landing-view').classList.remove('hidden');
       document.getElementById('bg-elements').classList.remove('hidden');
-      document.getElementById('footer-logo').classList.remove('hidden');
       targetPortal = null;
     }
 
@@ -369,13 +358,11 @@
 
     function setupEntryAppUI(data) {
       document.getElementById('bg-elements').classList.remove('hidden');
-      document.getElementById('footer-logo').classList.remove('hidden');
       document.getElementById('display-pic').src = currentUser.picture;
       document.getElementById('display-name').innerText = currentUser.name || data.displayName;
       document.getElementById('display-email').innerText = currentUser.email;
       document.getElementById('app').classList.remove('hidden');
       
-      // Determine if they can switch to dashboard
       if (data && data.authorizedDashboard) document.getElementById('btn-goto-dash').classList.remove('hidden');
       else document.getElementById('btn-goto-dash').classList.add('hidden');
       
@@ -392,10 +379,8 @@
 
     function setupDashboardUI(data) {
       document.getElementById('bg-elements').classList.add('hidden');
-      document.getElementById('footer-logo').classList.add('hidden');
       document.getElementById('dashboard-app').classList.remove('hidden');
       
-      // Determine if they can switch to entry
       if (data && data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
       else document.getElementById('btn-goto-entry').classList.add('hidden');
     }
@@ -521,7 +506,7 @@
     function callAPI(payload, callback) {
       fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
       .then(res => res.json()).then(data => callback(data)).catch(err => {
-        console.error("API Error:", err); alert("Connection Error."); document.getElementById('loader').classList.add('hidden');
+        console.error(err); alert("Network or Server error.");
       });
     }
   </script>
