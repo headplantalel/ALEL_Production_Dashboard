@@ -50,27 +50,28 @@
     .delay-200 { animation-delay: 200ms; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
+<body class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
   
   <!-- SOOTHING BACKGROUND ELEMENTS -->
-  <div class="fixed inset-0 pointer-events-none z-0 flex flex-col justify-end items-center overflow-hidden">
-    <!-- Subtle Grid -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
     <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px); background-size: 20px 20px; opacity: 0.04;"></div>
     
-    <!-- Colored Enovar Bottom Image -->
-    <img src="enovar.png" alt="" class="w-[70vw] max-w-[800px] min-w-[500px] opacity-[0.12] translate-y-[30%] select-none transition-opacity duration-700 hover:opacity-[0.18]">
-    
-    <!-- Floating Dimmed Quotes (Desktop only to prevent mobile clutter) -->
-    <div class="absolute bottom-8 left-10 hidden md:block max-w-[220px] opacity-40 transition-opacity hover:opacity-70">
-      <p class="font-serif italic text-sm leading-relaxed">"Quality is not an act, it is a habit."</p>
+    <div class="absolute top-10 left-10 hidden md:block max-w-[200px] opacity-30">
+      <p class="font-serif italic text-sm leading-relaxed">"Focus on being productive instead of busy."</p>
     </div>
-    <div class="absolute bottom-8 right-10 hidden md:block max-w-[220px] text-right opacity-40 transition-opacity hover:opacity-70">
-      <p class="font-serif italic text-sm leading-relaxed">"Continuous improvement is better than delayed perfection."</p>
+    <div class="absolute top-10 right-10 hidden md:block max-w-[200px] text-right opacity-30">
+      <p class="font-serif italic text-sm leading-relaxed">"Efficiency is doing things right; effectiveness is doing the right things."</p>
+    </div>
+    <div class="absolute bottom-10 left-10 hidden md:block max-w-[220px] opacity-30">
+      <p class="font-serif italic text-sm leading-relaxed">"Improved productivity means less human sweat, not more."</p>
+    </div>
+    <div class="absolute bottom-10 right-10 hidden md:block max-w-[220px] text-right opacity-30">
+      <p class="font-serif italic text-sm leading-relaxed">"Productivity is never an accident. It is the result of a commitment to excellence."</p>
     </div>
   </div>
 
   <!-- 1. LANDING PAGE VIEW -->
-  <div id="landing-view" class="w-full min-h-[85vh] flex flex-col items-center justify-center z-10 relative py-8">
+  <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-center z-10 relative pt-2 pb-6">
     
     <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto">
       <!-- Top ALEL Logo -->
@@ -237,6 +238,10 @@
       
       <button onclick="logout()" class="text-xs font-bold px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-all shadow-md">Secure Logout</button>
     </div>
+  </div>
+
+  <div id="footer-logo" class="w-full py-4 flex justify-center z-10">
+    <img src="enovar.png" alt="Enovar" class="h-8 sm:h-10 object-contain opacity-90 hover:opacity-100 transition-opacity">
   </div>
 
   <script>
