@@ -7,19 +7,16 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
-  
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            enovar: {
-              DEFAULT: '#0D5C58',
-              light: '#13827d',
-              dark: '#083836'
-            }
+            enovar: { DEFAULT: '#0D5C58', light: '#13827d', dark: '#083836' }
           },
           fontFamily: {
             sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -29,606 +26,496 @@
       }
     }
   </script>
-  
-  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  
   <style>
-    body { 
-      background: linear-gradient(135deg, #F4F7F6 0%, #E6EDEB 100%);
-      background-attachment: fixed;
-    }
-    
-    .ts-control { padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; background-color: rgba(255,255,255,0.8); box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03); transition: all 0.3s ease; }
-    .ts-control.focus { border-color: #0D5C58; box-shadow: 0 0 0 3px rgba(13, 92, 88, 0.15); background-color: #FFF; }
-    .ts-dropdown { border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: 1px solid #E5E7EB; }
-    
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .delay-100 { animation-delay: 100ms; }
-    .delay-200 { animation-delay: 200ms; }
-    
-    .live-pulse { animation: pulse 2s infinite; }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(13, 92, 88, 0.7); }
-      70% { box-shadow: 0 0 0 6px rgba(13, 92, 88, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(13, 92, 88, 0); }
-    }
+    /* Custom Scrollbar for sleek UI */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .ts-control { border-radius: 0.375rem !important; border-color: #d1d5db !important; padding: 0.5rem 0.75rem !important; min-height: 42px !important; }
+    .nav-btn.active { background-color: white; color: #0D5C58; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .dash-tab.active { border-bottom: 2px solid #0D5C58; color: #0D5C58; font-weight: 600; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
-  
-  <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-    <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px); background-size: 20px 20px; opacity: 0.04;"></div>
-    <div class="absolute top-10 left-10 hidden md:block max-w-[200px] opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Focus on being productive instead of busy."</p>
-    </div>
-    <div class="absolute top-10 right-10 hidden md:block max-w-[200px] text-right opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Efficiency is doing things right; effectiveness is doing the right things."</p>
-    </div>
-    <div class="absolute bottom-10 left-10 hidden md:block max-w-[220px] opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Improved productivity means less human sweat, not more."</p>
-    </div>
-    <div class="absolute bottom-10 right-10 hidden md:block max-w-[220px] text-right opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Success is the sum of small efforts, repeated day in and day out."</p>
-    </div>
-  </div>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-between z-10 relative pt-5 pb-6 md:pt-8 md:pb-10">
-    <div class="w-full flex justify-center animate-fade-up opacity-0">
-      <img src="alel.png" alt="Akij Light Engineering" class="h-[50px] md:h-[50px] object-contain drop-shadow-sm">
-    </div>
-
-    <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto py-8">
-      <div class="text-center mb-10 animate-fade-up opacity-0 delay-100">
-        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-3">
-          Productivity <span class="text-transparent bg-clip-text bg-gradient-to-r from-enovar to-enovar-light">Tracker</span>
-        </h1>
-        <p class="text-base text-gray-500 font-medium max-w-xl mx-auto">Select your authorized workspace to continue.</p>
+  <div id="login-screen" class="flex-grow flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-md border border-gray-100">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-serif font-semibold text-enovar mb-2">ALEL Tracker</h1>
+        <p class="text-sm text-gray-500">Sign in with your authorized email</p>
       </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full px-2 animate-fade-up opacity-0 delay-200">
-        <button onclick="openLogin('entry')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(13,92,88,0.1)] hover:-translate-y-1">
-          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors border border-gray-100/50">
-            <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-          </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">Data Entry</h3>
-          <p class="text-xs text-gray-500 font-medium mb-5 leading-relaxed">Input shift details, manpower, and realtime production yields.</p>
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+          <input type="email" id="email-input" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-enovar focus:border-enovar transition-all outline-none" placeholder="name@akijlightengineering.com">
+        </div>
+        <button type="submit" id="login-btn" class="w-full bg-enovar hover:bg-enovar-dark text-white font-medium py-2.5 rounded-lg transition-colors shadow-md flex justify-center items-center">
+          <span>Continue to Portal</span>
         </button>
-
-        <button onclick="openLogin('dashboard')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(13,92,88,0.1)] hover:-translate-y-1">
-          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors border border-gray-100/50">
-            <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-          </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">Dashboard</h3>
-          <p class="text-xs text-gray-500 font-medium mb-5 leading-relaxed">View executive analytics, reports, and master data overview.</p>
-        </button>
-      </div>
-    </div>
-
-    <div class="w-full flex justify-center animate-fade-up opacity-0 delay-200">
-      <img src="enovar.png" alt="Enovar" class="h-[30px] md:h-[40px] object-contain drop-shadow-sm">
+      </form>
     </div>
   </div>
 
-  <div id="login-screen" class="hidden bg-white/80 backdrop-blur-xl p-8 sm:p-10 rounded-2xl shadow-xl text-center max-w-md w-full border border-white flex flex-col items-center relative z-20">
-    <button onclick="returnToLanding()" class="absolute top-4 left-4 text-gray-400 hover:text-enovar transition-colors p-2 bg-gray-50/50 hover:bg-enovar/10 rounded-full">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-    </button>
-    <div class="w-14 h-14 bg-enovar/5 rounded-2xl flex items-center justify-center mb-4 border border-enovar/10 shadow-sm">
-      <svg class="w-7 h-7 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-    </div>
-    <h1 id="login-title" class="text-xl font-extrabold text-gray-900 tracking-tight">System Login</h1>
-    <p id="login-subtitle" class="text-xs text-gray-500 mt-1.5 mb-4">Authenticate with your Google Workspace account.</p>
-    <button onclick="togglePortalTarget()" id="login-switch-btn" class="mb-6 text-[10px] font-bold text-enovar bg-enovar/10 hover:bg-enovar/20 px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Switch to Dashboard</button>
-    <div id="g_id_onload" data-client_id="537235659462-je47c211i8eqatakdl4sr08kq0kle8fq.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
-    <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"></div>
-  </div>
-
-  <div id="loader" class="hidden text-center text-enovar font-medium text-sm tracking-wide flex flex-col items-center bg-white/90 p-8 rounded-2xl shadow-xl backdrop-blur-md border border-white z-20">
-    <svg class="animate-spin h-8 w-8 text-enovar mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-    <span id="loader-text">Authenticating...</span>
-  </div>
-  
-  <div id="denied" class="hidden bg-white/90 backdrop-blur-lg p-8 rounded-2xl shadow-xl text-center max-w-md w-full border-t-4 border-red-500 z-20">
-    <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100">
-      <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-    </div>
-    <h2 class="text-lg font-bold text-gray-900 mb-1">Access Denied</h2>
-    <p class="text-gray-500 text-xs mb-6">User <span id="user-email" class="font-bold text-gray-800"></span> lacks authorization.</p>
-    <button id="requestBtn" onclick="requestAccess()" class="w-full bg-enovar hover:bg-enovar-light text-white font-medium text-sm py-2.5 rounded-xl transition-all shadow-sm mb-2.5">Request Admin Access</button>
-    <button onclick="togglePortalTarget()" id="denied-switch-btn" class="w-full bg-enovar/10 hover:bg-enovar/20 text-enovar font-medium text-sm py-2.5 rounded-xl transition-all mb-2.5">Switch to Other Portal</button>
-    <button onclick="logout()" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium text-sm py-2.5 rounded-xl transition-all border border-gray-200">Switch Account / Back</button>
-  </div>
-  
-  <div id="app" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-xl w-full border border-white z-20">
-    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-      <img src="alel.png" alt="ALEL" class="h-6 object-contain">
-      <div class="flex items-center gap-3">
-        <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Dashboard</button>
-        <span class="text-[10px] font-bold text-enovar bg-enovar/10 px-2.5 py-1.5 rounded-md uppercase tracking-widest">Data Entry</span>
-      </div>
-    </div>
+  <div id="main-app" class="hidden flex-col min-h-screen">
     
-    <form id="prodForm" onsubmit="submitForm(event)" class="space-y-4">
-      <div>
-        <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Select Item</label>
-        <select id="item" required></select>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Line Name</label>
-          <select id="line" required></select>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Time Slot</label>
-          <select id="time" required></select>
-        </div>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Manpower</label>
-          <input type="number" id="manpower" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all shadow-sm bg-gray-50/50 focus:bg-white text-sm">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Production Qty</label>
-          <input type="number" id="production" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all shadow-sm bg-gray-50/50 focus:bg-white text-sm">
+    <header class="bg-enovar text-white shadow-lg sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center space-x-3">
+            <h1 class="text-xl font-serif font-semibold tracking-wide">ALEL Tracker</h1>
+          </div>
+          
+          <div class="hidden sm:flex bg-enovar-dark p-1 rounded-lg" id="nav-container">
+            <button onclick="switchMainView('entry')" id="nav-entry" class="nav-btn px-4 py-1.5 rounded-md text-sm transition-all text-gray-200 hover:text-white">Data Entry</button>
+            <button onclick="switchMainView('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-1.5 rounded-md text-sm transition-all text-gray-200 hover:text-white hidden">Dashboard</button>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <span id="user-display-name" class="text-sm font-medium text-gray-200 hidden sm:block"></span>
+            <button onclick="logout()" class="text-sm bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded transition-colors">Logout</button>
+          </div>
         </div>
       </div>
-      <div class="pt-3">
-        <button type="submit" id="submitBtn" class="w-full bg-enovar hover:bg-enovar-dark text-white font-semibold text-sm py-3 rounded-xl transition-all shadow-md hover:shadow-lg">Submit Entry</button>
-        <button type="button" onclick="openHistory()" class="w-full bg-white hover:bg-gray-50 text-enovar border border-gray-200 font-semibold text-sm py-2.5 rounded-xl mt-2.5 transition-all shadow-sm hover:border-enovar/30">View My Past Entries</button>
+      <div class="sm:hidden bg-enovar-dark px-4 py-2 flex space-x-2 overflow-x-auto" id="nav-container-mobile">
+        <button onclick="switchMainView('entry')" id="nav-entry-mob" class="nav-btn flex-shrink-0 px-3 py-1.5 rounded text-sm text-gray-200">Data Entry</button>
+        <button onclick="switchMainView('dashboard')" id="nav-dashboard-mob" class="nav-btn flex-shrink-0 px-3 py-1.5 rounded text-sm text-gray-200 hidden">Dashboard</button>
       </div>
-      <div id="successMsg" class="hidden bg-green-50 text-green-700 text-center font-medium text-sm py-2.5 rounded-xl mt-3 border border-green-200">Data logged successfully</div>
-    </form>
-    
-    <div class="mt-6 pt-5 border-t border-gray-100 flex flex-row items-center justify-between -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 p-5 sm:p-6 bg-gray-50/30 rounded-b-2xl">
-      <div class="flex items-center gap-3 overflow-hidden">
-        <img id="display-pic" class="w-9 h-9 rounded-full shadow-sm border border-gray-200 flex-shrink-0" src="" alt="Profile">
-        <div class="flex flex-col truncate">
-          <span id="display-name" class="font-bold text-gray-800 text-xs truncate">Name</span>
-          <span id="display-email" class="text-[10px] text-gray-500 font-medium truncate">email@domain.com</span>
+    </header>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+      
+      <div id="view-entry" class="hidden max-w-3xl mx-auto">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
+          <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Production Log</h2>
+            <button onclick="openHistory()" class="text-sm text-enovar hover:text-enovar-dark font-medium flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              View History
+            </button>
+          </div>
+          
+          <form id="data-form" onsubmit="submitForm(event)" class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div><label class="block text-sm font-medium text-gray-700 mb-1">Line Name</label><select id="line" required class="w-full" placeholder="Select Line..."></select></div>
+              <div><label class="block text-sm font-medium text-gray-700 mb-1">Time Slot</label><select id="time" required class="w-full" placeholder="Select Time..."></select></div>
+            </div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Item Code & Name</label><select id="item" required class="w-full" placeholder="Search item..."></select></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div><label class="block text-sm font-medium text-gray-700 mb-1">Manpower</label><input type="number" id="manpower" required min="1" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-enovar focus:border-enovar outline-none"></div>
+              <div><label class="block text-sm font-medium text-gray-700 mb-1">Production Qty</label><input type="number" id="production" required min="0" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-enovar focus:border-enovar outline-none"></div>
+            </div>
+            <button type="submit" id="submit-btn" class="w-full bg-enovar hover:bg-enovar-dark text-white font-medium py-3 rounded-lg shadow transition-all flex justify-center items-center mt-4">
+              <span>Submit Production Data</span>
+            </button>
+          </form>
         </div>
       </div>
-      <button onclick="logout()" class="ml-2 flex-shrink-0 text-[10px] font-bold px-3 py-2 bg-white hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-lg transition-colors shadow-sm uppercase tracking-wider">
-        Log Out
-      </button>
-    </div>
+
+      <div id="view-dashboard" class="hidden">
+        
+        <div class="flex space-x-6 border-b border-gray-200 mb-6 overflow-x-auto">
+          <button onclick="switchDashTab('executive')" id="tab-executive" class="dash-tab pb-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap">Executive Summary</button>
+          <button onclick="switchDashTab('hourly')" id="tab-hourly" class="dash-tab pb-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap">Hourly Monitor</button>
+          <button onclick="switchDashTab('analytics')" id="tab-analytics" class="dash-tab pb-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap">Analytics & Deep-Dive</button>
+        </div>
+
+        <div id="dashboard-loading" class="text-center py-12 text-gray-500">Loading live dashboard data...</div>
+
+        <div id="dash-content-executive" class="hidden space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center items-center">
+              <h3 class="text-sm font-medium text-gray-500 mb-2">Overall Plant Achievement</h3>
+              <div id="chart-gauge" class="w-full flex justify-center"></div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
+              <h3 class="text-sm font-medium text-gray-500">Total Output (Units)</h3>
+              <p id="kpi-output" class="text-3xl font-bold text-gray-800 mt-2">0</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
+              <h3 class="text-sm font-medium text-gray-500">Avg Daily Productivity</h3>
+              <p id="kpi-prod" class="text-3xl font-bold text-gray-800 mt-2">0</p>
+            </div>
+          </div>
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4">Daily Achievement Trend (%)</h3>
+            <div id="chart-trend"></div>
+          </div>
+        </div>
+
+        <div id="dash-content-hourly" class="hidden space-y-6">
+          <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 items-end">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Select Date</label>
+              <select id="filter-date" class="border border-gray-300 rounded px-3 py-1.5 text-sm outline-none" onchange="renderHourlyChart()"></select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Select Line</label>
+              <select id="filter-line" class="border border-gray-300 rounded px-3 py-1.5 text-sm outline-none" onchange="renderHourlyChart()"></select>
+            </div>
+          </div>
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4">Actual vs Target Productivity (By Hour)</h3>
+            <div id="chart-hourly"></div>
+          </div>
+        </div>
+
+        <div id="dash-content-analytics" class="hidden space-y-6">
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4">Line Performance (Average Achievement %)</h3>
+            <div id="chart-lines"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
   </div>
 
-  <div id="history-view" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-2xl w-full border border-white z-20">
-    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-      <h2 class="text-lg font-bold text-gray-900">Entry History</h2>
-      <button onclick="closeHistory()" class="text-xs text-enovar font-bold px-3 py-1.5 bg-gray-50 hover:bg-enovar/10 border border-gray-200 hover:border-enovar/30 rounded-lg transition-all shadow-sm">Back to Input</button>
-    </div>
-    <div class="mb-5">
-      <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Select Date</label>
-      <select id="date-selector" onchange="renderEntriesFromCache()" class="w-full p-2.5 rounded-lg border border-gray-200 font-medium outline-none focus:border-enovar focus:ring-2 focus:ring-enovar/20 shadow-sm bg-gray-50/50 text-sm"></select>
-    </div>
-    <div id="entries-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
-  </div>
-
-  <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-[#F4F7F6] z-50 flex flex-col">
-    <div class="flex justify-between items-center px-4 py-3 bg-white shadow-sm border-b border-gray-200 w-full z-10 relative">
-      <div class="flex items-center gap-3 sm:gap-4">
-        <img src="alel.png" alt="ALEL" class="h-5 sm:h-6 object-contain">
-        <div class="w-px h-5 bg-gray-300 hidden sm:block"></div>
-        <img src="enovar.png" alt="Enovar" class="h-3 sm:h-4 object-contain hidden sm:block">
-        <span class="text-xs font-bold text-gray-800 ml-1 hidden md:block tracking-wide flex items-center gap-2">
-          Executive Dashboard 
-          <span class="w-2 h-2 rounded-full bg-green-500 live-pulse ml-1" title="Live Synced"></span>
-        </span>
+  <div id="history-modal" class="fixed inset-0 bg-gray-900/60 z-[60] hidden flex-col justify-end sm:justify-center items-center sm:p-4 backdrop-blur-sm transition-opacity">
+    <div class="bg-gray-50 w-full sm:max-w-2xl sm:rounded-2xl h-[85vh] sm:h-[80vh] flex flex-col shadow-2xl transform transition-transform">
+      <div class="bg-white px-5 py-4 border-b border-gray-200 flex justify-between items-center sm:rounded-t-2xl">
+        <div><h2 class="text-lg font-semibold text-gray-800">My Submissions</h2><p class="text-xs text-gray-500 mt-0.5">Edit or delete recent entries</p></div>
+        <button onclick="closeHistory()" class="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
       </div>
-      <div class="flex items-center gap-2 sm:gap-3">
-        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-white bg-enovar hover:bg-enovar-light px-3 py-1.5 rounded-md shadow-sm uppercase tracking-wider transition-colors">
-          Data Entry
-        </button>
-        <button onclick="logout()" class="text-[10px] sm:text-xs font-bold px-3 py-1.5 bg-white hover:bg-red-50 text-red-500 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-md transition-all shadow-sm uppercase tracking-wider flex items-center gap-1">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-          <span class="hidden sm:block">Logout</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="w-full bg-white border-b border-gray-200 z-10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
-        
-        <div class="flex bg-gray-100 p-1 rounded-lg">
-          <button id="tab-overview" onclick="switchDashTab('overview')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white text-gray-800 shadow-sm transition-all">Overview</button>
-          <button id="tab-analysis" onclick="switchDashTab('analysis')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all">Line Analysis</button>
-        </div>
-
-        <div class="flex items-center gap-3 w-full md:w-auto">
-          <select id="filter-date" onchange="renderDashboard()" class="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-            <option value="all">All Time</option>
-            <option value="7">Last 7 Days</option>
-            <option value="30">Last 30 Days</option>
-          </select>
-          <select id="filter-line" onchange="renderDashboard()" class="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm w-full md:w-32">
-            <option value="all">All Lines</option>
-          </select>
-          <select id="filter-item" onchange="renderDashboard()" class="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm w-full md:w-32">
-            <option value="all">All Items</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex-1 w-full overflow-y-auto bg-transparent p-4 sm:p-8">
-      <div class="max-w-7xl mx-auto space-y-6 pb-10">
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-           <div class="bg-white p-6 rounded-2xl shadow-sm border border-enovar/20 flex flex-col items-center justify-center animate-fade-up relative overflow-hidden">
-              <div class="absolute -right-4 -top-4 w-16 h-16 bg-enovar/5 rounded-full"></div>
-              <span class="text-[10px] font-bold text-enovar uppercase tracking-widest mb-1 z-10">Productivity (Output / MP)</span>
-              <span id="dash-productivity" class="text-4xl font-extrabold text-gray-900 z-10">0.0</span>
-           </div>
-           <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center animate-fade-up delay-100">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Output</span>
-              <span id="dash-total-prod" class="text-3xl font-bold text-gray-700">0</span>
-           </div>
-           <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center animate-fade-up delay-200">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Manpower</span>
-              <span id="dash-total-mp" class="text-3xl font-bold text-gray-700">0</span>
-           </div>
-        </div>
-
-        <div id="dash-charts-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-           <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 animate-fade-up delay-200">
-              <h3 id="trend-title" class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-4">Productivity Trend</h3>
-              <div id="chart-trend" class="w-full h-[320px]"></div>
-           </div>
-           <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 animate-fade-up delay-200">
-              <h3 id="bar-title" class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-4">Productivity by Line</h3>
-              <div id="chart-bar" class="w-full h-[320px]"></div>
-           </div>
-        </div>
-      </div>
+      <div class="p-4 bg-white border-b border-gray-200"><select id="history-date-filter" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-enovar" onchange="renderEntriesFromCache()"><option value="">Loading dates...</option></select></div>
+      <div id="history-content" class="flex-grow overflow-y-auto p-4 sm:p-5 space-y-4"></div>
     </div>
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5cZBzzZOjcrKDpuq0TKh0rDf5ExBL45F6FA0c13a1ayOpZMQHLbIVh65LAktUFP9J6g/exec"; 
-    let tsItem, tsLine, tsTime;
-    let currentUser = {};
-    let historyCache = {}; 
-    let targetPortal = null; 
-    let masterAuthData = null; 
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwRk6Xf5hG1v8_x30Oq8L5ZfXyY6N0E3_X3R3_R3_X3/exec"; // REPLACE WITH YOUR LATEST DEPLOYMENT URL
     
-    let rawDashboardData = []; 
-    let activeDashTab = 'overview';
-    let trendChartInstance = null;
-    let barChartInstance = null;
-    let syncTimer = null; 
+    let tomLine, tomTime, tomItem;
+    let currentUserData = null;
+    let historyCache = {};
+    let dashboardRawData = [];
+    let charts = {};
 
-    window.onload = function() {
-      const savedToken = localStorage.getItem('google_token');
-      const savedPortal = localStorage.getItem('active_portal');
+    // --- State Persistence via LocalStorage ---
+    let savedEmail = localStorage.getItem('alel_email');
+    let activeMainView = localStorage.getItem('alel_mainView') || 'entry';
+    let activeDashTab = localStorage.getItem('alel_dashTab') || 'executive';
+
+    document.addEventListener("DOMContentLoaded", () => {
+      tomLine = new TomSelect("#line", { create: false, sortField: { field: "text", direction: "asc" } });
+      tomTime = new TomSelect("#time", { create: false });
+      tomItem = new TomSelect("#item", { create: false, maxOptions: null, sortField: { field: "text", direction: "asc" } });
       
-      if (savedToken) {
-        const payload = parseJwt(savedToken);
-        currentUser = { name: payload.name, email: payload.email, picture: payload.picture };
-        const localCache = localStorage.getItem('master_data_cache_' + currentUser.email);
-        if (localCache) masterAuthData = JSON.parse(localCache);
-        
-        if (savedPortal) {
-          targetPortal = savedPortal;
-          document.getElementById('landing-view').classList.add('hidden');
-          verifyAndRoute();
+      // Auto-login if email is saved
+      if (savedEmail) {
+        document.getElementById('email-input').value = savedEmail;
+        verifyEmail(savedEmail);
+      }
+    });
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('email-input').value.trim();
+      const btn = document.getElementById('login-btn');
+      btn.innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Verifying...`;
+      btn.disabled = true;
+      verifyEmail(email, btn);
+    }
+
+    function verifyEmail(email, btnElement = null) {
+      callAPI({ action: "getData", email: email }, function(data) {
+        if (data.error) {
+          alert("Error: " + data.error);
+          if (btnElement) { btnElement.innerHTML = "Continue to Portal"; btnElement.disabled = false; }
+          localStorage.removeItem('alel_email');
+          return;
         }
-      }
-    };
+        if (!data.authorizedEntry && !data.authorizedDashboard) {
+          alert("Unauthorized Email. Please contact Admin.");
+          if (btnElement) { btnElement.innerHTML = "Continue to Portal"; btnElement.disabled = false; }
+          localStorage.removeItem('alel_email');
+          return;
+        }
 
-    function parseJwt(token) {
-      var base64Url = token.split('.')[1];
-      var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+        // Save email to local storage for persistence
+        localStorage.setItem('alel_email', email);
+        currentUserData = data;
+        
+        // Setup UI
+        document.getElementById('user-display-name').innerText = data.displayName;
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('main-app').classList.remove('hidden');
+
+        // Configure Navigation based on permissions
+        if (data.authorizedEntry) {
+          tomLine.addOptions(data.lines.map(l => ({value: l, text: l})));
+          tomTime.addOptions(data.times.map(t => ({value: t, text: t})));
+          tomItem.addOptions(data.items.map(i => ({value: i, text: i})));
+        } else {
+          document.getElementById('nav-entry').classList.add('hidden');
+          document.getElementById('nav-entry-mob').classList.add('hidden');
+          activeMainView = 'dashboard'; // Force to dashboard if no entry access
+        }
+
+        if (data.authorizedDashboard) {
+          document.getElementById('nav-dashboard').classList.remove('hidden');
+          document.getElementById('nav-dashboard-mob').classList.remove('hidden');
+          loadDashboardData();
+        } else {
+          activeMainView = 'entry'; // Force to entry if no dash access
+        }
+
+        // Restore saved views
+        switchMainView(activeMainView);
+        switchDashTab(activeDashTab);
+      });
     }
 
-    function updatePortalUI() {
-      const title = targetPortal === 'dashboard' ? 'Executive Dashboard' : 'Data Entry Portal';
-      const switchText = targetPortal === 'dashboard' ? 'Switch to Data Entry' : 'Switch to Dashboard';
-      document.getElementById('login-title').innerText = title;
-      if(document.getElementById('login-switch-btn')) document.getElementById('login-switch-btn').innerText = switchText;
-      if(document.getElementById('denied-switch-btn')) document.getElementById('denied-switch-btn').innerText = switchText;
+    function logout() {
+      localStorage.removeItem('alel_email');
+      localStorage.removeItem('alel_mainView');
+      localStorage.removeItem('alel_dashTab');
+      location.reload();
     }
 
-    function togglePortalTarget() {
-      targetPortal = targetPortal === 'entry' ? 'dashboard' : 'entry';
-      localStorage.setItem('active_portal', targetPortal);
-      updatePortalUI();
-      if(currentUser.email && !document.getElementById('denied').classList.contains('hidden')) {
-        document.getElementById('denied').classList.add('hidden');
-        verifyAndRoute();
-      }
-    }
-
-    function switchPortal(portalType) {
-      document.getElementById('app').classList.add('hidden');
-      document.getElementById('dashboard-app').classList.add('hidden');
-      document.getElementById('history-view').classList.add('hidden');
-      if (syncTimer) clearInterval(syncTimer); 
+    // --- Navigation & State Management ---
+    function switchMainView(view) {
+      activeMainView = view;
+      localStorage.setItem('alel_mainView', view);
       
-      targetPortal = portalType;
-      localStorage.setItem('active_portal', portalType);
-      routeUser(masterAuthData);
-    }
-
-    function openLogin(portalType) {
-      targetPortal = portalType;
-      localStorage.setItem('active_portal', portalType);
-      updatePortalUI();
-      document.getElementById('landing-view').classList.add('hidden');
-
-      if (currentUser.email) {
-        verifyAndRoute();
-      } else {
-        document.getElementById('login-screen').classList.remove('hidden');
-      }
-    }
-
-    function returnToLanding() {
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('landing-view').classList.remove('hidden');
-      document.getElementById('bg-elements').classList.remove('hidden');
-      targetPortal = null;
-    }
-
-    function handleCredentialResponse(response) {
-      localStorage.setItem('google_token', response.credential);
-      const payload = parseJwt(response.credential);
-      currentUser = { name: payload.name, email: payload.email, picture: payload.picture };
-      verifyAndRoute();
-    }
-
-    function verifyAndRoute() {
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('loader-text').innerText = "Authenticating...";
+      // Update Buttons
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`nav-${view}`)?.classList.add('active');
+      document.getElementById(`nav-${view}-mob`)?.classList.add('active');
       
-      if (masterAuthData) {
-        routeUser(masterAuthData);
-        callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
-          localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
-          masterAuthData = data;
-        });
-      } else {
-        document.getElementById('loader').classList.remove('hidden');
-        callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, function(data) {
-          localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
-          masterAuthData = data;
-          routeUser(data);
-        });
-      }
-    }
-
-    function routeUser(data) {
-      document.getElementById('loader').classList.add('hidden');
-      if (targetPortal === 'entry') {
-        if (data.authorizedEntry) setupEntryAppUI(data);
-        else showDenied();
-      } else if (targetPortal === 'dashboard') {
-        if (data.authorizedDashboard) setupDashboardUI(data);
-        else showDenied();
-      }
-    }
-
-    function showDenied() {
-      document.getElementById('user-email').innerText = currentUser.email;
-      document.getElementById('denied').classList.remove('hidden');
-    }
-
-    function setupEntryAppUI(data) {
-      document.getElementById('bg-elements').classList.remove('hidden');
-      document.getElementById('display-pic').src = currentUser.picture;
-      document.getElementById('display-name').innerText = currentUser.name || data.displayName;
-      document.getElementById('display-email').innerText = currentUser.email;
-      document.getElementById('app').classList.remove('hidden');
-      if (data && data.authorizedDashboard) document.getElementById('btn-goto-dash').classList.remove('hidden');
-      else document.getElementById('btn-goto-dash').classList.add('hidden');
-      
-      if(tsItem) { tsItem.destroy(); tsLine.destroy(); tsTime.destroy(); }
-      const itemSelect = document.getElementById('item'); itemSelect.innerHTML = ''; data.items.forEach(i => itemSelect.add(new Option(i, i)));
-      const lineSelect = document.getElementById('line'); lineSelect.innerHTML = ''; data.lines.forEach(l => lineSelect.add(new Option(l, l)));
-      const timeSelect = document.getElementById('time'); timeSelect.innerHTML = ''; data.times.forEach(t => timeSelect.add(new Option(t, t)));
-      
-      tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false, placeholder: "Select item...", items: [] });
-      tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false, placeholder: "Select line...", items: [] });
-      tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false, placeholder: "Select time...", items: [] });
-    }
-
-    function setupDashboardUI(data) {
-      document.getElementById('bg-elements').classList.add('hidden');
-      document.getElementById('dashboard-app').classList.remove('hidden');
-      if (data && data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
-      
-      document.getElementById('loader-text').innerText = "Loading Master Data...";
-      document.getElementById('loader').classList.remove('hidden');
-      fetchDashboardData(true);
-      
-      syncTimer = setInterval(() => { fetchDashboardData(false); }, 60000);
+      // Update Views
+      document.getElementById('view-entry').classList.add('hidden');
+      document.getElementById('view-dashboard').classList.add('hidden');
+      document.getElementById(`view-${view}`).classList.remove('hidden');
     }
 
     function switchDashTab(tab) {
       activeDashTab = tab;
-      document.getElementById('tab-overview').className = tab === 'overview' ? "px-4 py-1.5 text-xs font-bold rounded-md bg-white text-gray-800 shadow-sm transition-all" : "px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all";
-      document.getElementById('tab-analysis').className = tab === 'analysis' ? "px-4 py-1.5 text-xs font-bold rounded-md bg-white text-gray-800 shadow-sm transition-all" : "px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all";
-      document.getElementById('bar-title').innerText = tab === 'overview' ? "Productivity by Line" : "Productivity by Item";
-      renderDashboard(); 
-    }
-
-    function fetchDashboardData(isInitialLoad) {
-      callAPI({ action: "getDashboardRawData" }, function(data) {
-        if(isInitialLoad) document.getElementById('loader').classList.add('hidden');
-        if (data.error) return; 
-        rawDashboardData = data.raw; 
-        if(isInitialLoad) populateFilterDropdowns(); 
-        renderDashboard(); 
-      });
-    }
-
-    function populateFilterDropdowns() {
-      let lines = new Set(), items = new Set();
-      rawDashboardData.forEach(r => { lines.add(r.line); items.add(r.item); });
+      localStorage.setItem('alel_dashTab', tab);
       
-      const lineSel = document.getElementById('filter-line'); lineSel.innerHTML = '<option value="all">All Lines</option>';
-      lines.forEach(l => lineSel.add(new Option(l, l)));
+      // Update Tabs
+      document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
       
-      const itemSel = document.getElementById('filter-item'); itemSel.innerHTML = '<option value="all">All Items</option>';
-      items.forEach(i => itemSel.add(new Option(i, i)));
-    }
+      // Update Content
+      document.querySelectorAll('[id^="dash-content-"]').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`dash-content-${tab}`).classList.remove('hidden');
 
-    function renderDashboard() {
-      const dateFilter = document.getElementById('filter-date').value;
-      const lineFilter = document.getElementById('filter-line').value;
-      const itemFilter = document.getElementById('filter-item').value;
-      
-      let filteredData = rawDashboardData.filter(row => {
-        if (lineFilter !== 'all' && row.line !== lineFilter) return false;
-        if (itemFilter !== 'all' && row.item !== itemFilter) return false;
-        if (dateFilter !== 'all') {
-          const rowDate = new Date(row.date);
-          const diffTime = Math.abs(new Date() - rowDate);
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          if (diffDays > parseInt(dateFilter)) return false;
-        }
-        return true;
-      });
-
-      let sumQty = 0, sumMp = 0;
-      let dateMap = {}, entityMap = {};
-      
-      filteredData.forEach(row => {
-        sumQty += row.qty;
-        sumMp += row.mp;
-        
-        if(!dateMap[row.date]) dateMap[row.date] = { qty: 0, mp: 0 };
-        dateMap[row.date].qty += row.qty;
-        dateMap[row.date].mp += row.mp;
-
-        let entity = activeDashTab === 'overview' ? row.line : row.item;
-        if(!entityMap[entity]) entityMap[entity] = { qty: 0, mp: 0 };
-        entityMap[entity].qty += row.qty;
-        entityMap[entity].mp += row.mp;
-      });
-
-      let productivity = sumMp > 0 ? (sumQty / sumMp).toFixed(1) : "0.0";
-      document.getElementById('dash-productivity').innerText = productivity;
-      document.getElementById('dash-total-prod').innerText = sumQty.toLocaleString();
-      document.getElementById('dash-total-mp').innerText = sumMp.toLocaleString();
-
-      let trendDates = Object.keys(dateMap).sort((a,b) => new Date(a) - new Date(b)); 
-      let trendProd = trendDates.map(d => dateMap[d].mp > 0 ? parseFloat((dateMap[d].qty / dateMap[d].mp).toFixed(1)) : 0);
-      
-      let entities = Object.keys(entityMap);
-      let entityProd = entities.map(e => entityMap[e].mp > 0 ? parseFloat((entityMap[e].qty / entityMap[e].mp).toFixed(1)) : 0);
-
-      var trendOptions = {
-        chart: { type: 'area', height: 320, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
-        series: [{ name: 'Efficiency (Out/MP)', data: trendProd }],
-        xaxis: { categories: trendDates, tooltip: { enabled: false } },
-        colors: ['#0D5C58'],
-        fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 90, 100] } },
-        dataLabels: { enabled: false },
-        stroke: { curve: 'smooth', width: 3 }
-      };
-      if (trendChartInstance) { trendChartInstance.updateOptions(trendOptions); } 
-      else { trendChartInstance = new ApexCharts(document.querySelector("#chart-trend"), trendOptions); trendChartInstance.render(); }
-
-      var barOptions = {
-        chart: { type: 'bar', height: 320, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
-        series: [{ name: 'Efficiency', data: entityProd }],
-        xaxis: { categories: entities },
-        colors: ['#13827d'],
-        plotOptions: { bar: { borderRadius: 4, horizontal: true } },
-        dataLabels: { enabled: true, style: { colors: ['#fff'] } }
-      };
-      if (barChartInstance) { barChartInstance.updateOptions(barOptions); } 
-      else { barChartInstance = new ApexCharts(document.querySelector("#chart-bar"), barOptions); barChartInstance.render(); }
-    }
-
-    function logout() { localStorage.removeItem('google_token'); localStorage.removeItem('active_portal'); location.reload(); }
-    
-    async function submitForm(e) {
-      e.preventDefault();
-      const itemVal = tsItem.getValue(), lineVal = tsLine.getValue(), timeVal = tsTime.getValue();
-      const manpowerVal = document.getElementById('manpower').value, productionVal = document.getElementById('production').value;
-      if (!itemVal || !lineVal || !timeVal) { alert("Please complete all selections."); return; }
-      if (!confirm("Submit this production data?")) return;
-      const btn = document.getElementById('submitBtn'); btn.innerText = 'Submitting...';
-      
-      callAPI({ action: "submit", email: currentUser.email, formData: { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal } }, function(data) {
-        btn.innerText = 'Submit Entry';
-        if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
-          document.getElementById('manpower').value = ''; document.getElementById('production').value = '';
-          tsItem.clear(); tsLine.clear(); tsTime.clear();
-          document.getElementById('successMsg').classList.remove('hidden');
-          setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3000);
-        } else { alert("Submission failed: " + (data.error || "Check backend setup.")); }
-      });
-    }
-
-    function openHistory() {
-      document.getElementById('app').classList.add('hidden');
-      document.getElementById('loader-text').innerText = "Fetching History...";
-      document.getElementById('loader').classList.remove('hidden');
-      callAPI({ action: "getHistory", email: currentUser.email }, function(data) {
-        document.getElementById('loader').classList.add('hidden');
-        document.getElementById('history-view').classList.remove('hidden');
-        historyCache = data.entriesByDate;
-        const dateSelect = document.getElementById('date-selector'); dateSelect.innerHTML = ''; 
-        if (data.dates.length === 0) {
-          dateSelect.add(new Option("No entries found", ""));
-          document.getElementById('entries-container').innerHTML = '<p class="text-gray-500 text-xs text-center py-4">You have no recorded entries.</p>';
-        } else {
-          data.dates.forEach(d => dateSelect.add(new Option(d, d)));
-          renderEntriesFromCache(); 
-        }
-      });
-    }
-
-    function closeHistory() { document.getElementById('history-view').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); }
-
-    function renderEntriesFromCache() {
-      const selectedDate = document.getElementById('date-selector').value;
-      const container = document.getElementById('entries-container'); container.innerHTML = '';
-      if (!selectedDate || !historyCache[selectedDate] || historyCache[selectedDate].length === 0) {
-         container.innerHTML = '<p class="text-gray-400 text-xs text-center py-4">No data found.</p>'; return;
+      // Re-render charts to fix width bugs on unhiding
+      if(dashboardRawData.length > 0) {
+        if(tab === 'hourly') renderHourlyChart();
+        if(tab === 'analytics') renderAnalyticsChart();
       }
-      historyCache[selectedDate].forEach((entry, index) => {
-        const card = document.createElement('div');
-        card.id = `entry-card-${entry.rowIndex}`;
-        card.className = "p-4 border border-gray-100 rounded-xl bg-gray-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 transition-all duration-300 hover:border-enovar/20 hover:bg-white shadow-sm";
-        card.innerHTML = `
-          <div class="flex-1 w-full">
-            <p class="font-bold text-gray-800 text-xs mb-2 leading-tight">${entry.itemName}</p>
-            <div class="text-[10px] text-gray-500 flex gap-2 mb-2">
-              <span class="bg-white px-2 py-1 rounded border border-gray-200 font-semibold shadow-sm">${entry.line}</span>
-              <span class="bg-white px-2 py-1 rounded border border-gray-200 font-semibold shadow-sm">${entry.time}</span>
-            </div>
-            <div class="mt-1 text-[11px] font-bold text-enovar bg-enovar/5 px-3 py-1.5 rounded-lg inline-block border border-enovar/10">
-              Qty: <span id="qty-val-${entry.rowIndex}" class="text-gray-900">${entry.qty}</span> <span class="mx-1 text-enovar/20">|</span> 
-              MP: <span id="mp-val-${entry.rowIndex}" class="text-gray-900">${entry.manpower}</span>
-            </div>
-          </div>
-          <div class="flex flex-row sm:flex-col gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-            <button onclick="handleEdit(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 sm:flex-none bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-enovar hover:border-enovar/30 text-[10px] font-bold py-2 px-4 rounded-lg shadow-sm transition-all uppercase tracking-wide">Edit</button>
-            <button onclick="handleDelete(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 sm:flex-none bg-white text-red-500 hover:bg-red-50 border border-red-100 text-[10px] font-bold py-2 px-4 rounded-lg shadow-sm transition-all uppercase tracking-wide">Delete</button>
+    }
+
+    // --- Dashboard Logic ---
+    function loadDashboardData() {
+      callAPI({ action: "getDashboardRawData" }, function(res) {
+        if (res.raw) {
+          dashboardRawData = res.raw;
+          document.getElementById('dashboard-loading').classList.add('hidden');
+          processExecutiveData();
+          populateHourlyFilters();
+          renderHourlyChart();
+          renderAnalyticsChart();
+        }
+      });
+    }
+
+    function processExecutiveData() {
+      if (!dashboardRawData.length) return;
+      
+      let totalQty = 0;
+      let totalAch = 0;
+      let countAch = 0;
+      let totalProd = 0;
+      
+      const dailyTrend = {};
+
+      dashboardRawData.forEach(r => {
+        totalQty += (r.qty || 0);
+        totalProd += (r.productivity || 0);
+        if (r.achievement > 0) { totalAch += r.achievement; countAch++; }
+        
+        if(!dailyTrend[r.date]) dailyTrend[r.date] = { ach: 0, count: 0 };
+        if (r.achievement > 0) {
+          dailyTrend[r.date].ach += r.achievement;
+          dailyTrend[r.date].count++;
+        }
+      });
+
+      document.getElementById('kpi-output').innerText = totalQty.toLocaleString();
+      document.getElementById('kpi-prod').innerText = dashboardRawData.length ? (totalProd / dashboardRawData.length).toFixed(1) : 0;
+      
+      const avgAch = countAch ? (totalAch / countAch).toFixed(1) : 0;
+
+      // Gauge Chart
+      if(charts.gauge) charts.gauge.destroy();
+      charts.gauge = new ApexCharts(document.querySelector("#chart-gauge"), {
+        series: [avgAch],
+        chart: { type: 'radialBar', height: 250 },
+        plotOptions: { radialBar: { dataLabels: { value: { fontSize: '24px', formatter: function (val) { return val + "%" } } } } },
+        colors: [avgAch >= 95 ? '#10B981' : avgAch >= 85 ? '#F59E0B' : '#EF4444'],
+        labels: ['Achievement']
+      });
+      charts.gauge.render();
+
+      // Trend Line Chart
+      const dates = Object.keys(dailyTrend).sort((a,b) => new Date(a) - new Date(b));
+      const trendData = dates.map(d => dailyTrend[d].count ? (dailyTrend[d].ach / dailyTrend[d].count).toFixed(1) : 0);
+
+      if(charts.trend) charts.trend.destroy();
+      charts.trend = new ApexCharts(document.querySelector("#chart-trend"), {
+        series: [{ name: 'Avg Achievement %', data: trendData }],
+        chart: { type: 'area', height: 300, toolbar: { show: false } },
+        xaxis: { categories: dates },
+        colors: ['#0D5C58'],
+        dataLabels: { enabled: false },
+        stroke: { curve: 'smooth', width: 2 }
+      });
+      charts.trend.render();
+    }
+
+    function populateHourlyFilters() {
+      const dates = [...new Set(dashboardRawData.map(d => d.date))].sort((a,b) => new Date(b) - new Date(a));
+      const lines = [...new Set(dashboardRawData.map(d => d.line))].sort();
+      
+      const df = document.getElementById('filter-date');
+      const lf = document.getElementById('filter-line');
+      
+      df.innerHTML = dates.map(d => `<option value="${d}">${d}</option>`).join('');
+      lf.innerHTML = lines.map(l => `<option value="${l}">${l}</option>`).join('');
+    }
+
+    function renderHourlyChart() {
+      const selectedDate = document.getElementById('filter-date').value;
+      const selectedLine = document.getElementById('filter-line').value;
+      
+      const filtered = dashboardRawData.filter(d => d.date === selectedDate && d.line === selectedLine);
+      filtered.sort((a,b) => a.time.localeCompare(b.time)); // Basic sort for time slots
+
+      const times = filtered.map(d => d.time);
+      const actual = filtered.map(d => d.productivity);
+      const target = filtered.map(d => d.targetProductivity);
+
+      if(charts.hourly) charts.hourly.destroy();
+      charts.hourly = new ApexCharts(document.querySelector("#chart-hourly"), {
+        series: [
+          { name: 'Actual Productivity', data: actual },
+          { name: 'Target Productivity', data: target }
+        ],
+        chart: { type: 'bar', height: 350, toolbar: { show: false } },
+        plotOptions: { bar: { horizontal: false, columnWidth: '55%', endingShape: 'rounded' } },
+        dataLabels: { enabled: false },
+        stroke: { show: true, width: 2, colors: ['transparent'] },
+        xaxis: { categories: times, title: { text: 'Time Slots' } },
+        yaxis: { title: { text: 'Units / Manpower' } },
+        colors: ['#0D5C58', '#9CA3AF'],
+        fill: { opacity: 1 }
+      });
+      charts.hourly.render();
+    }
+
+    function renderAnalyticsChart() {
+      const lineStats = {};
+      dashboardRawData.forEach(r => {
+        if(!lineStats[r.line]) lineStats[r.line] = { ach: 0, count: 0 };
+        if(r.achievement > 0) { lineStats[r.line].ach += r.achievement; lineStats[r.line].count++; }
+      });
+
+      const categories = Object.keys(lineStats);
+      const data = categories.map(c => lineStats[c].count ? (lineStats[c].ach / lineStats[c].count).toFixed(1) : 0);
+
+      if(charts.lines) charts.lines.destroy();
+      charts.lines = new ApexCharts(document.querySelector("#chart-lines"), {
+        series: [{ name: 'Avg Achievement %', data: data }],
+        chart: { type: 'bar', height: 350, toolbar: { show: false } },
+        plotOptions: { bar: { horizontal: true, borderRadius: 4 } },
+        xaxis: { categories: categories },
+        colors: ['#13827d'],
+        dataLabels: { enabled: true, formatter: function(val) { return val + "%" } }
+      });
+      charts.lines.render();
+    }
+
+    // --- Data Entry Form Logic ---
+    function submitForm(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true; btn.innerHTML = 'Submitting...';
+
+      const payload = {
+        action: "submit",
+        email: currentUserData.email,
+        formData: {
+          line: document.getElementById('line').value,
+          time: document.getElementById('time').value,
+          item: document.getElementById('item').value,
+          manpower: document.getElementById('manpower').value,
+          production: document.getElementById('production').value
+        }
+      };
+
+      callAPI(payload, function(res) {
+        btn.disabled = false; btn.innerHTML = 'Submit Production Data';
+        if (res.status === "Success") {
+          alert("Data submitted successfully!");
+          document.getElementById('manpower').value = '';
+          document.getElementById('production').value = '';
+          tomTime.clear();
+          if(currentUserData.authorizedDashboard) loadDashboardData(); // Refresh dash silently
+        } else {
+          alert("Error: " + res.error);
+        }
+      });
+    }
+
+    // --- History Logic (Unchanged but adapted for cleanliness) ---
+    function openHistory() {
+      document.getElementById('history-modal').classList.remove('hidden');
+      document.getElementById('history-content').innerHTML = '<div class="text-center py-10 text-gray-500">Loading history...</div>';
+      
+      callAPI({ action: "getHistory", email: currentUserData.email }, function(data) {
+        historyCache = data.entriesByDate;
+        const select = document.getElementById('history-date-filter');
+        select.innerHTML = data.dates.length ? data.dates.map((d, i) => `<option value="${d}" ${i===0?'selected':''}>${d}</option>`).join('') : '<option value="">No history found</option>';
+        renderEntriesFromCache();
+      });
+    }
+    
+    function closeHistory() { document.getElementById('history-modal').classList.add('hidden'); }
+    
+    function renderEntriesFromCache() {
+      const dateStr = document.getElementById('history-date-filter').value;
+      const content = document.getElementById('history-content');
+      if (!dateStr || !historyCache[dateStr] || historyCache[dateStr].length === 0) { content.innerHTML = '<div class="text-center py-10 text-gray-500">No entries for this date.</div>'; return; }
+      
+      let html = '';
+      historyCache[dateStr].forEach((entry, idx) => {
+        html += `
+          <div id="entry-card-${entry.rowIndex}" class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm transition-all relative">
+            <div class="flex justify-between items-start mb-2"><div class="pr-8"><h4 class="font-semibold text-gray-800 text-sm">${entry.itemCode ? `[${entry.itemCode}] ` : ''}${entry.itemName}</h4><p class="text-xs text-gray-500 mt-1">${entry.line} • <span class="font-medium text-enovar">${entry.time}</span></p></div>
+            <div class="flex space-x-2"><button onclick="handleEdit(${entry.rowIndex}, ${idx}, '${dateStr}')" class="p-1.5 text-blue-600 bg-blue-50 rounded hover:bg-blue-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>
+            <button onclick="handleDelete(${entry.rowIndex}, ${idx}, '${dateStr}')" class="p-1.5 text-red-600 bg-red-50 rounded hover:bg-red-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></div>
+            <div class="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-gray-100"><div><p class="text-xs text-gray-500">Production</p><p class="text-sm font-semibold text-gray-800" id="qty-val-${entry.rowIndex}">${entry.qty}</p></div>
+            <div><p class="text-xs text-gray-500">Manpower</p><p class="text-sm font-semibold text-gray-800" id="mp-val-${entry.rowIndex}">${entry.manpower}</p></div></div>
+            <div class="mt-2 text-xs text-gray-400">Target: ${entry.targetProductivity || 0} | Achieved: <span class="${entry.achievement >= 90 ? 'text-green-600' : 'text-red-600'} font-medium">${entry.achievement || 0}%</span></div>
           </div>
         `;
-        container.appendChild(card);
       });
+      content.innerHTML = html;
     }
 
     function handleDelete(rowIndex, cacheIndex, dateStr) {
-      if (!confirm("Delete this entry permanently?")) return;
-      const card = document.getElementById(`entry-card-${rowIndex}`); card.style.opacity = '0.4'; card.style.pointerEvents = 'none';
-      historyCache[dateStr].splice(cacheIndex, 1); 
+      if(!confirm("Delete this entry forever?")) return;
+      const card = document.getElementById(`entry-card-${rowIndex}`);
+      card.style.opacity = '0.5';
       callAPI({ action: "deleteEntry", rowIndex: rowIndex }, function(data) {
-        if (data.status === "Success") { card.remove(); if(historyCache[dateStr].length === 0) renderEntriesFromCache(); } else { alert("Failed."); openHistory(); }
+        if (data.status === "Success") {
+          historyCache[dateStr].splice(cacheIndex, 1);
+          renderEntriesFromCache();
+          if(currentUserData.authorizedDashboard) loadDashboardData();
+        } else { alert("Failed to delete."); card.style.opacity = '1'; }
       });
     }
 
@@ -637,17 +524,27 @@
       const newQty = prompt("Edit Production Quantity:", entry.qty); if (newQty === null) return; 
       const newManpower = prompt("Edit Manpower:", entry.manpower); if (newManpower === null) return; 
       if (newQty == entry.qty && newManpower == entry.manpower) return; 
-      document.getElementById(`qty-val-${rowIndex}`).innerText = newQty; document.getElementById(`mp-val-${rowIndex}`).innerText = newManpower;
-      document.getElementById(`entry-card-${rowIndex}`).classList.add('ring-1', 'ring-enovar', 'bg-white');
-      historyCache[dateStr][cacheIndex].qty = newQty; historyCache[dateStr][cacheIndex].manpower = newManpower;
+      
+      const card = document.getElementById(`entry-card-${rowIndex}`);
+      card.classList.add('opacity-50');
+      
       callAPI({ action: "editEntry", rowIndex: rowIndex, newQty: newQty, newManpower: newManpower }, function(data) {
-        if (data.status === "Success") setTimeout(() => { document.getElementById(`entry-card-${rowIndex}`).classList.remove('ring-1', 'ring-enovar', 'bg-white'); }, 1000);
+        if (data.status === "Success") {
+          historyCache[dateStr][cacheIndex].qty = newQty; 
+          historyCache[dateStr][cacheIndex].manpower = newManpower;
+          renderEntriesFromCache();
+          if(currentUserData.authorizedDashboard) loadDashboardData();
+        } else {
+          alert("Edit failed");
+          card.classList.remove('opacity-50');
+        }
       });
     }
 
+    // --- Helper ---
     function callAPI(payload, callback) {
       fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
-      .then(res => res.json()).then(data => callback(data)).catch(err => { console.error(err); });
+        .then(r => r.json()).then(data => callback(data)).catch(err => callback({error: err.toString()}));
     }
   </script>
 </body>
