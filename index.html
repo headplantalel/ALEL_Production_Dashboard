@@ -52,9 +52,7 @@
     .delay-100 { animation-delay: 100ms; }
     .delay-200 { animation-delay: 200ms; }
     
-    .live-pulse {
-      animation: pulse 2s infinite;
-    }
+    .live-pulse { animation: pulse 2s infinite; }
     @keyframes pulse {
       0% { box-shadow: 0 0 0 0 rgba(13, 92, 88, 0.7); }
       70% { box-shadow: 0 0 0 6px rgba(13, 92, 88, 0); }
@@ -66,7 +64,6 @@
   
   <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
     <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px); background-size: 20px 20px; opacity: 0.04;"></div>
-    
     <div class="absolute top-10 left-10 hidden md:block max-w-[200px] opacity-30">
       <p class="font-serif italic text-sm leading-relaxed">"Focus on being productive instead of busy."</p>
     </div>
@@ -188,6 +185,19 @@
       </div>
       <div id="successMsg" class="hidden bg-green-50 text-green-700 text-center font-medium text-sm py-2.5 rounded-xl mt-3 border border-green-200">Data logged successfully</div>
     </form>
+    
+    <div class="mt-6 pt-5 border-t border-gray-100 flex flex-row items-center justify-between -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 p-5 sm:p-6 bg-gray-50/30 rounded-b-2xl">
+      <div class="flex items-center gap-3 overflow-hidden">
+        <img id="display-pic" class="w-9 h-9 rounded-full shadow-sm border border-gray-200 flex-shrink-0" src="" alt="Profile">
+        <div class="flex flex-col truncate">
+          <span id="display-name" class="font-bold text-gray-800 text-xs truncate">Name</span>
+          <span id="display-email" class="text-[10px] text-gray-500 font-medium truncate">email@domain.com</span>
+        </div>
+      </div>
+      <button onclick="logout()" class="ml-2 flex-shrink-0 text-[10px] font-bold px-3 py-2 bg-white hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-lg transition-colors shadow-sm uppercase tracking-wider">
+        Log Out
+      </button>
+    </div>
   </div>
 
   <div id="history-view" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-2xl w-full border border-white z-20">
@@ -245,7 +255,6 @@
             <option value="all">All Items</option>
           </select>
         </div>
-
       </div>
     </div>
 
@@ -278,7 +287,6 @@
               <div id="chart-bar" class="w-full h-[320px]"></div>
            </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -291,12 +299,11 @@
     let targetPortal = null; 
     let masterAuthData = null; 
     
-    // Dashboard Specific Variables
-    let rawDashboardData = []; // Caches the entire spreadsheet
+    let rawDashboardData = []; 
     let activeDashTab = 'overview';
     let trendChartInstance = null;
     let barChartInstance = null;
-    let syncTimer = null; // Holds the silent auto-sync interval
+    let syncTimer = null; 
 
     window.onload = function() {
       const savedToken = localStorage.getItem('google_token');
@@ -322,9 +329,18 @@
       return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     }
 
+    function updatePortalUI() {
+      const title = targetPortal === 'dashboard' ? 'Executive Dashboard' : 'Data Entry Portal';
+      const switchText = targetPortal === 'dashboard' ? 'Switch to Data Entry' : 'Switch to Dashboard';
+      document.getElementById('login-title').innerText = title;
+      if(document.getElementById('login-switch-btn')) document.getElementById('login-switch-btn').innerText = switchText;
+      if(document.getElementById('denied-switch-btn')) document.getElementById('denied-switch-btn').innerText = switchText;
+    }
+
     function togglePortalTarget() {
       targetPortal = targetPortal === 'entry' ? 'dashboard' : 'entry';
       localStorage.setItem('active_portal', targetPortal);
+      updatePortalUI();
       if(currentUser.email && !document.getElementById('denied').classList.contains('hidden')) {
         document.getElementById('denied').classList.add('hidden');
         verifyAndRoute();
@@ -335,7 +351,7 @@
       document.getElementById('app').classList.add('hidden');
       document.getElementById('dashboard-app').classList.add('hidden');
       document.getElementById('history-view').classList.add('hidden');
-      if (syncTimer) clearInterval(syncTimer); // Stop silent sync if leaving dashboard
+      if (syncTimer) clearInterval(syncTimer); 
       
       targetPortal = portalType;
       localStorage.setItem('active_portal', portalType);
@@ -345,6 +361,7 @@
     function openLogin(portalType) {
       targetPortal = portalType;
       localStorage.setItem('active_portal', portalType);
+      updatePortalUI();
       document.getElementById('landing-view').classList.add('hidden');
 
       if (currentUser.email) {
@@ -390,7 +407,6 @@
 
     function routeUser(data) {
       document.getElementById('loader').classList.add('hidden');
-      
       if (targetPortal === 'entry') {
         if (data.authorizedEntry) setupEntryAppUI(data);
         else showDenied();
@@ -429,39 +445,28 @@
       document.getElementById('dashboard-app').classList.remove('hidden');
       if (data && data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
       
-      // Load initial dashboard data blocking the screen once
       document.getElementById('loader-text').innerText = "Loading Master Data...";
       document.getElementById('loader').classList.remove('hidden');
       fetchDashboardData(true);
       
-      // Start the Silent Auto-Sync (Every 60 seconds)
       syncTimer = setInterval(() => { fetchDashboardData(false); }, 60000);
     }
 
-    // --- CLIENT-SIDE DASHBOARD ENGINE ---
-
     function switchDashTab(tab) {
       activeDashTab = tab;
-      
-      // Tab UI Update
       document.getElementById('tab-overview').className = tab === 'overview' ? "px-4 py-1.5 text-xs font-bold rounded-md bg-white text-gray-800 shadow-sm transition-all" : "px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all";
       document.getElementById('tab-analysis').className = tab === 'analysis' ? "px-4 py-1.5 text-xs font-bold rounded-md bg-white text-gray-800 shadow-sm transition-all" : "px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all";
-      
-      // Update Chart Titles based on Tab Context
       document.getElementById('bar-title').innerText = tab === 'overview' ? "Productivity by Line" : "Productivity by Item";
-      
-      renderDashboard(); // Instantly re-render
+      renderDashboard(); 
     }
 
     function fetchDashboardData(isInitialLoad) {
       callAPI({ action: "getDashboardRawData" }, function(data) {
         if(isInitialLoad) document.getElementById('loader').classList.add('hidden');
         if (data.error) return; 
-        
-        rawDashboardData = data.raw; // Cache it in the browser
-        
-        if(isInitialLoad) populateFilterDropdowns(); // Only populate options on first load so we don't overwrite user selection
-        renderDashboard(); // Draw the charts
+        rawDashboardData = data.raw; 
+        if(isInitialLoad) populateFilterDropdowns(); 
+        renderDashboard(); 
       });
     }
 
@@ -477,12 +482,10 @@
     }
 
     function renderDashboard() {
-      // 1. Get Selected Filters
       const dateFilter = document.getElementById('filter-date').value;
       const lineFilter = document.getElementById('filter-line').value;
       const itemFilter = document.getElementById('filter-item').value;
       
-      // 2. Filter the cached raw data instantly
       let filteredData = rawDashboardData.filter(row => {
         if (lineFilter !== 'all' && row.line !== lineFilter) return false;
         if (itemFilter !== 'all' && row.item !== itemFilter) return false;
@@ -495,7 +498,6 @@
         return true;
       });
 
-      // 3. Calculate Scorecards (Productivity Math)
       let sumQty = 0, sumMp = 0;
       let dateMap = {}, entityMap = {};
       
@@ -503,12 +505,10 @@
         sumQty += row.qty;
         sumMp += row.mp;
         
-        // Group for Trend (By Date)
         if(!dateMap[row.date]) dateMap[row.date] = { qty: 0, mp: 0 };
         dateMap[row.date].qty += row.qty;
         dateMap[row.date].mp += row.mp;
 
-        // Group for Bar Chart (By Line OR Item depending on Tab)
         let entity = activeDashTab === 'overview' ? row.line : row.item;
         if(!entityMap[entity]) entityMap[entity] = { qty: 0, mp: 0 };
         entityMap[entity].qty += row.qty;
@@ -520,14 +520,12 @@
       document.getElementById('dash-total-prod').innerText = sumQty.toLocaleString();
       document.getElementById('dash-total-mp').innerText = sumMp.toLocaleString();
 
-      // 4. Build Arrays for ApexCharts
-      let trendDates = Object.keys(dateMap).sort(); // chronological
+      let trendDates = Object.keys(dateMap).sort((a,b) => new Date(a) - new Date(b)); 
       let trendProd = trendDates.map(d => dateMap[d].mp > 0 ? parseFloat((dateMap[d].qty / dateMap[d].mp).toFixed(1)) : 0);
       
       let entities = Object.keys(entityMap);
       let entityProd = entities.map(e => entityMap[e].mp > 0 ? parseFloat((entityMap[e].qty / entityMap[e].mp).toFixed(1)) : 0);
 
-      // 5. Update/Render Trend Chart
       var trendOptions = {
         chart: { type: 'area', height: 320, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
         series: [{ name: 'Efficiency (Out/MP)', data: trendProd }],
@@ -540,7 +538,6 @@
       if (trendChartInstance) { trendChartInstance.updateOptions(trendOptions); } 
       else { trendChartInstance = new ApexCharts(document.querySelector("#chart-trend"), trendOptions); trendChartInstance.render(); }
 
-      // 6. Update/Render Bar Chart
       var barOptions = {
         chart: { type: 'bar', height: 320, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
         series: [{ name: 'Efficiency', data: entityProd }],
@@ -553,7 +550,6 @@
       else { barChartInstance = new ApexCharts(document.querySelector("#chart-bar"), barOptions); barChartInstance.render(); }
     }
 
-    // --- OTHER CORE FUNCTIONS ---
     function logout() { localStorage.removeItem('google_token'); localStorage.removeItem('active_portal'); location.reload(); }
     
     async function submitForm(e) {
