@@ -473,6 +473,47 @@
       document.getElementById('denied').classList.remove('hidden');
     }
 
+    function requestAccess() {
+      const btn = document.getElementById('requestBtn');
+      const originalText = btn.innerText;
+      
+      // Update UI to show loading state
+      btn.innerText = 'Sending Request...';
+      btn.disabled = true;
+      btn.classList.add('opacity-70', 'cursor-not-allowed');
+
+      // Create the payload exactly as the backend expects
+      const payload = {
+        action: "requestAccess",
+        email: currentUser.email,
+        name: currentUser.name || "Unknown User",
+        requestedApp: targetPortal // will be either 'entry' or 'dashboard'
+      };
+
+      // Call your backend API
+      callAPI(payload, function(data) {
+        if (data.status === "Success") {
+          // Success feedback
+          btn.innerText = 'Request Sent Successfully!';
+          btn.classList.remove('bg-enovar', 'hover:bg-enovar-light');
+          btn.classList.add('bg-green-600', 'hover:bg-green-700');
+          
+          // Reset button after 3 seconds
+          setTimeout(() => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed', 'bg-green-600', 'hover:bg-green-700');
+            btn.classList.add('bg-enovar', 'hover:bg-enovar-light');
+          }, 3000);
+        } else {
+          alert("Failed to send access request. Please contact the admin directly.");
+          btn.innerText = originalText;
+          btn.disabled = false;
+          btn.classList.remove('opacity-70', 'cursor-not-allowed');
+        }
+      });
+    }
+
     function setupEntryAppUI(data) {
       document.getElementById('bg-elements').classList.remove('hidden');
       document.getElementById('display-pic').src = currentUser.picture;
