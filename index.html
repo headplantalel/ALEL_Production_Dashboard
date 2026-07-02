@@ -212,115 +212,125 @@
     <div id="entries-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
   </div>
 
-  <div id="dashboard-app" class="hidden h-screen flex flex-col bg-slate-50">
+  <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-[#F4F7F6] z-50 flex flex-col">
+    <div class="flex justify-between items-center px-4 py-3 bg-white shadow-sm border-b border-gray-200 w-full z-10 relative">
+      <div class="flex items-center gap-3 sm:gap-4">
+        <img src="alel.png" alt="ALEL" class="h-5 sm:h-6 object-contain">
+        <div class="w-px h-5 bg-gray-300 hidden sm:block"></div>
+        <img src="enovar.png" alt="Enovar" class="h-3 sm:h-4 object-contain opacity-70">
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] font-bold px-3 py-1.5 bg-enovar/10 hover:bg-enovar/20 text-enovar rounded-md uppercase tracking-wider transition-colors">
+          Data Entry
+        </button>
+        <button onclick="logout()" class="text-[10px] sm:text-xs font-bold px-3 py-1.5 bg-white hover:bg-red-50 text-red-500 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-md transition-all shadow-sm uppercase tracking-wider flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          <span class="hidden sm:block">Logout</span>
+        </button>
+      </div>
+    </div>
     
-    <nav class="bg-white shadow-sm border-b border-gray-200 shrink-0">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex items-center space-x-4">
-            <h1 class="text-xl font-serif font-bold text-enovar">Executive Pulse</h1>
-            
-            <div class="hidden md:flex space-x-2 ml-8">
-              <button onclick="switchDashTab('section')" id="tab-section" class="px-3 py-2 rounded-md text-sm font-medium bg-enovar text-white">Section View</button>
-              <button onclick="switchDashTab('master')" id="tab-master" class="px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-enovar">Master Analysis</button>
-              <button onclick="switchDashTab('management')" id="tab-management" class="px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-enovar">Management KPI</button>
-            </div>
+    <div class="w-full bg-white border-b border-gray-200 z-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex bg-gray-100 p-1 rounded-lg">
+          <button id="tab-pulse" onclick="switchDashTab('pulse')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white text-gray-800 shadow-sm transition-all">Executive Pulse</button>
+          <button id="tab-analysis" onclick="switchDashTab('analysis')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all">PG Analysis</button>
+          <button id="tab-hourly" onclick="switchDashTab('hourly')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all">Hourly Momentum</button>
+        </div>
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <select id="filter-line" onchange="renderDashboard()" class="p-1.5 rounded-md border border-gray-200 text-xs font-medium outline-none focus:border-enovar w-full md:w-40 bg-gray-50/50"></select>
+          <select id="filter-pg" onchange="renderDashboard()" class="p-1.5 rounded-md border border-gray-200 text-xs font-medium outline-none focus:border-enovar w-full md:w-40 bg-gray-50/50"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4 sm:p-6 max-w-7xl w-full mx-auto">
+      <div id="view-pulse" class="w-full space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center border-l-4 border-l-enovar">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Avg Achievement</span>
+            <span id="kpi-pulse-achiev" class="text-3xl font-bold text-gray-800">0%</span>
           </div>
-          
-          <div class="flex items-center space-x-4">
-            <div class="flex items-center text-sm text-gray-500">
-              <span class="relative flex h-3 w-3 mr-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-enovar-light opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-enovar"></span>
-              </span>
-              Live Sync
-            </div>
-            
-            <button onclick="toggleFullscreen()" class="p-2 text-gray-400 hover:text-enovar rounded-full hover:bg-gray-100 transition-colors" title="Toggle Fullscreen">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
-              </svg>
-            </button>
-            <button onclick="logout()" class="text-sm text-gray-500 hover:text-red-600 font-medium ml-4">Logout</button>
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center border-l-4 border-l-blue-500">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Productivity Index</span>
+            <span id="kpi-pulse-prod" class="text-3xl font-bold text-gray-800">0.00</span>
+          </div>
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center border-l-4 border-l-orange-500">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Yield Output</span>
+            <span id="kpi-pulse-output" class="text-3xl font-bold text-gray-800">0</span>
+          </div>
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center border-l-4 border-l-red-500">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Manpower</span>
+            <span id="kpi-pulse-manpower" class="text-3xl font-bold text-gray-800">0</span>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Hourly Achievement Trend</h3>
+            <div id="chart-pulse-trend" class="w-full h-[300px]"></div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Leaderboard (Line Achiev %)</h3>
+            <div id="chart-pulse-bar" class="w-full h-[300px]"></div>
           </div>
         </div>
       </div>
-    </nav>
 
-    <div id="dashboard-container" class="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-      
-      <div id="view-section" class="block space-y-6">
-        <div class="bg-white p-4 rounded-xl shadow-sm flex flex-wrap gap-4 items-end border border-gray-100">
-          <div>
-            <label class="block text-xs font-medium text-gray-500 mb-1">Select Date</label>
-            <select id="dash-date" class="block w-40 border-gray-300 rounded-md shadow-sm focus:ring-enovar focus:border-enovar sm:text-sm p-2 border" onchange="renderSectionDashboard()">
-            </select>
+      <div id="view-analysis" class="w-full space-y-4 hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Target vs Actual Output Gap</span>
+            <span id="kpi-analysis-gap" class="text-3xl font-bold text-red-600">0</span>
           </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-500 mb-1">Select Section</label>
-            <select id="dash-section" class="block w-48 border-gray-300 rounded-md shadow-sm focus:ring-enovar focus:border-enovar sm:text-sm p-2 border" onchange="renderSectionDashboard()">
-              <option value="ALL">All Sections</option>
-            </select>
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Worst Performing PG</span>
+            <span id="kpi-analysis-worst" class="text-2xl font-bold text-gray-800 truncate w-full">-</span>
           </div>
-          <button onclick="loadDashboardData()" class="px-4 py-2 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-md text-sm font-medium transition-colors flex items-center">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            Refresh
-          </button>
         </div>
-
-        <div id="section-charts-grid" class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
-          </div>
-      </div>
-
-      <div id="view-master" class="hidden">
-        <div class="flex items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-xl">
-          <p class="text-gray-500 font-medium">Master Analysis View is under construction...</p>
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+          <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Actual vs Target Productivity by Line</h3>
+          <div id="chart-analysis-combo" class="w-full h-[300px]"></div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+          <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">PG Performance Matrix (Size = Output, Color = Achievement)</h3>
+          <div id="chart-analysis-treemap" class="w-full h-[350px]"></div>
         </div>
       </div>
 
-      <div id="view-management" class="hidden">
-        <div class="flex items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-xl">
-          <p class="text-gray-500 font-medium">Management KPI View is under construction...</p>
+      <div id="view-hourly" class="w-full space-y-4 hidden">
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+          <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Hourly Shift Performance Heatmap (Achievement %)</h3>
+          <div id="chart-hourly-heatmap" class="w-full h-[400px]"></div>
         </div>
       </div>
-
     </div>
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5cZBzzZOjcrKDpuq0TKh0rDf5ExBL45F6FA0c13a1ayOpZMQHLbIVh65LAktUFP9J6g/exec"; 
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_9I6f85U_e72f-5P_PqorZcK5D2wNExYlW6fLpTyl9N1S8n-F_H4nCgU7xLwGvjM/exec";
+    
     let tsItem, tsLine, tsTime;
     let currentUser = {};
-    let historyCache = {}; 
-    let targetPortal = null; 
-    let masterAuthData = null; 
-    
-    // NEW IE DASHBOARD VARIABLES
-    let rawDashboardData = []; 
+    let targetPortal = localStorage.getItem('active_portal') || null;
+    let masterAuthData = null;
+    let rawDashboardData = [];
     let activeDashTab = 'pulse';
-    let syncTimer = null; 
-    let charts = {
-      pulseTrend: null,
-      pulseBar: null,
-      analysisCombo: null,
-      analysisTree: null,
-      hourlyHeatmap: null
-    };
+    let syncTimer = null;
+    let historyCache = {};
+    let charts = { pulseTrend: null, pulseBar: null, analysisCombo: null, analysisTree: null, hourlyHeatmap: null };
 
     window.onload = function() {
       const savedToken = localStorage.getItem('google_token');
-      const savedPortal = localStorage.getItem('active_portal');
-      
       if (savedToken) {
-        const payload = parseJwt(savedToken);
-        currentUser = { name: payload.name, email: payload.email, picture: payload.picture };
-        const localCache = localStorage.getItem('master_data_cache_' + currentUser.email);
-        if (localCache) masterAuthData = JSON.parse(localCache);
-        
-        if (savedPortal) {
-          targetPortal = savedPortal;
-          document.getElementById('landing-view').classList.add('hidden');
-          verifyAndRoute();
+        try {
+          const payload = parseJwt(savedToken);
+          currentUser = { name: payload.name, email: payload.email, picture: payload.picture };
+          if(targetPortal) {
+            verifyAndRoute();
+          }
+        } catch(e) {
+          localStorage.removeItem('google_token');
         }
       }
     };
@@ -353,8 +363,7 @@
       document.getElementById('app').classList.add('hidden');
       document.getElementById('dashboard-app').classList.add('hidden');
       document.getElementById('history-view').classList.add('hidden');
-      if (syncTimer) clearInterval(syncTimer); 
-      
+      if (syncTimer) clearInterval(syncTimer);
       targetPortal = portalType;
       localStorage.setItem('active_portal', portalType);
       routeUser(masterAuthData);
@@ -365,7 +374,6 @@
       localStorage.setItem('active_portal', portalType);
       updatePortalUI();
       document.getElementById('landing-view').classList.add('hidden');
-
       if (currentUser.email) {
         verifyAndRoute();
       } else {
@@ -389,203 +397,144 @@
 
     function verifyAndRoute() {
       document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('loader-text').innerText = "Authenticating...";
+      document.getElementById('bg-elements').classList.add('hidden');
+      document.getElementById('loader-text').innerText = "Verifying Credentials...";
+      document.getElementById('loader').classList.remove('hidden');
       
-      if (masterAuthData) {
-        routeUser(masterAuthData);
-        callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
-          localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
-          masterAuthData = data;
-        });
-      } else {
-        document.getElementById('loader').classList.remove('hidden');
-        callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, function(data) {
-          localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
+      callAPI({ action: "verifyUser", email: currentUser.email }, function(data) {
+        document.getElementById('loader').classList.add('hidden');
+        if (data && data.status === "Authorized") {
           masterAuthData = data;
           routeUser(data);
-        });
-      }
-    }
-
-    function routeUser(data) {
-      document.getElementById('loader').classList.add('hidden');
-      if (targetPortal === 'entry') {
-        if (data.authorizedEntry) setupEntryAppUI(data);
-        else showDenied();
-      } else if (targetPortal === 'dashboard') {
-        if (data.authorizedDashboard) setupDashboardUI(data);
-        else showDenied();
-      }
-    }
-
-    function showDenied() {
-      document.getElementById('user-email').innerText = currentUser.email;
-      document.getElementById('denied').classList.remove('hidden');
-    }
-
-    function requestAccess() {
-      const btn = document.getElementById('requestBtn');
-      const originalText = btn.innerText;
-      
-      // Update UI to show loading state
-      btn.innerText = 'Sending Request...';
-      btn.disabled = true;
-      btn.classList.add('opacity-70', 'cursor-not-allowed');
-
-      // Create the payload exactly as the backend expects
-      const payload = {
-        action: "requestAccess",
-        email: currentUser.email,
-        name: currentUser.name || "Unknown User",
-        requestedApp: targetPortal // will be either 'entry' or 'dashboard'
-      };
-
-      // Call your backend API
-      callAPI(payload, function(data) {
-        if (data.status === "Success") {
-          // Success feedback
-          btn.innerText = 'Request Sent Successfully!';
-          btn.classList.remove('bg-enovar', 'hover:bg-enovar-light');
-          btn.classList.add('bg-green-600', 'hover:bg-green-700');
-          
-          // Reset button after 3 seconds
-          setTimeout(() => {
-            btn.innerText = originalText;
-            btn.disabled = false;
-            btn.classList.remove('opacity-70', 'cursor-not-allowed', 'bg-green-600', 'hover:bg-green-700');
-            btn.classList.add('bg-enovar', 'hover:bg-enovar-light');
-          }, 3000);
         } else {
-          alert("Failed to send access request. Please contact the admin directly.");
-          btn.innerText = originalText;
-          btn.disabled = false;
-          btn.classList.remove('opacity-70', 'cursor-not-allowed');
+          document.getElementById('user-email').innerText = currentUser.email;
+          document.getElementById('denied').classList.remove('hidden');
         }
       });
     }
 
-    function setupEntryAppUI(data) {
-      document.getElementById('bg-elements').classList.remove('hidden');
-      document.getElementById('display-pic').src = currentUser.picture;
-      document.getElementById('display-name').innerText = currentUser.name || data.displayName;
-      document.getElementById('display-email').innerText = currentUser.email;
-      document.getElementById('app').classList.remove('hidden');
-      if (data && data.authorizedDashboard) document.getElementById('btn-goto-dash').classList.remove('hidden');
-      else document.getElementById('btn-goto-dash').classList.add('hidden');
-      
-      if(tsItem) { tsItem.destroy(); tsLine.destroy(); tsTime.destroy(); }
-      const itemSelect = document.getElementById('item'); itemSelect.innerHTML = ''; data.items.forEach(i => itemSelect.add(new Option(i, i)));
-      const lineSelect = document.getElementById('line'); lineSelect.innerHTML = ''; data.lines.forEach(l => lineSelect.add(new Option(l, l)));
-      const timeSelect = document.getElementById('time'); timeSelect.innerHTML = ''; data.times.forEach(t => timeSelect.add(new Option(t, t)));
-      
-      tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false, placeholder: "Select item...", items: [] });
-      tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false, placeholder: "Select line...", items: [] });
-      tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false, placeholder: "Select time...", items: [] });
+    function routeUser(authData) {
+      if (targetPortal === 'dashboard' && authData.authorizedDashboard) {
+        initDashboardPortal(authData);
+      } else if (targetPortal === 'entry' && authData.authorizedEntry) {
+        initEntryPortal(authData);
+      } else {
+        document.getElementById('user-email').innerText = currentUser.email;
+        document.getElementById('denied').classList.remove('hidden');
+      }
     }
 
-    function setupDashboardUI(data) {
-      document.getElementById('bg-elements').classList.add('hidden');
-      document.getElementById('dashboard-app').classList.remove('hidden');
-      if (data && data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
+    function initEntryPortal(data) {
+      document.getElementById('display-name').innerText = currentUser.name;
+      document.getElementById('display-email').innerText = currentUser.email;
+      document.getElementById('display-pic').src = currentUser.picture;
       
+      populateSelect('item', data.items);
+      populateSelect('line', data.lines);
+      populateSelect('time', data.timeSlots);
+      
+      if(!tsItem) tsItem = new TomSelect('#item', { create: false, placeholder: 'Search & Select Item...' });
+      if(!tsLine) tsLine = new TomSelect('#line', { create: false, placeholder: 'Line...' });
+      if(!tsTime) tsTime = new TomSelect('#time', { create: false, placeholder: 'Time Slot...' });
+      
+      if(data.authorizedDashboard) document.getElementById('btn-goto-dash').classList.remove('hidden');
+      document.getElementById('app').classList.remove('hidden');
+    }
+
+    function initDashboardPortal(data) {
+      document.getElementById('dashboard-app').classList.remove('hidden');
+      if(data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
       document.getElementById('loader-text').innerText = "Loading Master Data...";
       document.getElementById('loader').classList.remove('hidden');
       fetchDashboardData(true);
-      
       syncTimer = setInterval(() => { fetchDashboardData(false); }, 60000);
     }
-
-    // --- DASHBOARD DATA & RENDERING LOGIC ---
 
     function fetchDashboardData(isInitialLoad) {
       callAPI({ action: "getDashboardRawData" }, function(data) {
         if(isInitialLoad) document.getElementById('loader').classList.add('hidden');
-        if (data.error) return; 
-        rawDashboardData = data.raw; 
-        if(isInitialLoad) populateFilterDropdowns(); 
-        renderDashboard(); 
+        if (data.error) return;
+        rawDashboardData = data.raw;
+        if(isInitialLoad) populateFilterDropdowns();
+        renderDashboard();
       });
     }
 
     function populateFilterDropdowns() {
       let lines = new Set(), pgs = new Set();
-      rawDashboardData.forEach(r => { 
-        if(r.line) lines.add(r.line); 
-        if(r.pg) pgs.add(r.pg); 
+      rawDashboardData.forEach(r => {
+        if(r.line) lines.add(r.line);
+        if(r.pg) pgs.add(r.pg);
       });
-      
-      const lineSel = document.getElementById('filter-line'); lineSel.innerHTML = '<option value="all">All Lines</option>';
+      const lineSel = document.getElementById('filter-line');
+      lineSel.innerHTML = '<option value="all">All Lines</option>';
       Array.from(lines).sort().forEach(l => lineSel.add(new Option(l, l)));
-      
-      const pgSel = document.getElementById('filter-pg'); pgSel.innerHTML = '<option value="all">All PGs</option>';
+      const pgSel = document.getElementById('filter-pg');
+      pgSel.innerHTML = '<option value="all">All PGs</option>';
       Array.from(pgs).sort().forEach(p => pgSel.add(new Option(p, p)));
     }
 
     function switchDashTab(tab) {
       activeDashTab = tab;
-      
-      // Update Button Styles
       ['pulse', 'analysis', 'hourly'].forEach(t => {
         let btn = document.getElementById('tab-' + t);
-        if(t === tab) btn.className = "px-4 py-1.5 text-[10px] sm:text-xs font-bold rounded-md bg-white text-gray-800 shadow-sm transition-all";
-        else btn.className = "px-4 py-1.5 text-[10px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all";
-        
-        // Hide/Show Views
-        let view = document.getElementById('view-' + t);
-        if(t === tab) view.classList.remove('hidden');
-        else view.classList.add('hidden');
+        if(t === tab) {
+          btn.className = "px-4 py-1.5 text-xs font-bold rounded-md bg-white text-gray-800 shadow-sm transition-all";
+          document.getElementById('view-' + t).classList.remove('hidden');
+        } else {
+          btn.className = "px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all";
+          document.getElementById('view-' + t).classList.add('hidden');
+        }
       });
-      
-      renderDashboard(); 
+      renderDashboard();
     }
 
     function renderDashboard() {
-      if(!rawDashboardData || rawDashboardData.length === 0) return;
-
-      const dateFilter = document.getElementById('filter-date').value;
-      const lineFilter = document.getElementById('filter-line').value;
-      const pgFilter = document.getElementById('filter-pg').value;
+      const fLine = document.getElementById('filter-line').value;
+      const fPg = document.getElementById('filter-pg').value;
       
-      // Filter Data
-      let fData = rawDashboardData.filter(row => {
-        if (lineFilter !== 'all' && row.line !== lineFilter) return false;
-        if (pgFilter !== 'all' && row.pg !== pgFilter) return false;
-        if (dateFilter !== 'all') {
-          const rDate = new Date(row.date);
-          const diffDays = Math.ceil(Math.abs(new Date() - rDate) / (1000 * 60 * 60 * 24));
-          if (diffDays > parseInt(dateFilter)) return false;
-        }
-        return true;
-      });
-
-      // IE MATH ENGINE
-      let sumQty = 0, sumMp = 0, sumAchiev = 0, achievCount = 0;
-      let targetGap = 0;
-      let dateMap = {}, lineMap = {}, pgMap = {}, heatMap = {};
+      let sumAchiev = 0, achievCount = 0, sumQty = 0, sumMp = 0, totalTarget = 0;
+      let hourlyTrend = {}, lineMap = {}, pgMap = {}, heatMap = {};
       
-      fData.forEach(r => {
-        sumQty += r.qty; sumMp += r.mp;
-        let expectedQty = (r.targetProductivity || 0) * r.mp;
-        targetGap += (expectedQty - r.qty);
-
-        if(r.achievement > 0) { sumAchiev += r.achievement; achievCount++; }
+      rawDashboardData.forEach(r => {
+        if(fLine !== 'all' && r.line !== fLine) return;
+        if(fPg !== 'all' && r.pg !== fPg) return;
         
-        if(!dateMap[r.date]) dateMap[r.date] = { achiev: 0, count: 0 };
-        if(r.achievement > 0) { dateMap[r.date].achiev += r.achievement; dateMap[r.date].count++; }
-
-        if(!lineMap[r.line]) lineMap[r.line] = { achiev: 0, aCount: 0, actProdSum: 0, tgtProdSum: 0, pCount: 0 };
-        if(r.achievement > 0) { lineMap[r.line].achiev += r.achievement; lineMap[r.line].aCount++; }
-        if(r.productivity > 0 || r.targetProductivity > 0) {
+        sumQty += r.qty || 0;
+        sumMp += r.manpower || 0;
+        totalTarget += r.target || 0;
+        
+        if(r.achievement > 0) {
+          sumAchiev += r.achievement;
+          achievCount++;
+        }
+        
+        let t = r.time || 'Unknown';
+        if(!hourlyTrend[t]) hourlyTrend[t] = { sum: 0, count: 0 };
+        if(r.achievement > 0) {
+          hourlyTrend[t].sum += r.achievement;
+          hourlyTrend[t].count++;
+        }
+        
+        if(!lineMap[r.line]) lineMap[r.line] = { actProdSum: 0, tgtProdSum: 0, pCount: 0, achievSum: 0, count: 0 };
+        if(r.achievement > 0) {
+          lineMap[r.line].achievSum += r.achievement;
+          lineMap[r.line].count++;
+        }
+        if(r.productivity > 0) {
           lineMap[r.line].actProdSum += r.productivity;
           lineMap[r.line].tgtProdSum += r.targetProductivity;
           lineMap[r.line].pCount++;
         }
-
+        
         let pg = r.pg || 'Uncategorized';
         if(!pgMap[pg]) pgMap[pg] = { qty: 0, achievSum: 0, count: 0 };
         pgMap[pg].qty += r.qty;
-        if(r.achievement > 0) { pgMap[pg].achievSum += r.achievement; pgMap[pg].count++; }
-
+        if(r.achievement > 0) {
+          pgMap[pg].achievSum += r.achievement;
+          pgMap[pg].count++;
+        }
+        
         if(!heatMap[r.line]) heatMap[r.line] = {};
         if(!heatMap[r.line][r.time]) heatMap[r.line][r.time] = { achievSum: 0, count: 0, qty: 0 };
         heatMap[r.line][r.time].qty += r.qty;
@@ -594,65 +543,65 @@
           heatMap[r.line][r.time].count++;
         }
       });
-
+      
       const font = 'Inter, sans-serif';
-
-      // TAB 1: EXECUTIVE PULSE
+      
       if(activeDashTab === 'pulse') {
         let avgAchiev = achievCount > 0 ? (sumAchiev / achievCount * 100).toFixed(1) : 0;
         document.getElementById('kpi-pulse-achiev').innerText = avgAchiev + "%";
         document.getElementById('kpi-pulse-prod').innerText = sumMp > 0 ? (sumQty / sumMp).toFixed(2) : "0.0";
         document.getElementById('kpi-pulse-output').innerText = sumQty.toLocaleString();
-        document.getElementById('kpi-pulse-mp').innerText = sumMp.toLocaleString();
-
-        let tDates = Object.keys(dateMap).sort((a,b) => new Date(a) - new Date(b)); 
-        let tVals = tDates.map(d => dateMap[d].count > 0 ? parseFloat((dateMap[d].achiev/dateMap[d].count*100).toFixed(1)) : 0);
-
+        document.getElementById('kpi-pulse-manpower').innerText = sumMp.toLocaleString();
+        
+        let hCategories = Object.keys(hourlyTrend).sort();
+        let hData = hCategories.map(c => hourlyTrend[c].count > 0 ? parseFloat((hourlyTrend[c].sum / hourlyTrend[c].count * 100).toFixed(1)) : 0);
+        
         if(charts.pulseTrend) charts.pulseTrend.destroy();
         charts.pulseTrend = new ApexCharts(document.querySelector("#chart-pulse-trend"), {
           chart: { type: 'area', height: 300, toolbar: { show: false }, fontFamily: font },
-          series: [{ name: 'Overall Achievement %', data: tVals }],
-          xaxis: { categories: tDates, labels: { style: { colors: '#6B7280' } } },
+          series: [{ name: 'Avg Achievement %', data: hData }],
           colors: ['#0D5C58'],
-          stroke: { curve: 'smooth', width: 2 },
+          stroke: { curve: 'smooth', width: 3 },
+          xaxis: { categories: hCategories },
+          yaxis: { labels: { formatter: v => v + "%" } },
           dataLabels: { enabled: false },
-          fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } },
-          annotations: { yaxis: [{ y: 100, borderColor: '#10B981', strokeDashArray: 4, label: { text: 'Target 100%' } }] }
+          fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } }
         });
         charts.pulseTrend.render();
-
-        let lNames = Object.keys(lineMap).sort((a,b) => (lineMap[b].achiev/lineMap[b].aCount) - (lineMap[a].achiev/lineMap[a].aCount)).slice(0, 8);
-        let lVals = lNames.map(l => lineMap[l].aCount > 0 ? parseFloat((lineMap[l].achiev/lineMap[l].aCount*100).toFixed(1)) : 0);
-
+        
+        let lNames = Object.keys(lineMap).sort();
+        let lData = lNames.map(l => lineMap[l].count > 0 ? parseFloat((lineMap[l].achievSum / lineMap[l].count * 100).toFixed(1)) : 0);
+        
         if(charts.pulseBar) charts.pulseBar.destroy();
         charts.pulseBar = new ApexCharts(document.querySelector("#chart-pulse-bar"), {
           chart: { type: 'bar', height: 300, toolbar: { show: false }, fontFamily: font },
-          series: [{ name: 'Achievement %', data: lVals }],
-          xaxis: { categories: lNames, labels: { style: { colors: '#6B7280' } } },
+          series: [{ name: 'Achievement %', data: lData }],
           colors: ['#13827d'],
-          plotOptions: { bar: { borderRadius: 3, horizontal: true } },
-          dataLabels: { enabled: true, formatter: val => val + "%" }
+          xaxis: { categories: lNames },
+          yaxis: { labels: { formatter: v => v + "%" }, max: 120 },
+          plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '45%' } },
+          dataLabels: { enabled: true, formatter: v => v + "%", style: { fontSize: '10px' } }
         });
         charts.pulseBar.render();
       }
-
-      // TAB 2: PG & LINE ANALYSIS
+      
       if(activeDashTab === 'analysis') {
-        document.getElementById('kpi-analysis-gap').innerText = targetGap > 0 ? "-" + targetGap.toLocaleString() : "Exceeding Target";
+        let gap = totalTarget - sumQty;
+        document.getElementById('kpi-analysis-gap').innerText = gap.toLocaleString();
+        document.getElementById('kpi-analysis-gap').className = gap > 0 ? "text-3xl font-bold text-red-600" : "text-3xl font-bold text-green-600";
         
-        let worstPG = "-", lowestScore = 999;
-        let treeData = [];
-        for (let pg in pgMap) {
+        let worstPG = '-', lowestScore = 999, treeData = [];
+        for(let pg in pgMap) {
           let score = pgMap[pg].count > 0 ? (pgMap[pg].achievSum / pgMap[pg].count * 100) : 0;
           if (score < lowestScore && score > 0) { lowestScore = score; worstPG = pg; }
           treeData.push({ x: pg, y: pgMap[pg].qty, fillColor: score >= 90 ? '#0D5C58' : score >= 75 ? '#374151' : '#EF4444' });
         }
         document.getElementById('kpi-analysis-worst').innerText = worstPG + (lowestScore !== 999 ? ` (${lowestScore.toFixed(1)}%)` : "");
-
+        
         let cNames = Object.keys(lineMap).sort();
         let cAct = cNames.map(l => lineMap[l].pCount > 0 ? parseFloat((lineMap[l].actProdSum/lineMap[l].pCount).toFixed(1)) : 0);
         let cTgt = cNames.map(l => lineMap[l].pCount > 0 ? parseFloat((lineMap[l].tgtProdSum/lineMap[l].pCount).toFixed(1)) : 0);
-
+        
         if(charts.analysisCombo) charts.analysisCombo.destroy();
         charts.analysisCombo = new ApexCharts(document.querySelector("#chart-analysis-combo"), {
           chart: { type: 'bar', height: 300, toolbar: { show: false }, fontFamily: font },
@@ -667,49 +616,35 @@
           dataLabels: { enabled: false }
         });
         charts.analysisCombo.render();
-
+        
         if(charts.analysisTree) charts.analysisTree.destroy();
         charts.analysisTree = new ApexCharts(document.querySelector("#chart-analysis-treemap"), {
-          series: [{ data: treeData }],
           chart: { type: 'treemap', height: 350, toolbar: { show: false }, fontFamily: font },
-          dataLabels: { enabled: true, style: { fontSize: '12px' } },
-          plotOptions: { treemap: { enableShades: true, shadeIntensity: 0.5, reverseNegativeShade: true } }
+          series: [{ data: treeData }],
+          plotOptions: { treemap: { distributed: true, enableShades: false } }
         });
         charts.analysisTree.render();
       }
-
-      // TAB 3: HOURLY MOMENTUM
+      
       if(activeDashTab === 'hourly') {
-        let times = Array.from(new Set(fData.map(r => r.time))).sort();
-        let heatSeries = [];
+        let sortedLines = Object.keys(heatMap).sort();
+        let sortedTimes = [];
+        rawDashboardData.forEach(r => { if(r.time && !sortedTimes.includes(r.time)) sortedTimes.push(r.time); });
+        sortedTimes.sort();
         
-        let bestTime = "-", worstTime = "-", maxQty = -1, minQty = 999999;
-        let timeTotals = {};
-        
-        Object.keys(heatMap).sort().forEach(line => {
-          let hData = [];
-          times.forEach(t => {
-            let val = 0;
-            if(heatMap[line][t]) {
-              val = heatMap[line][t].count > 0 ? parseFloat((heatMap[line][t].achievSum/heatMap[line][t].count*100).toFixed(1)) : 0;
-              timeTotals[t] = (timeTotals[t] || 0) + heatMap[line][t].qty;
-            }
-            hData.push({ x: t, y: val });
+        let heatSeries = sortedTimes.map(t => {
+          let dataPoint = sortedLines.map(l => {
+            let cell = heatMap[l][t];
+            let val = cell && cell.count > 0 ? Math.round(cell.achievSum / cell.count * 100) : 0;
+            return { x: l, y: val };
           });
-          heatSeries.push({ name: line, data: hData });
+          return { name: t, data: dataPoint };
         });
-
-        for(let t in timeTotals) {
-          if(timeTotals[t] > maxQty) { maxQty = timeTotals[t]; bestTime = t; }
-          if(timeTotals[t] < minQty) { minQty = timeTotals[t]; worstTime = t; }
-        }
-        document.getElementById('kpi-hourly-peak').innerText = bestTime;
-        document.getElementById('kpi-hourly-low').innerText = worstTime;
-
+        
         if(charts.hourlyHeatmap) charts.hourlyHeatmap.destroy();
         charts.hourlyHeatmap = new ApexCharts(document.querySelector("#chart-hourly-heatmap"), {
+          chart: { type: 'heatmap', height: 400, toolbar: { show: false }, fontFamily: font },
           series: heatSeries,
-          chart: { type: 'heatmap', height: 500, toolbar: { show: false }, fontFamily: font },
           dataLabels: { enabled: true, style: { colors: ['#fff'] } },
           colors: ["#0D5C58"],
           plotOptions: {
@@ -731,143 +666,177 @@
       }
     }
 
-    // --- UTILITY LOGIC ---
+    function logout() {
+      localStorage.removeItem('google_token');
+      localStorage.removeItem('active_portal');
+      location.reload();
+    }
 
-    function logout() { localStorage.removeItem('google_token'); localStorage.removeItem('active_portal'); location.reload(); }
-    
     async function submitForm(e) {
       e.preventDefault();
       const itemVal = tsItem.getValue(), lineVal = tsLine.getValue(), timeVal = tsTime.getValue();
       const manpowerVal = document.getElementById('manpower').value, productionVal = document.getElementById('production').value;
-      if (!itemVal || !lineVal || !timeVal) { alert("Please complete all selections."); return; }
-      if (!confirm("Submit this production data?")) return;
-      const btn = document.getElementById('submitBtn'); btn.innerText = 'Submitting...';
       
-      callAPI({ action: "submit", email: currentUser.email, formData: { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal } }, function(data) {
+      if (!itemVal || !lineVal || !timeVal) {
+        alert("Please complete all selections.");
+        return;
+      }
+      if (!confirm("Submit this production data?")) return;
+      
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = 'Submitting...';
+      
+      callAPI({
+        action: "submit",
+        email: currentUser.email,
+        formData: { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal }
+      }, function(data) {
         btn.innerText = 'Submit Entry';
         if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
-          document.getElementById('manpower').value = ''; document.getElementById('production').value = '';
-          tsItem.clear(); tsLine.clear(); tsTime.clear();
-          document.getElementById('successMsg').classList.remove('hidden');
-          setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3000);
-        } else { alert("Submission failed: " + (data.error || "Check backend setup.")); }
+          document.getElementById('manpower').value = '';
+          document.getElementById('production').value = '';
+          tsItem.clear();
+          tsLine.clear();
+          tsTime.clear();
+          
+          const msg = document.getElementById('successMsg');
+          msg.classList.remove('hidden');
+          setTimeout(() => msg.classList.add('hidden'), 3500);
+        } else {
+          alert("Submission failed. Please check permissions or network connectivity.");
+        }
       });
     }
 
     function openHistory() {
       document.getElementById('app').classList.add('hidden');
-      document.getElementById('loader-text').innerText = "Fetching History...";
-      document.getElementById('loader').classList.remove('hidden');
-      callAPI({ action: "getHistory", email: currentUser.email }, function(data) {
-        document.getElementById('loader').classList.add('hidden');
-        document.getElementById('history-view').classList.remove('hidden');
-        historyCache = data.entriesByDate;
-        const dateSelect = document.getElementById('date-selector'); dateSelect.innerHTML = ''; 
-        if (data.dates.length === 0) {
-          dateSelect.add(new Option("No entries found", ""));
-          document.getElementById('entries-container').innerHTML = '<p class="text-gray-500 text-xs text-center py-4">You have no recorded entries.</p>';
-        } else {
-          data.dates.forEach(d => dateSelect.add(new Option(d, d)));
-          renderEntriesFromCache(); 
+      document.getElementById('history-view').classList.remove('hidden');
+      
+      const selector = document.getElementById('date-selector');
+      selector.innerHTML = '<option value="">Loading Dates...</option>';
+      
+      callAPI({ action: "getUserHistory", email: currentUser.email }, function(data) {
+        if (!data || !data.history) {
+          selector.innerHTML = '<option value="">No history found</option>';
+          return;
         }
+        
+        historyCache = data.history;
+        selector.innerHTML = '';
+        
+        const dates = Object.keys(historyCache).sort((a,b) => new Date(b) - new Date(a));
+        if (dates.length === 0) {
+          selector.innerHTML = '<option value="">No history rows found</option>';
+          return;
+        }
+        
+        dates.forEach(d => selector.add(new Option(d, d)));
+        renderEntriesFromCache();
       });
     }
 
-    function closeHistory() { document.getElementById('history-view').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); }
+    function closeHistory() {
+      document.getElementById('history-view').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+    }
 
     function renderEntriesFromCache() {
-      const selectedDate = document.getElementById('date-selector').value;
-      const container = document.getElementById('entries-container'); container.innerHTML = '';
-      if (!selectedDate || !historyCache[selectedDate] || historyCache[selectedDate].length === 0) {
-         container.innerHTML = '<p class="text-gray-400 text-xs text-center py-4">No data found.</p>'; return;
-      }
-      historyCache[selectedDate].forEach((entry, index) => {
-        const card = document.createElement('div');
-        card.id = `entry-card-${entry.rowIndex}`;
-        card.className = "p-4 border border-gray-100 rounded-xl bg-gray-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 transition-all duration-300 hover:border-enovar/20 hover:bg-white shadow-sm";
-        card.innerHTML = `
-          <div class="flex-1 w-full">
-            <p class="font-bold text-gray-800 text-xs mb-2 leading-tight">${entry.itemName}</p>
-            <div class="text-[10px] text-gray-500 flex gap-2 mb-2">
-              <span class="bg-white px-2 py-1 rounded border border-gray-200 font-semibold shadow-sm">${entry.line}</span>
-              <span class="bg-white px-2 py-1 rounded border border-gray-200 font-semibold shadow-sm">${entry.time}</span>
+      const dateStr = document.getElementById('date-selector').value;
+      const container = document.getElementById('entries-container');
+      container.innerHTML = '';
+      
+      if (!dateStr || !historyCache[dateStr]) return;
+      
+      historyCache[dateStr].forEach((entry, idx) => {
+        const div = document.createElement('div');
+        div.id = `entry-card-${entry.rowIndex}`;
+        div.className = "p-4 bg-gray-50/50 rounded-xl border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm transition-all";
+        div.innerHTML = `
+          <div class="flex flex-col text-left">
+            <span class="font-bold text-gray-900 text-sm">${entry.item}</span>
+            <div class="flex items-center gap-2 mt-0.5 text-xs text-gray-500 font-medium">
+              <span class="bg-gray-200/60 px-2 py-0.5 rounded text-gray-700 font-semibold">${entry.line}</span>
+              <span>•</span>
+              <span>Slot: ${entry.time}</span>
             </div>
             <div class="mt-1 text-[11px] font-bold text-enovar bg-enovar/5 px-3 py-1.5 rounded-lg inline-block border border-enovar/10">
-              Qty: <span id="qty-val-${entry.rowIndex}" class="text-gray-900">${entry.qty}</span> <span class="mx-1 text-enovar/20">|</span> 
+              Qty: <span id="qty-val-${entry.rowIndex}" class="text-gray-900">${entry.qty}</span>
+              <span class="mx-1 text-enovar/20">|</span>
               MP: <span id="mp-val-${entry.rowIndex}" class="text-gray-900">${entry.manpower}</span>
             </div>
           </div>
           <div class="flex flex-row sm:flex-col gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-            <button onclick="handleEdit(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 sm:flex-none bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-enovar hover:border-enovar/30 text-[10px] font-bold py-2 px-4 rounded-lg shadow-sm transition-all uppercase tracking-wide">Edit</button>
-            <button onclick="handleDelete(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 sm:flex-none bg-white text-red-500 hover:bg-red-50 border border-red-100 text-[10px] font-bold py-2 px-4 rounded-lg shadow-sm transition-all uppercase tracking-wide">Delete</button>
+            <button onclick="handleEdit(${entry.rowIndex}, ${idx}, '${dateStr}')" class="flex-1 sm:flex-initial text-center px-3 py-1.5 bg-white text-xs font-bold border border-gray-200 text-gray-600 hover:text-enovar hover:border-enovar/30 rounded-lg shadow-sm transition-all uppercase tracking-wider">Edit</button>
+            <button onclick="handleDelete(${entry.rowIndex}, ${idx}, '${dateStr}')" class="flex-1 sm:flex-initial text-center px-3 py-1.5 bg-white text-xs font-bold border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-200 rounded-lg shadow-sm transition-all uppercase tracking-wider">Delete</button>
           </div>
         `;
-        container.appendChild(card);
+        container.appendChild(div);
       });
     }
 
     function handleDelete(rowIndex, cacheIndex, dateStr) {
-      if (!confirm("Delete this entry permanently?")) return;
-      const card = document.getElementById(`entry-card-${rowIndex}`); card.style.opacity = '0.4'; card.style.pointerEvents = 'none';
-      historyCache[dateStr].splice(cacheIndex, 1); 
+      if(!confirm("Are you sure you want to permanently delete this record?")) return;
+      const card = document.getElementById(`entry-card-${rowIndex}`);
+      card.style.opacity = 0.4;
+      
       callAPI({ action: "deleteEntry", rowIndex: rowIndex }, function(data) {
-        if (data.status === "Success") { card.remove(); if(historyCache[dateStr].length === 0) renderEntriesFromCache(); } else { alert("Failed."); openHistory(); }
+        if(data.status === "Success") {
+          historyCache[dateStr].splice(cacheIndex, 1);
+          card.remove();
+          if(historyCache[dateStr].length === 0) renderEntriesFromCache();
+        } else {
+          alert("Failed.");
+          openHistory();
+        }
       });
     }
 
     function handleEdit(rowIndex, cacheIndex, dateStr) {
       const entry = historyCache[dateStr][cacheIndex];
-      const newQty = prompt("Edit Production Quantity:", entry.qty); if (newQty === null) return; 
-      const newManpower = prompt("Edit Manpower:", entry.manpower); if (newManpower === null) return; 
-      if (newQty == entry.qty && newManpower == entry.manpower) return; 
-      document.getElementById(`qty-val-${rowIndex}`).innerText = newQty; document.getElementById(`mp-val-${rowIndex}`).innerText = newManpower;
+      const newQty = prompt("Edit Production Quantity:", entry.qty); if (newQty === null) return;
+      const newManpower = prompt("Edit Manpower:", entry.manpower); if (newManpower === null) return;
+      if (newQty == entry.qty && newManpower == entry.manpower) return;
+      
+      document.getElementById(`qty-val-${rowIndex}`).innerText = newQty;
+      document.getElementById(`mp-val-${rowIndex}`).innerText = newManpower;
       document.getElementById(`entry-card-${rowIndex}`).classList.add('ring-1', 'ring-enovar', 'bg-white');
-      historyCache[dateStr][cacheIndex].qty = newQty; historyCache[dateStr][cacheIndex].manpower = newManpower;
+      
+      historyCache[dateStr][cacheIndex].qty = newQty;
+      historyCache[dateStr][cacheIndex].manpower = newManpower;
+      
       callAPI({ action: "editEntry", rowIndex: rowIndex, newQty: newQty, newManpower: newManpower }, function(data) {
-        if (data.status === "Success") setTimeout(() => { document.getElementById(`entry-card-${rowIndex}`).classList.remove('ring-1', 'ring-enovar', 'bg-white'); }, 1000);
+        if (data.status === "Success") {
+          setTimeout(() => {
+            document.getElementById(`entry-card-${rowIndex}`).classList.remove('ring-1', 'ring-enovar', 'bg-white');
+          }, 1000);
+        }
       });
     }
 
     function callAPI(payload, callback) {
-      fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
-      .then(res => res.json()).then(data => callback(data)).catch(err => { console.error(err); });
-    }
-
-    // --- Dashboard UI Controls ---
-    function toggleFullscreen() {
-      const elem = document.documentElement;
-      if (!document.fullscreenElement) {
-        if (elem.requestFullscreen) elem.requestFullscreen();
-        else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen(); // Safari
-        else if (elem.msRequestFullscreen) elem.msRequestFullscreen(); // IE11
-      } else {
-        if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        else if (document.msExitFullscreen) document.msExitFullscreen();
-      }
-    }
-
-    function switchDashTab(tabName) {
-      // Hide all views
-      document.getElementById('view-section').classList.add('hidden');
-      document.getElementById('view-master').classList.add('hidden');
-      document.getElementById('view-management').classList.add('hidden');
-      
-      // Reset all tab buttons styling
-      const tabs = ['tab-section', 'tab-master', 'tab-management'];
-      tabs.forEach(t => {
-        const el = document.getElementById(t);
-        el.className = "px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-enovar transition-colors";
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => callback(data))
+      .catch(err => {
+        console.error(err);
+        callback(null);
       });
+    }
 
-      // Show selected view and style selected tab
-      document.getElementById('view-' + tabName).classList.remove('hidden');
-      document.getElementById('tab-' + tabName).className = "px-3 py-2 rounded-md text-sm font-medium bg-enovar text-white transition-colors shadow-sm";
-      
-      // Render specific logic if needed
-      if(tabName === 'section' && dashboardRawData.length > 0) {
-        renderSectionDashboard();
+    function populateSelect(id, list) {
+      const el = document.getElementById(id);
+      el.innerHTML = '<option value=""></option>';
+      if (list) {
+        list.forEach(v => el.add(new Option(v, v)));
       }
+    }
+
+    function requestAccess() {
+      alert("Access request submitted to administrators.");
     }
   </script>
 </body>
