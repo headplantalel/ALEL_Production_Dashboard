@@ -7,7 +7,6 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
-  
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
   <script>
@@ -35,19 +34,12 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
   <style>
-    body { 
-      background: linear-gradient(135deg, #F4F7F6 0%, #E6EDEB 100%);
-      background-attachment: fixed;
-    }
-    
+    body { background: linear-gradient(135deg, #F4F7F6 0%, #E6EDEB 100%); background-attachment: fixed; }
     .ts-control { padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; background-color: rgba(255,255,255,0.8); box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03); transition: all 0.3s ease; }
     .ts-control.focus { border-color: #0D5C58; box-shadow: 0 0 0 3px rgba(13, 92, 88, 0.15); background-color: #FFF; }
     .ts-dropdown { border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: 1px solid #E5E7EB; }
     
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .delay-100 { animation-delay: 100ms; }
     .delay-200 { animation-delay: 200ms; }
@@ -58,29 +50,23 @@
       70% { box-shadow: 0 0 0 6px rgba(13, 92, 88, 0); }
       100% { box-shadow: 0 0 0 0 rgba(13, 92, 88, 0); }
     }
+
+    /* Custom scrollbar for charts grid */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
   
   <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
     <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px); background-size: 20px 20px; opacity: 0.04;"></div>
-    <div class="absolute top-10 left-10 hidden md:block max-w-[200px] opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Focus on being productive instead of busy."</p>
-    </div>
-    <div class="absolute top-10 right-10 hidden md:block max-w-[200px] text-right opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Efficiency is doing things right; effectiveness is doing the right things."</p>
-    </div>
-    <div class="absolute bottom-10 left-10 hidden md:block max-w-[220px] opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Improved productivity means less human sweat, not more."</p>
-    </div>
-    <div class="absolute bottom-10 right-10 hidden md:block max-w-[220px] text-right opacity-30">
-      <p class="font-serif italic text-sm leading-relaxed">"Success is the sum of small efforts, repeated day in and day out."</p>
-    </div>
   </div>
 
   <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-between z-10 relative pt-5 pb-6 md:pt-8 md:pb-10">
     <div class="w-full flex justify-center animate-fade-up opacity-0">
-      <img src="alel.png" alt="Akij Light Engineering" class="h-[50px] md:h-[50px] object-contain drop-shadow-sm">
+      <img src="alel.png" alt="ALEL Logo" class="h-[50px] md:h-[60px] object-contain drop-shadow-sm">
     </div>
 
     <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto py-8">
@@ -92,57 +78,55 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full px-2 animate-fade-up opacity-0 delay-200">
-        <button onclick="openLogin('entry')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(13,92,88,0.1)] hover:-translate-y-1">
-          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors border border-gray-100/50">
+        <button onclick="openLogin('entry')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1">
+          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
           </div>
           <h3 class="text-xl font-bold text-gray-900 mb-2">Data Entry</h3>
-          <p class="text-xs text-gray-500 font-medium mb-5 leading-relaxed">Input shift details, manpower, and realtime production yields.</p>
+          <p class="text-xs text-gray-500 font-medium mb-5">Input shift details, manpower, and realtime production yields.</p>
         </button>
 
-        <button onclick="openLogin('dashboard')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(13,92,88,0.1)] hover:-translate-y-1">
-          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors border border-gray-100/50">
+        <button onclick="openLogin('dashboard')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1">
+          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">Dashboard</h3>
-          <p class="text-xs text-gray-500 font-medium mb-5 leading-relaxed">View executive analytics, reports, and master data overview.</p>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">IE Dashboard</h3>
+          <p class="text-xs text-gray-500 font-medium mb-5">View line analytics, projected outputs, and master data overview.</p>
         </button>
       </div>
     </div>
-
+    
     <div class="w-full flex justify-center animate-fade-up opacity-0 delay-200">
-      <img src="enovar.png" alt="Enovar" class="h-[30px] md:h-[40px] object-contain drop-shadow-sm">
+      <img src="enovar.png" alt="Enovar" class="h-[25px] md:h-[30px] object-contain drop-shadow-sm opacity-60">
     </div>
   </div>
 
   <div id="login-screen" class="hidden bg-white/80 backdrop-blur-xl p-8 sm:p-10 rounded-2xl shadow-xl text-center max-w-md w-full border border-white flex flex-col items-center relative z-20">
-    <button onclick="returnToLanding()" class="absolute top-4 left-4 text-gray-400 hover:text-enovar transition-colors p-2 bg-gray-50/50 hover:bg-enovar/10 rounded-full">
+    <button onclick="returnToLanding()" class="absolute top-4 left-4 text-gray-400 hover:text-enovar transition-colors p-2 bg-gray-50 hover:bg-enovar/10 rounded-full">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
     </button>
-    <div class="w-14 h-14 bg-enovar/5 rounded-2xl flex items-center justify-center mb-4 border border-enovar/10 shadow-sm">
+    <div class="w-14 h-14 bg-enovar/5 rounded-2xl flex items-center justify-center mb-4 border border-enovar/10">
       <svg class="w-7 h-7 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
     </div>
     <h1 id="login-title" class="text-xl font-extrabold text-gray-900 tracking-tight">System Login</h1>
-    <p id="login-subtitle" class="text-xs text-gray-500 mt-1.5 mb-4">Authenticate with your Google Workspace account.</p>
-    <button onclick="togglePortalTarget()" id="login-switch-btn" class="mb-6 text-[10px] font-bold text-enovar bg-enovar/10 hover:bg-enovar/20 px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Switch to Dashboard</button>
+    <p class="text-xs text-gray-500 mt-1.5 mb-4">Authenticate with your Google Workspace account.</p>
+    <button onclick="togglePortalTarget()" id="login-switch-btn" class="mb-6 text-[10px] font-bold text-enovar bg-enovar/10 hover:bg-enovar/20 px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Switch Portal</button>
     <div id="g_id_onload" data-client_id="537235659462-je47c211i8eqatakdl4sr08kq0kle8fq.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
     <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"></div>
   </div>
 
-  <div id="loader" class="hidden text-center text-enovar font-medium text-sm tracking-wide flex flex-col items-center bg-white/90 p-8 rounded-2xl shadow-xl backdrop-blur-md border border-white z-20">
-    <svg class="animate-spin h-8 w-8 text-enovar mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-    <span id="loader-text">Authenticating...</span>
+  <div id="loader" class="hidden text-center text-enovar font-medium text-sm flex flex-col items-center bg-white/90 p-8 rounded-2xl shadow-xl backdrop-blur-md z-50 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-enovar/20">
+    <svg class="animate-spin h-10 w-10 text-enovar mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    <span id="loader-text">Loading Data...</span>
   </div>
   
   <div id="denied" class="hidden bg-white/90 backdrop-blur-lg p-8 rounded-2xl shadow-xl text-center max-w-md w-full border-t-4 border-red-500 z-20">
-    <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100">
-      <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-    </div>
     <h2 class="text-lg font-bold text-gray-900 mb-1">Access Denied</h2>
     <p class="text-gray-500 text-xs mb-6">User <span id="user-email" class="font-bold text-gray-800"></span> lacks authorization.</p>
-    <button id="requestBtn" onclick="requestAccess()" class="w-full bg-enovar hover:bg-enovar-light text-white font-medium text-sm py-2.5 rounded-xl transition-all shadow-sm mb-2.5">Request Admin Access</button>
+    <button onclick="requestAccess()" class="w-full bg-enovar hover:bg-enovar-light text-white font-medium text-sm py-2.5 rounded-xl transition-all shadow-sm mb-2.5">Request Admin Access</button>
     <button onclick="togglePortalTarget()" id="denied-switch-btn" class="w-full bg-enovar/10 hover:bg-enovar/20 text-enovar font-medium text-sm py-2.5 rounded-xl transition-all mb-2.5">Switch to Other Portal</button>
-    <button onclick="logout()" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium text-sm py-2.5 rounded-xl transition-all border border-gray-200">Switch Account / Back</button>
+    <button onclick="logout()" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium text-sm py-2.5 rounded-xl transition-all border border-gray-200">Switch Account</button>
+    <div id="requestSuccess" class="hidden mt-4 text-green-700 font-medium bg-green-50 p-3 rounded-xl border border-green-200 text-xs">Request sent to Administration.</div>
   </div>
   
   <div id="app" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-xl w-full border border-white z-20">
@@ -155,6 +139,10 @@
     </div>
     
     <form id="prodForm" onsubmit="submitForm(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Section</label>
+        <select id="section" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none text-sm"></select>
+      </div>
       <div>
         <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Select Item</label>
         <select id="item" required></select>
@@ -172,16 +160,16 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Manpower</label>
-          <input type="number" id="manpower" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all shadow-sm bg-gray-50/50 focus:bg-white text-sm">
+          <input type="number" id="manpower" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-gray-50 focus:bg-white text-sm">
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Production Qty</label>
-          <input type="number" id="production" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all shadow-sm bg-gray-50/50 focus:bg-white text-sm">
+          <input type="number" id="production" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-gray-50 focus:bg-white text-sm">
         </div>
       </div>
       <div class="pt-3">
         <button type="submit" id="submitBtn" class="w-full bg-enovar hover:bg-enovar-dark text-white font-semibold text-sm py-3 rounded-xl transition-all shadow-md hover:shadow-lg">Submit Entry</button>
-        <button type="button" onclick="openHistory()" class="w-full bg-white hover:bg-gray-50 text-enovar border border-gray-200 font-semibold text-sm py-2.5 rounded-xl mt-2.5 transition-all shadow-sm hover:border-enovar/30">View My Past Entries</button>
+        <button type="button" onclick="openHistory()" class="w-full bg-white hover:bg-gray-50 text-enovar border border-gray-200 font-semibold text-sm py-2.5 rounded-xl mt-2.5 transition-all shadow-sm">View My Past Entries</button>
       </div>
       <div id="successMsg" class="hidden bg-green-50 text-green-700 text-center font-medium text-sm py-2.5 rounded-xl mt-3 border border-green-200">Data logged successfully</div>
     </form>
@@ -194,7 +182,7 @@
           <span id="display-email" class="text-[10px] text-gray-500 font-medium truncate">email@domain.com</span>
         </div>
       </div>
-      <button onclick="logout()" class="ml-2 flex-shrink-0 text-[10px] font-bold px-3 py-2 bg-white hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-lg transition-colors shadow-sm uppercase tracking-wider">
+      <button onclick="logout()" class="ml-2 flex-shrink-0 text-[10px] font-bold px-3 py-2 bg-white hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 rounded-lg transition-colors shadow-sm uppercase tracking-wider">
         Log Out
       </button>
     </div>
@@ -212,125 +200,149 @@
     <div id="entries-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
   </div>
 
-  <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-[#F4F7F6] z-50 flex flex-col">
-    <div class="flex justify-between items-center px-4 py-3 bg-white shadow-sm border-b border-gray-200 w-full z-10 relative">
-      <div class="flex items-center gap-3 sm:gap-4">
-        <img src="alel.png" alt="ALEL" class="h-5 sm:h-6 object-contain">
-        <div class="w-px h-5 bg-gray-300 hidden sm:block"></div>
-        <img src="enovar.png" alt="Enovar" class="h-3 sm:h-4 object-contain opacity-70">
+  <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-[#F4F7F6] z-50 flex flex-col overflow-hidden">
+    
+    <div class="flex justify-between items-center px-4 sm:px-6 py-3 bg-white shadow-sm border-b border-gray-200 w-full z-20 relative shrink-0">
+      <div class="flex items-center gap-3 sm:gap-5">
+        <img src="alel.png" alt="ALEL" class="h-6 sm:h-8 object-contain">
+        <div class="w-px h-6 bg-gray-300 hidden sm:block"></div>
+        <span class="text-xs sm:text-sm font-extrabold text-gray-800 tracking-wide flex items-center gap-2">
+          IE Dashboard 
+          <span class="w-2 h-2 rounded-full bg-green-500 live-pulse ml-1" title="Live Auto-Sync"></span>
+        </span>
       </div>
-      <div class="flex items-center gap-2">
-        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] font-bold px-3 py-1.5 bg-enovar/10 hover:bg-enovar/20 text-enovar rounded-md uppercase tracking-wider transition-colors">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleFullscreen()" class="text-gray-500 hover:text-enovar p-1.5 rounded-md hover:bg-gray-100 transition-colors" title="Toggle Fullscreen">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+        </button>
+        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-white bg-enovar hover:bg-enovar-light px-3 py-2 rounded-md shadow-sm uppercase tracking-wider transition-colors">
           Data Entry
         </button>
-        <button onclick="logout()" class="text-[10px] sm:text-xs font-bold px-3 py-1.5 bg-white hover:bg-red-50 text-red-500 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-md transition-all shadow-sm uppercase tracking-wider flex items-center gap-1">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-          <span class="hidden sm:block">Logout</span>
+        <button onclick="logout()" class="text-[10px] sm:text-xs font-bold px-3 py-2 bg-white hover:bg-red-50 text-red-500 hover:text-red-600 border border-gray-200 rounded-md transition-all shadow-sm uppercase tracking-wider hidden sm:flex items-center gap-1">
+          Logout
         </button>
-      </div>
-    </div>
-    
-    <div class="w-full bg-white border-b border-gray-200 z-10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="flex bg-gray-100 p-1 rounded-lg">
-          <button id="tab-pulse" onclick="switchDashTab('pulse')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white text-gray-800 shadow-sm transition-all">Executive Pulse</button>
-          <button id="tab-analysis" onclick="switchDashTab('analysis')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all">PG Analysis</button>
-          <button id="tab-hourly" onclick="switchDashTab('hourly')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all">Hourly Momentum</button>
-        </div>
-        <div class="flex items-center gap-2 w-full md:w-auto">
-          <select id="filter-line" onchange="renderDashboard()" class="p-1.5 rounded-md border border-gray-200 text-xs font-medium outline-none focus:border-enovar w-full md:w-40 bg-gray-50/50"></select>
-          <select id="filter-pg" onchange="renderDashboard()" class="p-1.5 rounded-md border border-gray-200 text-xs font-medium outline-none focus:border-enovar w-full md:w-40 bg-gray-50/50"></select>
-        </div>
       </div>
     </div>
 
-    <div class="flex-1 overflow-y-auto p-4 sm:p-6 max-w-7xl w-full mx-auto">
-      <div id="view-pulse" class="w-full space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center border-l-4 border-l-enovar">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Avg Achievement</span>
-            <span id="kpi-pulse-achiev" class="text-3xl font-bold text-gray-800">0%</span>
+    <div class="w-full bg-white border-b border-gray-200 z-10 shrink-0 shadow-sm">
+      <div class="w-full px-4 sm:px-6 py-2.5 flex flex-col md:flex-row justify-between items-center gap-3">
+        
+        <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 w-full md:w-auto overflow-x-auto no-scrollbar">
+          <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Section Line View</button>
+          <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Master Analysis</button>
+          <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Management Summary</button>
+        </div>
+
+        <div id="filter-container" class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end">
           </div>
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center border-l-4 border-l-blue-500">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Productivity Index</span>
-            <span id="kpi-pulse-prod" class="text-3xl font-bold text-gray-800">0.00</span>
+      </div>
+    </div>
+
+    <div class="flex-1 w-full overflow-y-auto bg-transparent p-3 sm:p-6 pb-16">
+      
+      <div id="view-section" class="w-full space-y-4">
+        <div id="section-charts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
           </div>
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center border-l-4 border-l-orange-500">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Yield Output</span>
-            <span id="kpi-pulse-output" class="text-3xl font-bold text-gray-800">0</span>
+        <div id="section-empty-msg" class="hidden text-center text-gray-500 py-10 font-medium">No data found for this section/date.</div>
+      </div>
+
+      <div id="view-master" class="w-full space-y-4 hidden max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Productivity (Weighted)</span>
+              <span id="master-kpi-prod" class="text-3xl font-bold text-enovar">0.0</span>
+           </div>
+           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Output</span>
+              <span id="master-kpi-output" class="text-3xl font-bold text-gray-800">0</span>
+           </div>
+           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Manpower Deployed</span>
+              <span id="master-kpi-mp" class="text-3xl font-bold text-gray-800">0</span>
+           </div>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Daily Trend Analysis</h3>
+           <div id="chart-master-trend" class="w-full h-[350px]"></div>
+        </div>
+      </div>
+
+      <div id="view-management" class="w-full space-y-5 hidden max-w-6xl mx-auto">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center relative">
+            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest absolute top-5 left-5">Factory Health</h3>
+            <div id="chart-mgmt-gauge" class="w-full flex justify-center mt-6"></div>
           </div>
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center border-l-4 border-l-red-500">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Manpower</span>
-            <span id="kpi-pulse-manpower" class="text-3xl font-bold text-gray-800">0</span>
+          
+          <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-xl shadow-md lg:col-span-2 text-white relative overflow-hidden flex flex-col justify-center">
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-enovar/20 rounded-full blur-2xl"></div>
+            <span class="text-xs font-bold text-enovar-light uppercase tracking-widest mb-2">IE Pacing / Projected Shift Output</span>
+            <div class="flex items-end gap-4 mb-2">
+              <span id="mgmt-projected-output" class="text-5xl font-extrabold text-white">0</span>
+              <span class="text-sm font-medium text-gray-400 mb-1">Units Expected Today</span>
+            </div>
+            <p class="text-[11px] text-gray-400 mt-2 border-t border-gray-700 pt-2">Based on current run rate of <span id="mgmt-current-output" class="font-bold text-gray-200">0</span> units produced in <span id="mgmt-completed-slots" class="font-bold text-gray-200">0</span> time slots.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+            <h3 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+              Top 3 Lines (Over-Achieving)
+            </h3>
+            <div id="mgmt-top-lines" class="space-y-3"></div>
+          </div>
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+            <h3 class="text-xs font-bold text-red-500 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
+              Bottom 3 Lines (Under-Achieving)
+            </h3>
+            <div id="mgmt-bottom-lines" class="space-y-3"></div>
           </div>
         </div>
         
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Hourly Achievement Trend</h3>
-            <div id="chart-pulse-trend" class="w-full h-[300px]"></div>
-          </div>
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Leaderboard (Line Achiev %)</h3>
-            <div id="chart-pulse-bar" class="w-full h-[300px]"></div>
-          </div>
-        </div>
       </div>
-
-      <div id="view-analysis" class="w-full space-y-4 hidden">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Target vs Actual Output Gap</span>
-            <span id="kpi-analysis-gap" class="text-3xl font-bold text-red-600">0</span>
-          </div>
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Worst Performing PG</span>
-            <span id="kpi-analysis-worst" class="text-2xl font-bold text-gray-800 truncate w-full">-</span>
-          </div>
-        </div>
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-          <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Actual vs Target Productivity by Line</h3>
-          <div id="chart-analysis-combo" class="w-full h-[300px]"></div>
-        </div>
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-          <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">PG Performance Matrix (Size = Output, Color = Achievement)</h3>
-          <div id="chart-analysis-treemap" class="w-full h-[350px]"></div>
-        </div>
-      </div>
-
-      <div id="view-hourly" class="w-full space-y-4 hidden">
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-          <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Hourly Shift Performance Heatmap (Achievement %)</h3>
-          <div id="chart-hourly-heatmap" class="w-full h-[400px]"></div>
-        </div>
-      </div>
+    </div>
+    
+    <div class="absolute bottom-4 right-5 opacity-40 pointer-events-none z-0">
+      <img src="enovar.png" alt="Enovar" class="h-4 object-contain grayscale">
     </div>
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_9I6f85U_e72f-5P_PqorZcK5D2wNExYlW6fLpTyl9N1S8n-F_H4nCgU7xLwGvjM/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5cZBzzZOjcrKDpuq0TKh0rDf5ExBL45F6FA0c13a1ayOpZMQHLbIVh65LAktUFP9J6g/exec"; 
     
-    let tsItem, tsLine, tsTime;
+    // Global States
+    let tsItem, tsLine, tsTime, tsSection;
+    let tsDashItem; // For master dashboard searchable item
     let currentUser = {};
-    let targetPortal = localStorage.getItem('active_portal') || null;
-    let masterAuthData = null;
-    let rawDashboardData = [];
-    let activeDashTab = 'pulse';
-    let syncTimer = null;
-    let historyCache = {};
-    let charts = { pulseTrend: null, pulseBar: null, analysisCombo: null, analysisTree: null, hourlyHeatmap: null };
+    let historyCache = {}; 
+    let targetPortal = null; 
+    let masterAuthData = null; 
+    let rawDashboardData = []; 
+    let activeDashTab = 'section';
+    let syncTimer = null; 
+    let sectionChartInstances = [];
+    let masterTrendChart = null;
+    let gaugeChart = null;
 
+    // --- INITIALIZATION ---
     window.onload = function() {
       const savedToken = localStorage.getItem('google_token');
+      const savedPortal = localStorage.getItem('active_portal');
+      
       if (savedToken) {
-        try {
-          const payload = parseJwt(savedToken);
-          currentUser = { name: payload.name, email: payload.email, picture: payload.picture };
-          if(targetPortal) {
-            verifyAndRoute();
-          }
-        } catch(e) {
-          localStorage.removeItem('google_token');
+        const payload = parseJwt(savedToken);
+        currentUser = { name: payload.name, email: payload.email, picture: payload.picture };
+        const localCache = localStorage.getItem('master_data_cache_' + currentUser.email);
+        if (localCache) masterAuthData = JSON.parse(localCache);
+        
+        if (savedPortal) {
+          targetPortal = savedPortal;
+          document.getElementById('landing-view').classList.add('hidden');
+          verifyAndRoute();
         }
       }
     };
@@ -341,6 +353,7 @@
       return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     }
 
+    // --- NAVIGATION LOGIC ---
     function updatePortalUI() {
       const title = targetPortal === 'dashboard' ? 'Executive Dashboard' : 'Data Entry Portal';
       const switchText = targetPortal === 'dashboard' ? 'Switch to Data Entry' : 'Switch to Dashboard';
@@ -363,7 +376,7 @@
       document.getElementById('app').classList.add('hidden');
       document.getElementById('dashboard-app').classList.add('hidden');
       document.getElementById('history-view').classList.add('hidden');
-      if (syncTimer) clearInterval(syncTimer);
+      if (syncTimer) clearInterval(syncTimer); 
       targetPortal = portalType;
       localStorage.setItem('active_portal', portalType);
       routeUser(masterAuthData);
@@ -374,20 +387,22 @@
       localStorage.setItem('active_portal', portalType);
       updatePortalUI();
       document.getElementById('landing-view').classList.add('hidden');
-      if (currentUser.email) {
-        verifyAndRoute();
-      } else {
-        document.getElementById('login-screen').classList.remove('hidden');
-      }
+      if (currentUser.email) verifyAndRoute();
+      else document.getElementById('login-screen').classList.remove('hidden');
     }
 
     function returnToLanding() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('landing-view').classList.remove('hidden');
-      document.getElementById('bg-elements').classList.remove('hidden');
       targetPortal = null;
     }
 
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(err => {});
+      else if (document.exitFullscreen) document.exitFullscreen();
+    }
+
+    // --- AUTHENTICATION & ROUTING ---
     function handleCredentialResponse(response) {
       localStorage.setItem('google_token', response.credential);
       const payload = parseJwt(response.credential);
@@ -397,446 +412,613 @@
 
     function verifyAndRoute() {
       document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('bg-elements').classList.add('hidden');
-      document.getElementById('loader-text').innerText = "Verifying Credentials...";
-      document.getElementById('loader').classList.remove('hidden');
+      document.getElementById('loader-text').innerText = "Authenticating...";
       
-      callAPI({ action: "verifyUser", email: currentUser.email }, function(data) {
-        document.getElementById('loader').classList.add('hidden');
-        if (data && data.status === "Authorized") {
+      if (masterAuthData) {
+        routeUser(masterAuthData);
+        // Silently update cache
+        callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
+          localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
+          masterAuthData = data;
+        });
+      } else {
+        document.getElementById('loader').classList.remove('hidden');
+        callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, function(data) {
+          localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
           masterAuthData = data;
           routeUser(data);
-        } else {
-          document.getElementById('user-email').innerText = currentUser.email;
-          document.getElementById('denied').classList.remove('hidden');
-        }
-      });
-    }
-
-    function routeUser(authData) {
-      if (targetPortal === 'dashboard' && authData.authorizedDashboard) {
-        initDashboardPortal(authData);
-      } else if (targetPortal === 'entry' && authData.authorizedEntry) {
-        initEntryPortal(authData);
-      } else {
-        document.getElementById('user-email').innerText = currentUser.email;
-        document.getElementById('denied').classList.remove('hidden');
+        });
       }
     }
 
-    function initEntryPortal(data) {
-      document.getElementById('display-name').innerText = currentUser.name;
-      document.getElementById('display-email').innerText = currentUser.email;
-      document.getElementById('display-pic').src = currentUser.picture;
-      
-      populateSelect('item', data.items);
-      populateSelect('line', data.lines);
-      populateSelect('time', data.timeSlots);
-      
-      if(!tsItem) tsItem = new TomSelect('#item', { create: false, placeholder: 'Search & Select Item...' });
-      if(!tsLine) tsLine = new TomSelect('#line', { create: false, placeholder: 'Line...' });
-      if(!tsTime) tsTime = new TomSelect('#time', { create: false, placeholder: 'Time Slot...' });
-      
-      if(data.authorizedDashboard) document.getElementById('btn-goto-dash').classList.remove('hidden');
-      document.getElementById('app').classList.remove('hidden');
+    function routeUser(data) {
+      document.getElementById('loader').classList.add('hidden');
+      if (targetPortal === 'entry') {
+        if (data.authorizedEntry) setupEntryAppUI(data); else showDenied();
+      } else if (targetPortal === 'dashboard') {
+        if (data.authorizedDashboard) setupDashboardUI(data); else showDenied();
+      }
     }
 
-    function initDashboardPortal(data) {
+    function showDenied() {
+      document.getElementById('user-email').innerText = currentUser.email;
+      document.getElementById('denied').classList.remove('hidden');
+    }
+
+    function logout() { 
+      localStorage.removeItem('google_token'); localStorage.removeItem('active_portal'); location.reload(); 
+    }
+
+    // --- DATA ENTRY PORTAL LOGIC ---
+    function setupEntryAppUI(data) {
+      document.getElementById('bg-elements').classList.remove('hidden');
+      document.getElementById('display-pic').src = currentUser.picture;
+      document.getElementById('display-name').innerText = currentUser.name || data.displayName;
+      document.getElementById('display-email').innerText = currentUser.email;
+      document.getElementById('app').classList.remove('hidden');
+      
+      if (data && data.authorizedDashboard) document.getElementById('btn-goto-dash').classList.remove('hidden');
+      else document.getElementById('btn-goto-dash').classList.add('hidden');
+      
+      if(tsItem) { tsItem.destroy(); tsLine.destroy(); tsTime.destroy(); tsSection.destroy(); }
+      
+      const secSelect = document.getElementById('section'); secSelect.innerHTML = ''; 
+      if(data.sections) data.sections.forEach(s => secSelect.add(new Option(s, s)));
+      const itemSelect = document.getElementById('item'); itemSelect.innerHTML = ''; data.items.forEach(i => itemSelect.add(new Option(i, i)));
+      const lineSelect = document.getElementById('line'); lineSelect.innerHTML = ''; data.lines.forEach(l => lineSelect.add(new Option(l, l)));
+      const timeSelect = document.getElementById('time'); timeSelect.innerHTML = ''; data.times.forEach(t => timeSelect.add(new Option(t, t)));
+      
+      tsSection = new TomSelect("#section", { allowEmptyOption: true, create: false, placeholder: "Select section..."});
+      tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false, placeholder: "Search item..."});
+      tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false, placeholder: "Select line..."});
+      tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false, placeholder: "Select time slot..."});
+    }
+
+    async function submitForm(e) {
+      e.preventDefault();
+      const secVal = tsSection.getValue(), itemVal = tsItem.getValue(), lineVal = tsLine.getValue(), timeVal = tsTime.getValue();
+      const manpowerVal = document.getElementById('manpower').value, productionVal = document.getElementById('production').value;
+      
+      if (!secVal || !itemVal || !lineVal || !timeVal) { alert("Please complete all dropdown selections."); return; }
+      if (!confirm("Submit this production data?")) return;
+      
+      const btn = document.getElementById('submitBtn'); btn.innerText = 'Submitting...';
+      const formData = { section: secVal, item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal };
+      
+      callAPI({ action: "submit", email: currentUser.email, formData: formData }, function(data) {
+        btn.innerText = 'Submit Entry';
+        if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
+          document.getElementById('manpower').value = ''; document.getElementById('production').value = '';
+          tsItem.clear(); tsLine.clear(); tsTime.clear(); // Keep section selected usually
+          document.getElementById('successMsg').classList.remove('hidden');
+          setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3000);
+        } else { alert("Submission failed: " + (data.error || "Check backend setup.")); }
+      });
+    }
+
+    // --- DASHBOARD LOGIC ---
+    function setupDashboardUI(data) {
+      document.getElementById('bg-elements').classList.add('hidden');
       document.getElementById('dashboard-app').classList.remove('hidden');
-      if(data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
-      document.getElementById('loader-text').innerText = "Loading Master Data...";
+      if (data && data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
+      
+      document.getElementById('loader-text').innerText = "Loading Analytics...";
       document.getElementById('loader').classList.remove('hidden');
       fetchDashboardData(true);
+      
       syncTimer = setInterval(() => { fetchDashboardData(false); }, 60000);
     }
 
     function fetchDashboardData(isInitialLoad) {
       callAPI({ action: "getDashboardRawData" }, function(data) {
         if(isInitialLoad) document.getElementById('loader').classList.add('hidden');
-        if (data.error) return;
-        rawDashboardData = data.raw;
-        if(isInitialLoad) populateFilterDropdowns();
-        renderDashboard();
+        if (data.error) return; 
+        rawDashboardData = data.raw; 
+        
+        if(isInitialLoad) {
+          switchDashTab('section'); // Initialize default tab
+        } else {
+          renderDashboard(); // Re-render silently
+        }
       });
-    }
-
-    function populateFilterDropdowns() {
-      let lines = new Set(), pgs = new Set();
-      rawDashboardData.forEach(r => {
-        if(r.line) lines.add(r.line);
-        if(r.pg) pgs.add(r.pg);
-      });
-      const lineSel = document.getElementById('filter-line');
-      lineSel.innerHTML = '<option value="all">All Lines</option>';
-      Array.from(lines).sort().forEach(l => lineSel.add(new Option(l, l)));
-      const pgSel = document.getElementById('filter-pg');
-      pgSel.innerHTML = '<option value="all">All PGs</option>';
-      Array.from(pgs).sort().forEach(p => pgSel.add(new Option(p, p)));
     }
 
     function switchDashTab(tab) {
       activeDashTab = tab;
-      ['pulse', 'analysis', 'hourly'].forEach(t => {
+      
+      ['section', 'master', 'management'].forEach(t => {
         let btn = document.getElementById('tab-' + t);
+        let view = document.getElementById('view-' + t);
         if(t === tab) {
-          btn.className = "px-4 py-1.5 text-xs font-bold rounded-md bg-white text-gray-800 shadow-sm transition-all";
-          document.getElementById('view-' + t).classList.remove('hidden');
+          btn.classList.add('bg-white', 'text-enovar', 'shadow-sm');
+          btn.classList.remove('text-gray-500');
+          view.classList.remove('hidden');
         } else {
-          btn.className = "px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all";
-          document.getElementById('view-' + t).classList.add('hidden');
+          btn.classList.remove('bg-white', 'text-enovar', 'shadow-sm');
+          btn.classList.add('text-gray-500');
+          view.classList.add('hidden');
         }
       });
-      renderDashboard();
+      
+      buildDashboardFilters();
+      renderDashboard(); 
     }
 
+    // Dynamic Filter Builder based on Tab
+    function buildDashboardFilters() {
+      const container = document.getElementById('filter-container');
+      let html = '';
+      
+      if(activeDashTab === 'section') {
+        html = `
+          <select id="filter-section" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
+            <option value="all">All Sections</option>
+          </select>
+          <select id="filter-date" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
+             <option value="today">Today</option>
+          </select>
+        `;
+      } else if (activeDashTab === 'master') {
+        html = `
+          <select id="filter-date" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
+            <option value="today">Today</option><option value="7">Last 7 Days</option><option value="30">Last 30 Days</option><option value="all">All Time</option>
+          </select>
+          <select id="filter-pg" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[100px] truncate"><option value="all">All PGs</option></select>
+          <select id="filter-line" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[100px] truncate"><option value="all">All Lines</option></select>
+          <div class="w-full md:w-[200px]"><select id="filter-item" placeholder="Search Item..." class="text-xs"></select></div>
+        `;
+      } else if (activeDashTab === 'management') {
+         html = `
+          <select id="filter-date" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
+             <option value="today">Today</option>
+          </select>
+        `;
+      }
+      
+      container.innerHTML = html;
+      
+      // Populate dropdowns based on raw data
+      if (rawDashboardData.length > 0) {
+        let dates = new Set(), sections = new Set(), pgs = new Set(), lines = new Set(), items = new Set();
+        rawDashboardData.forEach(r => { 
+          if(r.date) dates.add(r.date);
+          if(r.section) sections.add(r.section);
+          if(r.pg) pgs.add(r.pg); 
+          if(r.line) lines.add(r.line);
+          if(r.item) items.add(r.item);
+        });
+
+        if(document.getElementById('filter-date') && activeDashTab === 'section') {
+           const dSel = document.getElementById('filter-date');
+           Array.from(dates).sort((a,b) => new Date(b) - new Date(a)).forEach(d => dSel.add(new Option(d, d)));
+           // Try to set to actual today's date if exists, otherwise leave first available
+           let todayStr = Utilities_formatDateClient(new Date());
+           if(Array.from(dates).includes(todayStr)) dSel.value = todayStr;
+           else if (dSel.options.length > 1) dSel.selectedIndex = 1; 
+        }
+
+        if(document.getElementById('filter-section')) {
+          const sSel = document.getElementById('filter-section');
+          Array.from(sections).sort().forEach(s => sSel.add(new Option(s, s)));
+        }
+        if(document.getElementById('filter-pg')) {
+          const pSel = document.getElementById('filter-pg');
+          Array.from(pgs).sort().forEach(p => pSel.add(new Option(p, p)));
+        }
+        if(document.getElementById('filter-line')) {
+          const lSel = document.getElementById('filter-line');
+          Array.from(lines).sort().forEach(l => lSel.add(new Option(l, l)));
+        }
+        if(document.getElementById('filter-item')) {
+          const iSel = document.getElementById('filter-item');
+          iSel.innerHTML = '<option value="all">All Items</option>';
+          Array.from(items).sort().forEach(i => iSel.add(new Option(i, i)));
+          if(tsDashItem) tsDashItem.destroy();
+          tsDashItem = new TomSelect("#filter-item", { allowEmptyOption: false, create: false });
+        }
+      }
+    }
+
+    // Client-side date formatter matching GS "MMM dd, yyyy" logic
+    function Utilities_formatDateClient(d) {
+       const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+       let day = d.getDate().toString().padStart(2, '0');
+       let year = d.getFullYear();
+       return `${months[d.getMonth()]} ${day}, ${year}`;
+    }
+
+    // MAIN RENDER ENGINE
     function renderDashboard() {
-      const fLine = document.getElementById('filter-line').value;
-      const fPg = document.getElementById('filter-pg').value;
-      
-      let sumAchiev = 0, achievCount = 0, sumQty = 0, sumMp = 0, totalTarget = 0;
-      let hourlyTrend = {}, lineMap = {}, pgMap = {}, heatMap = {};
-      
-      rawDashboardData.forEach(r => {
-        if(fLine !== 'all' && r.line !== fLine) return;
-        if(fPg !== 'all' && r.pg !== fPg) return;
+      if(!rawDashboardData || rawDashboardData.length === 0) return;
+
+      const dateEl = document.getElementById('filter-date');
+      const sectionEl = document.getElementById('filter-section');
+      const pgEl = document.getElementById('filter-pg');
+      const lineEl = document.getElementById('filter-line');
+      const itemEl = document.getElementById('filter-item');
+
+      const valDate = dateEl ? dateEl.value : 'all';
+      const valSection = sectionEl ? sectionEl.value : 'all';
+      const valPg = pgEl ? pgEl.value : 'all';
+      const valLine = lineEl ? lineEl.value : 'all';
+      const valItem = itemEl ? (tsDashItem ? tsDashItem.getValue() : itemEl.value) : 'all';
+
+      // 1. Core Filter
+      let fData = rawDashboardData.filter(row => {
+        if (valSection !== 'all' && row.section !== valSection) return false;
+        if (valPg !== 'all' && row.pg !== valPg) return false;
+        if (valLine !== 'all' && row.line !== valLine) return false;
+        if (valItem !== 'all' && row.item !== valItem) return false;
         
-        sumQty += r.qty || 0;
-        sumMp += r.manpower || 0;
-        totalTarget += r.target || 0;
-        
-        if(r.achievement > 0) {
-          sumAchiev += r.achievement;
-          achievCount++;
+        if (valDate === 'today') {
+           let todayStr = Utilities_formatDateClient(new Date());
+           if (row.date !== todayStr) return false;
+        } else if (valDate !== 'all' && isNaN(parseInt(valDate)) === false) { // 7 or 30 days
+          const rDate = new Date(row.date);
+          const diffDays = Math.ceil(Math.abs(new Date() - rDate) / (1000 * 60 * 60 * 24));
+          if (diffDays > parseInt(valDate)) return false;
+        } else if (valDate !== 'all' && valDate !== 'today') { // specific date selected
+           if (row.date !== valDate) return false;
         }
-        
-        let t = r.time || 'Unknown';
-        if(!hourlyTrend[t]) hourlyTrend[t] = { sum: 0, count: 0 };
-        if(r.achievement > 0) {
-          hourlyTrend[t].sum += r.achievement;
-          hourlyTrend[t].count++;
-        }
-        
-        if(!lineMap[r.line]) lineMap[r.line] = { actProdSum: 0, tgtProdSum: 0, pCount: 0, achievSum: 0, count: 0 };
-        if(r.achievement > 0) {
-          lineMap[r.line].achievSum += r.achievement;
-          lineMap[r.line].count++;
-        }
-        if(r.productivity > 0) {
-          lineMap[r.line].actProdSum += r.productivity;
-          lineMap[r.line].tgtProdSum += r.targetProductivity;
-          lineMap[r.line].pCount++;
-        }
-        
-        let pg = r.pg || 'Uncategorized';
-        if(!pgMap[pg]) pgMap[pg] = { qty: 0, achievSum: 0, count: 0 };
-        pgMap[pg].qty += r.qty;
-        if(r.achievement > 0) {
-          pgMap[pg].achievSum += r.achievement;
-          pgMap[pg].count++;
-        }
-        
-        if(!heatMap[r.line]) heatMap[r.line] = {};
-        if(!heatMap[r.line][r.time]) heatMap[r.line][r.time] = { achievSum: 0, count: 0, qty: 0 };
-        heatMap[r.line][r.time].qty += r.qty;
-        if(r.achievement > 0) {
-          heatMap[r.line][r.time].achievSum += r.achievement;
-          heatMap[r.line][r.time].count++;
-        }
+        return true;
       });
-      
+
       const font = 'Inter, sans-serif';
-      
-      if(activeDashTab === 'pulse') {
-        let avgAchiev = achievCount > 0 ? (sumAchiev / achievCount * 100).toFixed(1) : 0;
-        document.getElementById('kpi-pulse-achiev').innerText = avgAchiev + "%";
-        document.getElementById('kpi-pulse-prod').innerText = sumMp > 0 ? (sumQty / sumMp).toFixed(2) : "0.0";
-        document.getElementById('kpi-pulse-output').innerText = sumQty.toLocaleString();
-        document.getElementById('kpi-pulse-manpower').innerText = sumMp.toLocaleString();
+      const isMobile = window.innerWidth < 768;
+
+      // ==========================================
+      // TAB 1: SECTION DASHBOARD (Grid of Charts)
+      // ==========================================
+      if (activeDashTab === 'section') {
+        const grid = document.getElementById('section-charts-grid');
+        const emptyMsg = document.getElementById('section-empty-msg');
         
-        let hCategories = Object.keys(hourlyTrend).sort();
-        let hData = hCategories.map(c => hourlyTrend[c].count > 0 ? parseFloat((hourlyTrend[c].sum / hourlyTrend[c].count * 100).toFixed(1)) : 0);
-        
-        if(charts.pulseTrend) charts.pulseTrend.destroy();
-        charts.pulseTrend = new ApexCharts(document.querySelector("#chart-pulse-trend"), {
-          chart: { type: 'area', height: 300, toolbar: { show: false }, fontFamily: font },
-          series: [{ name: 'Avg Achievement %', data: hData }],
-          colors: ['#0D5C58'],
-          stroke: { curve: 'smooth', width: 3 },
-          xaxis: { categories: hCategories },
-          yaxis: { labels: { formatter: v => v + "%" } },
-          dataLabels: { enabled: false },
-          fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } }
-        });
-        charts.pulseTrend.render();
-        
-        let lNames = Object.keys(lineMap).sort();
-        let lData = lNames.map(l => lineMap[l].count > 0 ? parseFloat((lineMap[l].achievSum / lineMap[l].count * 100).toFixed(1)) : 0);
-        
-        if(charts.pulseBar) charts.pulseBar.destroy();
-        charts.pulseBar = new ApexCharts(document.querySelector("#chart-pulse-bar"), {
-          chart: { type: 'bar', height: 300, toolbar: { show: false }, fontFamily: font },
-          series: [{ name: 'Achievement %', data: lData }],
-          colors: ['#13827d'],
-          xaxis: { categories: lNames },
-          yaxis: { labels: { formatter: v => v + "%" }, max: 120 },
-          plotOptions: { bar: { borderRadius: 4, horizontal: false, columnWidth: '45%' } },
-          dataLabels: { enabled: true, formatter: v => v + "%", style: { fontSize: '10px' } }
-        });
-        charts.pulseBar.render();
-      }
-      
-      if(activeDashTab === 'analysis') {
-        let gap = totalTarget - sumQty;
-        document.getElementById('kpi-analysis-gap').innerText = gap.toLocaleString();
-        document.getElementById('kpi-analysis-gap').className = gap > 0 ? "text-3xl font-bold text-red-600" : "text-3xl font-bold text-green-600";
-        
-        let worstPG = '-', lowestScore = 999, treeData = [];
-        for(let pg in pgMap) {
-          let score = pgMap[pg].count > 0 ? (pgMap[pg].achievSum / pgMap[pg].count * 100) : 0;
-          if (score < lowestScore && score > 0) { lowestScore = score; worstPG = pg; }
-          treeData.push({ x: pg, y: pgMap[pg].qty, fillColor: score >= 90 ? '#0D5C58' : score >= 75 ? '#374151' : '#EF4444' });
+        // Clean up old charts
+        sectionChartInstances.forEach(c => c.destroy());
+        sectionChartInstances = [];
+        grid.innerHTML = '';
+
+        if (fData.length === 0) {
+          emptyMsg.classList.remove('hidden');
+          return;
+        } else {
+          emptyMsg.classList.add('hidden');
         }
-        document.getElementById('kpi-analysis-worst').innerText = worstPG + (lowestScore !== 999 ? ` (${lowestScore.toFixed(1)}%)` : "");
-        
-        let cNames = Object.keys(lineMap).sort();
-        let cAct = cNames.map(l => lineMap[l].pCount > 0 ? parseFloat((lineMap[l].actProdSum/lineMap[l].pCount).toFixed(1)) : 0);
-        let cTgt = cNames.map(l => lineMap[l].pCount > 0 ? parseFloat((lineMap[l].tgtProdSum/lineMap[l].pCount).toFixed(1)) : 0);
-        
-        if(charts.analysisCombo) charts.analysisCombo.destroy();
-        charts.analysisCombo = new ApexCharts(document.querySelector("#chart-analysis-combo"), {
-          chart: { type: 'bar', height: 300, toolbar: { show: false }, fontFamily: font },
-          series: [
-            { name: 'Actual Productivity', type: 'bar', data: cAct },
-            { name: 'Target Productivity', type: 'line', data: cTgt }
-          ],
-          stroke: { width: [0, 4], curve: 'stepline' },
-          colors: ['#0D5C58', '#EF4444'],
-          xaxis: { categories: cNames },
-          plotOptions: { bar: { columnWidth: '50%', borderRadius: 2 } },
-          dataLabels: { enabled: false }
+
+        // Group by Line
+        let lineData = {};
+        // Get all unique times globally for the X-axis sequence
+        let masterTimesSet = new Set(masterAuthData ? masterAuthData.times : []);
+        fData.forEach(r => masterTimesSet.add(r.time));
+        let sortedTimes = Array.from(masterTimesSet).sort(); // Assumes times can be alphabetically sorted properly (e.g. 01, 02...)
+        // Better: rely on the original sequence from masterData if available
+        if (masterAuthData && masterAuthData.times && masterAuthData.times.length > 0) {
+           sortedTimes = masterAuthData.times; 
+        }
+
+        fData.forEach(row => {
+          if (!lineData[row.line]) lineData[row.line] = {};
+          if (!lineData[row.line][row.time]) lineData[row.line][row.time] = { act: 0, tgt: 0, qty: 0, mp: 0, count: 0 };
+          
+          lineData[row.line][row.time].qty += row.qty;
+          lineData[row.line][row.time].mp += row.mp;
+          lineData[row.line][row.time].act += row.productivity;
+          lineData[row.line][row.time].tgt += row.targetProductivity;
+          lineData[row.line][row.time].count++;
         });
-        charts.analysisCombo.render();
-        
-        if(charts.analysisTree) charts.analysisTree.destroy();
-        charts.analysisTree = new ApexCharts(document.querySelector("#chart-analysis-treemap"), {
-          chart: { type: 'treemap', height: 350, toolbar: { show: false }, fontFamily: font },
-          series: [{ data: treeData }],
-          plotOptions: { treemap: { distributed: true, enableShades: false } }
-        });
-        charts.analysisTree.render();
-      }
-      
-      if(activeDashTab === 'hourly') {
-        let sortedLines = Object.keys(heatMap).sort();
-        let sortedTimes = [];
-        rawDashboardData.forEach(r => { if(r.time && !sortedTimes.includes(r.time)) sortedTimes.push(r.time); });
-        sortedTimes.sort();
-        
-        let heatSeries = sortedTimes.map(t => {
-          let dataPoint = sortedLines.map(l => {
-            let cell = heatMap[l][t];
-            let val = cell && cell.count > 0 ? Math.round(cell.achievSum / cell.count * 100) : 0;
-            return { x: l, y: val };
-          });
-          return { name: t, data: dataPoint };
-        });
-        
-        if(charts.hourlyHeatmap) charts.hourlyHeatmap.destroy();
-        charts.hourlyHeatmap = new ApexCharts(document.querySelector("#chart-hourly-heatmap"), {
-          chart: { type: 'heatmap', height: 400, toolbar: { show: false }, fontFamily: font },
-          series: heatSeries,
-          dataLabels: { enabled: true, style: { colors: ['#fff'] } },
-          colors: ["#0D5C58"],
-          plotOptions: {
-            heatmap: {
-              shadeIntensity: 0.5,
-              radius: 4,
-              useFillColorAsStroke: false,
-              colorScale: {
-                ranges: [
-                  { from: 0, to: 70, name: 'Critical (<70%)', color: '#EF4444' },
-                  { from: 71, to: 89, name: 'Warning (71-89%)', color: '#F59E0B' },
-                  { from: 90, to: 200, name: 'Target (90%+)', color: '#0D5C58' }
-                ]
-              }
+
+        Object.keys(lineData).sort().forEach((lineName, idx) => {
+          // Prepare Arrays for this line based on master times
+          let actData = [], tgtData = [], qtyArr = [], mpArr = [];
+          let hasData = false;
+          let latestTarget = 0; // For the straight line annotation
+
+          sortedTimes.forEach(t => {
+            let cell = lineData[lineName][t];
+            if (cell) {
+               actData.push(parseFloat((cell.act / cell.count).toFixed(1)));
+               let tgt = parseFloat((cell.tgt / cell.count).toFixed(1));
+               tgtData.push(tgt);
+               if(tgt > 0) latestTarget = tgt; 
+               qtyArr.push(cell.qty);
+               mpArr.push(cell.mp);
+               hasData = true;
+            } else {
+               actData.push(null); // Leave gap if no data
+               tgtData.push(null);
+               qtyArr.push(0);
+               mpArr.push(0);
             }
+          });
+
+          if (!hasData) return; // Skip empty charts
+
+          // Create DOM container
+          let chartDivId = 'sec-chart-' + idx;
+          let wrapper = document.createElement('div');
+          wrapper.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow";
+          wrapper.innerHTML = `<h3 class="text-xs font-bold text-enovar uppercase tracking-wider mb-2 border-b border-gray-100 pb-1">${lineName}</h3><div id="${chartDivId}" class="w-full h-[250px]"></div>`;
+          grid.appendChild(wrapper);
+
+          // Render ApexChart
+          let options = {
+            chart: { type: 'line', height: 250, toolbar: { show: false }, fontFamily: font, animations: { enabled: false } },
+            series: [
+              { name: 'Actual Prod', data: actData }
+            ],
+            stroke: { width: 3, curve: 'smooth' },
+            colors: ['#0D5C58'],
+            markers: { size: 4, hover: { size: 6 } },
+            xaxis: { 
+              categories: sortedTimes,
+              labels: {
+                style: { fontSize: '10px', colors: '#6B7280' },
+                formatter: function(value, timestamp, opts) {
+                  if(isMobile || !opts) return value; // Tooltip only on mobile
+                  let dataIdx = opts.dataPointIndex;
+                  if(dataIdx === undefined) return value;
+                  let q = qtyArr[dataIdx] || 0;
+                  let m = mpArr[dataIdx] || 0;
+                  if (q===0 && m===0) return value;
+                  return [value, `Qty: ${q}`, `MP: ${m}`]; // Multi-line!
+                }
+              }
+            },
+            yaxis: { title: { text: 'Productivity' }, min: 0 },
+            annotations: {
+              yaxis: latestTarget > 0 ? [{ y: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, label: { text: 'Target', style: {color: '#fff', background: '#EF4444'} } }] : []
+            },
+            tooltip: {
+               y: { formatter: function(val) { return val; } },
+               custom: function({series, seriesIndex, dataPointIndex, w}) {
+                 // For mobile or detailed view
+                 let q = qtyArr[dataPointIndex] || 0;
+                 let m = mpArr[dataPointIndex] || 0;
+                 let p = series[seriesIndex][dataPointIndex] !== null ? series[seriesIndex][dataPointIndex] : 'N/A';
+                 return `<div class="p-2 text-xs shadow-lg bg-white border border-gray-100 rounded-md">
+                   <div class="font-bold border-b border-gray-100 mb-1 pb-1">${sortedTimes[dataPointIndex]}</div>
+                   <div>Prod: <span class="font-bold text-enovar">${p}</span></div>
+                   <div>Qty: <span class="font-semibold">${q}</span></div>
+                   <div>MP: <span class="font-semibold">${m}</span></div>
+                 </div>`;
+               }
+            }
+          };
+
+          let chart = new ApexCharts(document.getElementById(chartDivId), options);
+          chart.render();
+          sectionChartInstances.push(chart);
+        });
+      }
+
+      // ==========================================
+      // TAB 2: MASTER DASHBOARD (Analysis)
+      // ==========================================
+      if (activeDashTab === 'master') {
+        let sumQty = 0, sumMp = 0, sumProdWeighted = 0;
+        let dateMap = {};
+
+        fData.forEach(r => {
+          sumQty += r.qty; sumMp += r.mp;
+          sumProdWeighted += (r.productivity * r.mp); // Weight by manpower
+          
+          if(!dateMap[r.date]) dateMap[r.date] = { act: 0, tgt: 0, count: 0 };
+          if(r.productivity > 0) { dateMap[r.date].act += r.productivity; dateMap[r.date].tgt += r.targetProductivity; dateMap[r.date].count++; }
+        });
+
+        let avgProd = sumMp > 0 ? (sumProdWeighted / sumMp).toFixed(1) : "0.0";
+        // Override with simple aggregate if requested item filter is active (better for items)
+        if (valItem !== 'all') {
+           avgProd = sumMp > 0 ? (sumQty / sumMp).toFixed(1) : "0.0";
+        }
+
+        document.getElementById('master-kpi-prod').innerText = avgProd;
+        document.getElementById('master-kpi-output').innerText = sumQty.toLocaleString();
+        document.getElementById('master-kpi-mp').innerText = sumMp.toLocaleString();
+
+        let tDates = Object.keys(dateMap).sort((a,b) => new Date(a) - new Date(b));
+        let actVals = tDates.map(d => dateMap[d].count > 0 ? parseFloat((dateMap[d].act/dateMap[d].count).toFixed(1)) : 0);
+        let tgtVals = tDates.map(d => dateMap[d].count > 0 ? parseFloat((dateMap[d].tgt/dateMap[d].count).toFixed(1)) : 0);
+
+        let options = {
+          chart: { type: 'area', height: 350, toolbar: { show: false }, fontFamily: font },
+          series: [
+            { name: 'Actual Productivity', data: actVals },
+            { name: 'Target Productivity', type: 'line', data: tgtVals }
+          ],
+          stroke: { width: [3, 3], curve: 'smooth', dashArray: [0, 4] },
+          colors: ['#0D5C58', '#EF4444'],
+          xaxis: { categories: tDates, labels: { style: { colors: '#6B7280' } } },
+          fill: { type: ['gradient', 'solid'], gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } },
+          dataLabels: { enabled: false }
+        };
+
+        if (masterTrendChart) masterTrendChart.destroy();
+        masterTrendChart = new ApexCharts(document.querySelector("#chart-master-trend"), options);
+        masterTrendChart.render();
+      }
+
+      // ==========================================
+      // TAB 3: MANAGEMENT DASHBOARD (Summary)
+      // ==========================================
+      if (activeDashTab === 'management') {
+        let sumQty = 0, sumAchiev = 0, achievCount = 0;
+        let lineAchievMap = {};
+        // Passed slots calculation for projection
+        let uniqueSlotsPassed = new Set();
+
+        fData.forEach(r => {
+          sumQty += r.qty;
+          if(r.qty > 0 || r.mp > 0) uniqueSlotsPassed.add(r.line + "_" + r.time); // Approximate slot counting
+
+          if(r.achievement > 0) { 
+             sumAchiev += r.achievement; achievCount++; 
+             if(!lineAchievMap[r.line]) lineAchievMap[r.line] = { achiev: 0, count: 0 };
+             lineAchievMap[r.line].achiev += r.achievement;
+             lineAchievMap[r.line].count++;
           }
         });
-        charts.hourlyHeatmap.render();
-      }
-    }
 
-    function logout() {
-      localStorage.removeItem('google_token');
-      localStorage.removeItem('active_portal');
-      location.reload();
-    }
+        // 1. Health Gauge
+        let overallAchiev = achievCount > 0 ? parseFloat((sumAchiev / achievCount * 100).toFixed(1)) : 0;
+        let gaugeColor = overallAchiev >= 90 ? '#10B981' : overallAchiev >= 75 ? '#F59E0B' : '#EF4444';
 
-    async function submitForm(e) {
-      e.preventDefault();
-      const itemVal = tsItem.getValue(), lineVal = tsLine.getValue(), timeVal = tsTime.getValue();
-      const manpowerVal = document.getElementById('manpower').value, productionVal = document.getElementById('production').value;
-      
-      if (!itemVal || !lineVal || !timeVal) {
-        alert("Please complete all selections.");
-        return;
-      }
-      if (!confirm("Submit this production data?")) return;
-      
-      const btn = document.getElementById('submitBtn');
-      btn.innerText = 'Submitting...';
-      
-      callAPI({
-        action: "submit",
-        email: currentUser.email,
-        formData: { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal }
-      }, function(data) {
-        btn.innerText = 'Submit Entry';
-        if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
-          document.getElementById('manpower').value = '';
-          document.getElementById('production').value = '';
-          tsItem.clear();
-          tsLine.clear();
-          tsTime.clear();
-          
-          const msg = document.getElementById('successMsg');
-          msg.classList.remove('hidden');
-          setTimeout(() => msg.classList.add('hidden'), 3500);
+        let gOptions = {
+          series: [overallAchiev],
+          chart: { type: 'radialBar', height: 250, fontFamily: font },
+          plotOptions: {
+            radialBar: {
+              startAngle: -135, endAngle: 135,
+              hollow: { size: '60%' },
+              dataLabels: {
+                name: { fontSize: '12px', color: '#6B7280', offsetY: 20 },
+                value: { fontSize: '28px', fontWeight: 800, color: gaugeColor, offsetY: -10, formatter: function (val) { return val + "%" } }
+              }
+            }
+          },
+          fill: { colors: [gaugeColor] },
+          stroke: { lineCap: 'round' },
+          labels: ['Achievement']
+        };
+        if(gaugeChart) gaugeChart.destroy();
+        gaugeChart = new ApexCharts(document.querySelector("#chart-mgmt-gauge"), gOptions);
+        gaugeChart.render();
+
+        // 2. Projected Output Engine
+        let totalActiveLines = Object.keys(lineAchievMap).length;
+        // Average slots completed per line today
+        let avgSlotsPassed = totalActiveLines > 0 ? (uniqueSlotsPassed.size / totalActiveLines) : 0;
+        
+        let totalShiftSlots = masterAuthData ? masterAuthData.times.length : 12; // Default 12
+        let projected = 0;
+        
+        if (avgSlotsPassed > 0 && avgSlotsPassed <= totalShiftSlots) {
+           let runRate = sumQty / avgSlotsPassed; // Output per slot interval globally
+           projected = Math.round(runRate * totalShiftSlots);
         } else {
-          alert("Submission failed. Please check permissions or network connectivity.");
+           projected = sumQty; // Fallback
         }
+
+        document.getElementById('mgmt-current-output').innerText = sumQty.toLocaleString();
+        document.getElementById('mgmt-completed-slots').innerText = avgSlotsPassed.toFixed(1);
+        
+        // Counter animation effect for projection
+        let projEl = document.getElementById('mgmt-projected-output');
+        let currentProj = parseInt(projEl.innerText.replace(/,/g, '')) || 0;
+        let step = (projected - currentProj) / 20;
+        let iter = 0;
+        let anim = setInterval(() => {
+           iter++;
+           if(iter >= 20) { clearInterval(anim); projEl.innerText = projected.toLocaleString(); }
+           else { projEl.innerText = Math.round(currentProj + (step * iter)).toLocaleString(); }
+        }, 30);
+
+        // 3. Leaderboards
+        let sortedLines = Object.keys(lineAchievMap).map(l => {
+           return { line: l, score: (lineAchievMap[l].achiev / lineAchievMap[l].count * 100) };
+        }).sort((a,b) => b.score - a.score);
+
+        const topContainer = document.getElementById('mgmt-top-lines');
+        const botContainer = document.getElementById('mgmt-bottom-lines');
+        topContainer.innerHTML = ''; botContainer.innerHTML = '';
+
+        if(sortedLines.length === 0) {
+           topContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>';
+           botContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>';
+        } else {
+           let top3 = sortedLines.slice(0, 3);
+           let bot3 = sortedLines.slice(-3).reverse(); // Reverse so absolute worst is first
+
+           top3.forEach((l, idx) => {
+             topContainer.innerHTML += `<div class="flex justify-between items-center bg-green-50/50 p-2 rounded border border-green-100"><span class="text-xs font-bold text-gray-800">${idx+1}. ${l.line}</span><span class="text-xs font-black text-green-600">${l.score.toFixed(1)}%</span></div>`;
+           });
+           bot3.forEach((l, idx) => {
+             botContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50/50 p-2 rounded border border-red-100"><span class="text-xs font-bold text-gray-800">${sortedLines.length - idx}. ${l.line}</span><span class="text-xs font-black text-red-600">${l.score.toFixed(1)}%</span></div>`;
+           });
+        }
+      }
+    }
+
+    // --- GENERIC API EXECUTOR ---
+    function requestAccess() {
+      const btn = document.getElementById('requestBtn'); btn.innerText = "Sending...";
+      callAPI({ action: "requestAccess", email: currentUser.email, name: currentUser.name, requestedApp: targetPortal }, function() {
+        btn.classList.add('hidden'); document.getElementById('requestSuccess').classList.remove('hidden');
       });
     }
 
     function openHistory() {
       document.getElementById('app').classList.add('hidden');
-      document.getElementById('history-view').classList.remove('hidden');
-      
-      const selector = document.getElementById('date-selector');
-      selector.innerHTML = '<option value="">Loading Dates...</option>';
-      
-      callAPI({ action: "getUserHistory", email: currentUser.email }, function(data) {
-        if (!data || !data.history) {
-          selector.innerHTML = '<option value="">No history found</option>';
-          return;
+      document.getElementById('loader-text').innerText = "Fetching History...";
+      document.getElementById('loader').classList.remove('hidden');
+      callAPI({ action: "getHistory", email: currentUser.email }, function(data) {
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('history-view').classList.remove('hidden');
+        historyCache = data.entriesByDate;
+        const dateSelect = document.getElementById('date-selector'); dateSelect.innerHTML = ''; 
+        if (data.dates.length === 0) {
+          dateSelect.add(new Option("No entries found", ""));
+          document.getElementById('entries-container').innerHTML = '<p class="text-gray-500 text-xs text-center py-4">No recorded entries.</p>';
+        } else {
+          data.dates.forEach(d => dateSelect.add(new Option(d, d)));
+          renderEntriesFromCache(); 
         }
-        
-        historyCache = data.history;
-        selector.innerHTML = '';
-        
-        const dates = Object.keys(historyCache).sort((a,b) => new Date(b) - new Date(a));
-        if (dates.length === 0) {
-          selector.innerHTML = '<option value="">No history rows found</option>';
-          return;
-        }
-        
-        dates.forEach(d => selector.add(new Option(d, d)));
-        renderEntriesFromCache();
       });
     }
 
-    function closeHistory() {
-      document.getElementById('history-view').classList.add('hidden');
-      document.getElementById('app').classList.remove('hidden');
-    }
+    function closeHistory() { document.getElementById('history-view').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); }
 
     function renderEntriesFromCache() {
-      const dateStr = document.getElementById('date-selector').value;
-      const container = document.getElementById('entries-container');
-      container.innerHTML = '';
-      
-      if (!dateStr || !historyCache[dateStr]) return;
-      
-      historyCache[dateStr].forEach((entry, idx) => {
-        const div = document.createElement('div');
-        div.id = `entry-card-${entry.rowIndex}`;
-        div.className = "p-4 bg-gray-50/50 rounded-xl border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm transition-all";
-        div.innerHTML = `
-          <div class="flex flex-col text-left">
-            <span class="font-bold text-gray-900 text-sm">${entry.item}</span>
-            <div class="flex items-center gap-2 mt-0.5 text-xs text-gray-500 font-medium">
-              <span class="bg-gray-200/60 px-2 py-0.5 rounded text-gray-700 font-semibold">${entry.line}</span>
-              <span>•</span>
-              <span>Slot: ${entry.time}</span>
+      const selectedDate = document.getElementById('date-selector').value;
+      const container = document.getElementById('entries-container'); container.innerHTML = '';
+      if (!selectedDate || !historyCache[selectedDate] || historyCache[selectedDate].length === 0) return;
+      historyCache[selectedDate].forEach((entry, index) => {
+        const card = document.createElement('div');
+        card.id = `entry-card-${entry.rowIndex}`;
+        card.className = "p-4 border border-gray-100 rounded-xl bg-gray-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-sm";
+        card.innerHTML = `
+          <div class="flex-1 w-full">
+            <p class="font-bold text-gray-800 text-xs mb-2 leading-tight">${entry.itemName}</p>
+            <div class="text-[10px] text-gray-500 flex gap-2 mb-2">
+              <span class="bg-white px-2 py-1 rounded border border-gray-200 font-semibold shadow-sm">${entry.line}</span>
+              <span class="bg-white px-2 py-1 rounded border border-gray-200 font-semibold shadow-sm">${entry.time}</span>
             </div>
             <div class="mt-1 text-[11px] font-bold text-enovar bg-enovar/5 px-3 py-1.5 rounded-lg inline-block border border-enovar/10">
-              Qty: <span id="qty-val-${entry.rowIndex}" class="text-gray-900">${entry.qty}</span>
-              <span class="mx-1 text-enovar/20">|</span>
+              Qty: <span id="qty-val-${entry.rowIndex}" class="text-gray-900">${entry.qty}</span> <span class="mx-1 text-enovar/20">|</span> 
               MP: <span id="mp-val-${entry.rowIndex}" class="text-gray-900">${entry.manpower}</span>
             </div>
           </div>
           <div class="flex flex-row sm:flex-col gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-            <button onclick="handleEdit(${entry.rowIndex}, ${idx}, '${dateStr}')" class="flex-1 sm:flex-initial text-center px-3 py-1.5 bg-white text-xs font-bold border border-gray-200 text-gray-600 hover:text-enovar hover:border-enovar/30 rounded-lg shadow-sm transition-all uppercase tracking-wider">Edit</button>
-            <button onclick="handleDelete(${entry.rowIndex}, ${idx}, '${dateStr}')" class="flex-1 sm:flex-initial text-center px-3 py-1.5 bg-white text-xs font-bold border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-200 rounded-lg shadow-sm transition-all uppercase tracking-wider">Delete</button>
+            <button onclick="handleEdit(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 sm:flex-none bg-white border border-gray-200 text-gray-600 text-[10px] font-bold py-2 px-4 rounded-lg shadow-sm">Edit</button>
+            <button onclick="handleDelete(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 sm:flex-none bg-white text-red-500 text-[10px] font-bold py-2 px-4 rounded-lg shadow-sm">Delete</button>
           </div>
         `;
-        container.appendChild(div);
+        container.appendChild(card);
       });
     }
 
     function handleDelete(rowIndex, cacheIndex, dateStr) {
-      if(!confirm("Are you sure you want to permanently delete this record?")) return;
-      const card = document.getElementById(`entry-card-${rowIndex}`);
-      card.style.opacity = 0.4;
-      
+      if (!confirm("Delete this entry permanently?")) return;
+      document.getElementById(`entry-card-${rowIndex}`).style.opacity = '0.4';
+      historyCache[dateStr].splice(cacheIndex, 1); 
       callAPI({ action: "deleteEntry", rowIndex: rowIndex }, function(data) {
-        if(data.status === "Success") {
-          historyCache[dateStr].splice(cacheIndex, 1);
-          card.remove();
-          if(historyCache[dateStr].length === 0) renderEntriesFromCache();
-        } else {
-          alert("Failed.");
-          openHistory();
-        }
+        if (data.status === "Success") { document.getElementById(`entry-card-${rowIndex}`).remove(); if(historyCache[dateStr].length === 0) renderEntriesFromCache(); }
       });
     }
 
     function handleEdit(rowIndex, cacheIndex, dateStr) {
       const entry = historyCache[dateStr][cacheIndex];
-      const newQty = prompt("Edit Production Quantity:", entry.qty); if (newQty === null) return;
-      const newManpower = prompt("Edit Manpower:", entry.manpower); if (newManpower === null) return;
-      if (newQty == entry.qty && newManpower == entry.manpower) return;
-      
-      document.getElementById(`qty-val-${rowIndex}`).innerText = newQty;
-      document.getElementById(`mp-val-${rowIndex}`).innerText = newManpower;
-      document.getElementById(`entry-card-${rowIndex}`).classList.add('ring-1', 'ring-enovar', 'bg-white');
-      
-      historyCache[dateStr][cacheIndex].qty = newQty;
-      historyCache[dateStr][cacheIndex].manpower = newManpower;
-      
-      callAPI({ action: "editEntry", rowIndex: rowIndex, newQty: newQty, newManpower: newManpower }, function(data) {
-        if (data.status === "Success") {
-          setTimeout(() => {
-            document.getElementById(`entry-card-${rowIndex}`).classList.remove('ring-1', 'ring-enovar', 'bg-white');
-          }, 1000);
-        }
-      });
+      const newQty = prompt("Edit Production Quantity:", entry.qty); if (newQty === null) return; 
+      const newManpower = prompt("Edit Manpower:", entry.manpower); if (newManpower === null) return; 
+      if (newQty == entry.qty && newManpower == entry.manpower) return; 
+      document.getElementById(`qty-val-${rowIndex}`).innerText = newQty; document.getElementById(`mp-val-${rowIndex}`).innerText = newManpower;
+      historyCache[dateStr][cacheIndex].qty = newQty; historyCache[dateStr][cacheIndex].manpower = newManpower;
+      callAPI({ action: "editEntry", rowIndex: rowIndex, newQty: newQty, newManpower: newManpower }, function(data) {});
     }
 
     function callAPI(payload, callback) {
-      fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(data => callback(data))
-      .catch(err => {
-        console.error(err);
-        callback(null);
-      });
-    }
-
-    function populateSelect(id, list) {
-      const el = document.getElementById(id);
-      el.innerHTML = '<option value=""></option>';
-      if (list) {
-        list.forEach(v => el.add(new Option(v, v)));
-      }
-    }
-
-    function requestAccess() {
-      alert("Access request submitted to administrators.");
+      fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
+      .then(res => res.json()).then(data => callback(data)).catch(err => { console.error(err); });
     }
   </script>
 </body>
