@@ -212,128 +212,78 @@
     <div id="entries-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
   </div>
 
-  <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-[#F4F7F6] z-50 flex flex-col">
-    <div class="flex justify-between items-center px-4 py-3 bg-white shadow-sm border-b border-gray-200 w-full z-10 relative">
-      <div class="flex items-center gap-3 sm:gap-4">
-        <img src="alel.png" alt="ALEL" class="h-5 sm:h-6 object-contain">
-        <div class="w-px h-5 bg-gray-300 hidden sm:block"></div>
-        <img src="enovar.png" alt="Enovar" class="h-3 sm:h-4 object-contain hidden sm:block">
-        <span class="text-xs font-bold text-gray-800 ml-1 hidden md:block tracking-wide flex items-center gap-2">
-          Executive Dashboard 
-          <span class="w-2 h-2 rounded-full bg-green-500 live-pulse ml-1" title="Live Synced"></span>
-        </span>
-      </div>
-      <div class="flex items-center gap-2 sm:gap-3">
-        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-white bg-enovar hover:bg-enovar-light px-3 py-1.5 rounded-md shadow-sm uppercase tracking-wider transition-colors">
-          Data Entry
-        </button>
-        <button onclick="logout()" class="text-[10px] sm:text-xs font-bold px-3 py-1.5 bg-white hover:bg-red-50 text-red-500 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-md transition-all shadow-sm uppercase tracking-wider flex items-center gap-1">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-          <span class="hidden sm:block">Logout</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="w-full bg-white border-b border-gray-200 z-10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
-        
-        <div class="flex bg-gray-100 p-1 rounded-lg">
-          <button id="tab-pulse" onclick="switchDashTab('pulse')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white text-gray-800 shadow-sm transition-all">Executive Pulse</button>
-          <button id="tab-analysis" onclick="switchDashTab('analysis')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all">PG Analysis</button>
-          <button id="tab-hourly" onclick="switchDashTab('hourly')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all">Hourly Momentum</button>
-        </div>
-
-        <div class="flex items-center gap-3 w-full md:w-auto">
-          <select id="filter-date" onchange="renderDashboard()" class="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-            <option value="all">All Time</option>
-            <option value="1">Today</option>
-            <option value="7">Last 7 Days</option>
-            <option value="30">Last 30 Days</option>
-          </select>
-          <select id="filter-pg" onchange="renderDashboard()" class="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm w-full md:w-32">
-            <option value="all">All PGs</option>
-          </select>
-          <select id="filter-line" onchange="renderDashboard()" class="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm w-full md:w-32">
-            <option value="all">All Lines</option>
-          </select>
+  <div id="dashboard-app" class="hidden h-screen flex flex-col bg-slate-50">
+    
+    <nav class="bg-white shadow-sm border-b border-gray-200 shrink-0">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center space-x-4">
+            <h1 class="text-xl font-serif font-bold text-enovar">Executive Pulse</h1>
+            
+            <div class="hidden md:flex space-x-2 ml-8">
+              <button onclick="switchDashTab('section')" id="tab-section" class="px-3 py-2 rounded-md text-sm font-medium bg-enovar text-white">Section View</button>
+              <button onclick="switchDashTab('master')" id="tab-master" class="px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-enovar">Master Analysis</button>
+              <button onclick="switchDashTab('management')" id="tab-management" class="px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-enovar">Management KPI</button>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center text-sm text-gray-500">
+              <span class="relative flex h-3 w-3 mr-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-enovar-light opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-enovar"></span>
+              </span>
+              Live Sync
+            </div>
+            
+            <button onclick="toggleFullscreen()" class="p-2 text-gray-400 hover:text-enovar rounded-full hover:bg-gray-100 transition-colors" title="Toggle Fullscreen">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+              </svg>
+            </button>
+            <button onclick="logout()" class="text-sm text-gray-500 hover:text-red-600 font-medium ml-4">Logout</button>
+          </div>
         </div>
       </div>
-    </div>
+    </nav>
 
-    <div class="flex-1 w-full overflow-y-auto bg-transparent p-4 sm:p-8">
-      <div class="max-w-7xl mx-auto pb-10">
-        
-        <div id="view-pulse" class="w-full space-y-4">
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-             <div class="bg-gradient-to-br from-enovar to-[#0a4542] p-5 rounded-2xl shadow-sm flex flex-col items-start justify-center text-white relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-80">Overall Achievement</span>
-                <span id="kpi-pulse-achiev" class="text-3xl font-extrabold">0%</span>
-             </div>
-             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center">
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Plant Productivity</span>
-                <span id="kpi-pulse-prod" class="text-3xl font-bold text-gray-800">0.0</span>
-             </div>
-             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center">
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Output</span>
-                <span id="kpi-pulse-output" class="text-3xl font-bold text-gray-800">0</span>
-             </div>
-             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center border-l-4 border-l-red-500">
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Manpower</span>
-                <span id="kpi-pulse-mp" class="text-3xl font-bold text-gray-800">0</span>
-             </div>
+    <div id="dashboard-container" class="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+      
+      <div id="view-section" class="block space-y-6">
+        <div class="bg-white p-4 rounded-xl shadow-sm flex flex-wrap gap-4 items-end border border-gray-100">
+          <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1">Select Date</label>
+            <select id="dash-date" class="block w-40 border-gray-300 rounded-md shadow-sm focus:ring-enovar focus:border-enovar sm:text-sm p-2 border" onchange="renderSectionDashboard()">
+            </select>
           </div>
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
-                <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Daily Achievement Trend</h3>
-                <div id="chart-pulse-trend" class="w-full h-[300px]"></div>
-             </div>
-             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Leaderboard (Line Achiev %)</h3>
-                <div id="chart-pulse-bar" class="w-full h-[300px]"></div>
-             </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1">Select Section</label>
+            <select id="dash-section" class="block w-48 border-gray-300 rounded-md shadow-sm focus:ring-enovar focus:border-enovar sm:text-sm p-2 border" onchange="renderSectionDashboard()">
+              <option value="ALL">All Sections</option>
+            </select>
           </div>
+          <button onclick="loadDashboardData()" class="px-4 py-2 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-md text-sm font-medium transition-colors flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            Refresh
+          </button>
         </div>
 
-        <div id="view-analysis" class="w-full space-y-4 hidden">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center">
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Target vs Actual Output Gap</span>
-                <span id="kpi-analysis-gap" class="text-3xl font-bold text-red-600">0</span>
-             </div>
-             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center">
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Worst Performing PG</span>
-                <span id="kpi-analysis-worst" class="text-2xl font-bold text-gray-800 truncate w-full">-</span>
-             </div>
+        <div id="section-charts-grid" class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
           </div>
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Actual vs Target Productivity by Line</h3>
-            <div id="chart-analysis-combo" class="w-full h-[300px]"></div>
-          </div>
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">PG Performance Matrix (Size = Output, Color = Achievement)</h3>
-            <div id="chart-analysis-treemap" class="w-full h-[350px]"></div>
-          </div>
-        </div>
-
-        <div id="view-hourly" class="w-full space-y-4 hidden">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center border-l-4 border-l-green-500">
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Peak Time Slot</span>
-                <span id="kpi-hourly-peak" class="text-2xl font-bold text-gray-800">-</span>
-             </div>
-             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-start justify-center border-l-4 border-l-red-500">
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Lowest Time Slot</span>
-                <span id="kpi-hourly-low" class="text-2xl font-bold text-gray-800">-</span>
-             </div>
-          </div>
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Production Heatmap (Line vs Time Slot)</h3>
-            <div id="chart-hourly-heatmap" class="w-full h-[500px]"></div>
-          </div>
-        </div>
-
       </div>
+
+      <div id="view-master" class="hidden">
+        <div class="flex items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-xl">
+          <p class="text-gray-500 font-medium">Master Analysis View is under construction...</p>
+        </div>
+      </div>
+
+      <div id="view-management" class="hidden">
+        <div class="flex items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-xl">
+          <p class="text-gray-500 font-medium">Management KPI View is under construction...</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -881,6 +831,43 @@
     function callAPI(payload, callback) {
       fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
       .then(res => res.json()).then(data => callback(data)).catch(err => { console.error(err); });
+    }
+
+    // --- Dashboard UI Controls ---
+    function toggleFullscreen() {
+      const elem = document.documentElement;
+      if (!document.fullscreenElement) {
+        if (elem.requestFullscreen) elem.requestFullscreen();
+        else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen(); // Safari
+        else if (elem.msRequestFullscreen) elem.msRequestFullscreen(); // IE11
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
+      }
+    }
+
+    function switchDashTab(tabName) {
+      // Hide all views
+      document.getElementById('view-section').classList.add('hidden');
+      document.getElementById('view-master').classList.add('hidden');
+      document.getElementById('view-management').classList.add('hidden');
+      
+      // Reset all tab buttons styling
+      const tabs = ['tab-section', 'tab-master', 'tab-management'];
+      tabs.forEach(t => {
+        const el = document.getElementById(t);
+        el.className = "px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-enovar transition-colors";
+      });
+
+      // Show selected view and style selected tab
+      document.getElementById('view-' + tabName).classList.remove('hidden');
+      document.getElementById('tab-' + tabName).className = "px-3 py-2 rounded-md text-sm font-medium bg-enovar text-white transition-colors shadow-sm";
+      
+      // Render specific logic if needed
+      if(tabName === 'section' && dashboardRawData.length > 0) {
+        renderSectionDashboard();
+      }
     }
   </script>
 </body>
