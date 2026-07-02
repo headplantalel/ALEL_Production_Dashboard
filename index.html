@@ -13,17 +13,8 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            enovar: {
-              DEFAULT: '#0D5C58',
-              light: '#13827d',
-              dark: '#083836'
-            }
-          },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            serif: ['Playfair Display', 'Georgia', 'serif']
-          }
+          colors: { enovar: { DEFAULT: '#0D5C58', light: '#13827d', dark: '#083836' } },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], serif: ['Playfair Display', 'Georgia', 'serif'] }
         }
       }
     }
@@ -35,9 +26,8 @@
   
   <style>
     body { background: linear-gradient(135deg, #F4F7F6 0%, #E6EDEB 100%); background-attachment: fixed; }
-    .ts-control { padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; background-color: rgba(255,255,255,0.8); box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03); transition: all 0.3s ease; }
+    .ts-control { padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; background-color: rgba(255,255,255,0.8); transition: all 0.3s ease; }
     .ts-control.focus { border-color: #0D5C58; box-shadow: 0 0 0 3px rgba(13, 92, 88, 0.15); background-color: #FFF; }
-    .ts-dropdown { border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: 1px solid #E5E7EB; }
     
     @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -45,25 +35,27 @@
     .delay-200 { animation-delay: 200ms; }
     
     .live-pulse { animation: pulse 2s infinite; }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(13, 92, 88, 0.7); }
-      70% { box-shadow: 0 0 0 6px rgba(13, 92, 88, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(13, 92, 88, 0); }
-    }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(13, 92, 88, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(13, 92, 88, 0); } 100% { box-shadow: 0 0 0 0 rgba(13, 92, 88, 0); } }
 
-    /* Custom scrollbar for charts grid */
+    /* Custom scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    /* Maximize Chart Class */
+    .chart-maximized { position: fixed !important; top: 20px; left: 20px; right: 20px; bottom: 20px; z-index: 9999 !important; background: white; height: calc(100vh - 40px) !important; width: calc(100vw - 40px) !important; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border-radius: 12px; display: flex; flex-col; padding: 24px; }
+    .chart-maximized .apexcharts-canvas { height: 100% !important; flex: 1; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
   
+  <!-- BACKGROUND ELEMENTS -->
   <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
     <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px); background-size: 20px 20px; opacity: 0.04;"></div>
   </div>
 
+  <!-- 1. LANDING PAGE VIEW -->
   <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-between z-10 relative pt-5 pb-6 md:pt-8 md:pb-10">
     <div class="w-full flex justify-center animate-fade-up opacity-0">
       <img src="alel.png" alt="ALEL Logo" class="h-[50px] md:h-[60px] object-contain drop-shadow-sm">
@@ -78,6 +70,7 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full px-2 animate-fade-up opacity-0 delay-200">
+        <!-- Entry Card -->
         <button onclick="openLogin('entry')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1">
           <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
@@ -86,21 +79,30 @@
           <p class="text-xs text-gray-500 font-medium mb-5">Input shift details, manpower, and realtime production yields.</p>
         </button>
 
+        <!-- Dashboard Card -->
         <button onclick="openLogin('dashboard')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1">
           <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">IE Dashboard</h3>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Operations Analytics</h3>
           <p class="text-xs text-gray-500 font-medium mb-5">View line analytics, projected outputs, and master data overview.</p>
         </button>
       </div>
     </div>
     
-    <div class="w-full flex justify-center animate-fade-up opacity-0 delay-200">
-      <img src="enovar.png" alt="Enovar" class="h-[25px] md:h-[30px] object-contain drop-shadow-sm opacity-60">
+    <!-- Footer with Quotes & Colored Logo -->
+    <div class="w-full flex justify-between items-end px-4 sm:px-10 animate-fade-up opacity-0 delay-200">
+      <div class="hidden md:block max-w-[220px] opacity-40">
+        <p class="font-serif italic text-sm leading-relaxed">"Improved productivity means less human sweat, not more."</p>
+      </div>
+      <img src="enovar.png" alt="Enovar" class="h-[25px] md:h-[30px] object-contain drop-shadow-sm opacity-90 mx-auto">
+      <div class="hidden md:block max-w-[220px] text-right opacity-40">
+        <p class="font-serif italic text-sm leading-relaxed">"Success is the sum of small efforts, repeated day in and day out."</p>
+      </div>
     </div>
   </div>
 
+  <!-- 2. LOGIN SCREEN -->
   <div id="login-screen" class="hidden bg-white/80 backdrop-blur-xl p-8 sm:p-10 rounded-2xl shadow-xl text-center max-w-md w-full border border-white flex flex-col items-center relative z-20">
     <button onclick="returnToLanding()" class="absolute top-4 left-4 text-gray-400 hover:text-enovar transition-colors p-2 bg-gray-50 hover:bg-enovar/10 rounded-full">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
@@ -115,11 +117,13 @@
     <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"></div>
   </div>
 
+  <!-- 3. LOADER -->
   <div id="loader" class="hidden text-center text-enovar font-medium text-sm flex flex-col items-center bg-white/90 p-8 rounded-2xl shadow-xl backdrop-blur-md z-50 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-enovar/20">
     <svg class="animate-spin h-10 w-10 text-enovar mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
     <span id="loader-text">Loading Data...</span>
   </div>
   
+  <!-- 4. DENIED SCREEN -->
   <div id="denied" class="hidden bg-white/90 backdrop-blur-lg p-8 rounded-2xl shadow-xl text-center max-w-md w-full border-t-4 border-red-500 z-20">
     <h2 class="text-lg font-bold text-gray-900 mb-1">Access Denied</h2>
     <p class="text-gray-500 text-xs mb-6">User <span id="user-email" class="font-bold text-gray-800"></span> lacks authorization.</p>
@@ -129,20 +133,17 @@
     <div id="requestSuccess" class="hidden mt-4 text-green-700 font-medium bg-green-50 p-3 rounded-xl border border-green-200 text-xs">Request sent to Administration.</div>
   </div>
   
+  <!-- 5. DATA ENTRY PORTAL -->
   <div id="app" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-xl w-full border border-white z-20">
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
       <img src="alel.png" alt="ALEL" class="h-6 object-contain">
       <div class="flex items-center gap-3">
         <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Dashboard</button>
-        <span class="text-[10px] font-bold text-enovar bg-enovar/10 px-2.5 py-1.5 rounded-md uppercase tracking-widest">Data Entry</span>
+        <img src="enovar.png" alt="Enovar" class="h-4 object-contain">
       </div>
     </div>
     
     <form id="prodForm" onsubmit="submitForm(event)" class="space-y-4">
-      <div>
-        <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Section</label>
-        <select id="section" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none text-sm"></select>
-      </div>
       <div>
         <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Select Item</label>
         <select id="item" required></select>
@@ -188,6 +189,7 @@
     </div>
   </div>
 
+  <!-- ENTRY HISTORY VIEW -->
   <div id="history-view" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-2xl w-full border border-white z-20">
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
       <h2 class="text-lg font-bold text-gray-900">Entry History</h2>
@@ -200,14 +202,16 @@
     <div id="entries-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
   </div>
 
-  <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-[#F4F7F6] z-50 flex flex-col overflow-hidden">
+  <!-- 6. ANALYTICS PORTAL (FULL SCREEN) -->
+  <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-[#F8FAFC] z-50 flex flex-col overflow-hidden">
     
+    <!-- Dashboard Header -->
     <div class="flex justify-between items-center px-4 sm:px-6 py-3 bg-white shadow-sm border-b border-gray-200 w-full z-20 relative shrink-0">
       <div class="flex items-center gap-3 sm:gap-5">
         <img src="alel.png" alt="ALEL" class="h-6 sm:h-8 object-contain">
         <div class="w-px h-6 bg-gray-300 hidden sm:block"></div>
         <span class="text-xs sm:text-sm font-extrabold text-gray-800 tracking-wide flex items-center gap-2">
-          IE Dashboard 
+          Operations Analytics
           <span class="w-2 h-2 rounded-full bg-green-500 live-pulse ml-1" title="Live Auto-Sync"></span>
         </span>
       </div>
@@ -224,28 +228,37 @@
       </div>
     </div>
 
+    <!-- Dashboard Sub-Header (Tabs & Filters) -->
     <div class="w-full bg-white border-b border-gray-200 z-10 shrink-0 shadow-sm">
       <div class="w-full px-4 sm:px-6 py-2.5 flex flex-col md:flex-row justify-between items-center gap-3">
         
+        <!-- View Tabs -->
         <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 w-full md:w-auto overflow-x-auto no-scrollbar">
-          <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Section Line View</button>
-          <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Master Analysis</button>
-          <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Management Summary</button>
+          <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Line Grid</button>
+          <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Master Analytics</button>
+          <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Exec Summary</button>
         </div>
 
+        <!-- Dynamic Filters Area -->
         <div id="filter-container" class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end">
-          </div>
+          <!-- Injected by JS -->
+        </div>
       </div>
     </div>
 
-    <div class="flex-1 w-full overflow-y-auto bg-transparent p-3 sm:p-6 pb-16">
+    <!-- Scrollable Content Area -->
+    <div class="flex-1 w-full overflow-y-auto bg-transparent p-3 sm:p-6 pb-16 relative">
       
+      <!-- TAB 1: LINE GRID -->
       <div id="view-section" class="w-full space-y-4">
-        <div id="section-charts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-          </div>
-        <div id="section-empty-msg" class="hidden text-center text-gray-500 py-10 font-medium">No data found for this section/date.</div>
+        <!-- Strictly 2 Columns on Desktop -->
+        <div id="section-charts-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Charts injected here -->
+        </div>
+        <div id="section-empty-msg" class="hidden text-center text-gray-500 py-10 font-medium">No data found for this selection.</div>
       </div>
 
+      <!-- TAB 2: MASTER ANALYTICS -->
       <div id="view-master" class="w-full space-y-4 hidden max-w-7xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
@@ -262,19 +275,18 @@
            </div>
         </div>
         <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Daily Trend Analysis</h3>
+           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Productivity Trend Analysis</h3>
            <div id="chart-master-trend" class="w-full h-[350px]"></div>
         </div>
       </div>
 
+      <!-- TAB 3: EXEC SUMMARY -->
       <div id="view-management" class="w-full space-y-5 hidden max-w-6xl mx-auto">
-        
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center relative">
             <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest absolute top-5 left-5">Factory Health</h3>
             <div id="chart-mgmt-gauge" class="w-full flex justify-center mt-6"></div>
           </div>
-          
           <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-xl shadow-md lg:col-span-2 text-white relative overflow-hidden flex flex-col justify-center">
             <div class="absolute -right-10 -top-10 w-40 h-40 bg-enovar/20 rounded-full blur-2xl"></div>
             <span class="text-xs font-bold text-enovar-light uppercase tracking-widest mb-2">IE Pacing / Projected Shift Output</span>
@@ -285,29 +297,17 @@
             <p class="text-[11px] text-gray-400 mt-2 border-t border-gray-700 pt-2">Based on current run rate of <span id="mgmt-current-output" class="font-bold text-gray-200">0</span> units produced in <span id="mgmt-completed-slots" class="font-bold text-gray-200">0</span> time slots.</p>
           </div>
         </div>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-              Top 3 Lines (Over-Achieving)
-            </h3>
+            <h3 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Top 3 Lines (Over-Achieving)</h3>
             <div id="mgmt-top-lines" class="space-y-3"></div>
           </div>
           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="text-xs font-bold text-red-500 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
-              Bottom 3 Lines (Under-Achieving)
-            </h3>
+            <h3 class="text-xs font-bold text-red-500 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Bottom 3 Lines (Under-Achieving)</h3>
             <div id="mgmt-bottom-lines" class="space-y-3"></div>
           </div>
         </div>
-        
       </div>
-    </div>
-    
-    <div class="absolute bottom-4 right-5 opacity-40 pointer-events-none z-0">
-      <img src="enovar.png" alt="Enovar" class="h-4 object-contain grayscale">
     </div>
   </div>
 
@@ -315,8 +315,8 @@
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5cZBzzZOjcrKDpuq0TKh0rDf5ExBL45F6FA0c13a1ayOpZMQHLbIVh65LAktUFP9J6g/exec"; 
     
     // Global States
-    let tsItem, tsLine, tsTime, tsSection;
-    let tsDashItem; // For master dashboard searchable item
+    let tsItem, tsLine, tsTime;
+    let tsDashItem, tsDashVisibleCharts; 
     let currentUser = {};
     let historyCache = {}; 
     let targetPortal = null; 
@@ -324,11 +324,10 @@
     let rawDashboardData = []; 
     let activeDashTab = 'section';
     let syncTimer = null; 
-    let sectionChartInstances = [];
+    let sectionChartInstances = {}; // mapped by id
     let masterTrendChart = null;
     let gaugeChart = null;
 
-    // --- INITIALIZATION ---
     window.onload = function() {
       const savedToken = localStorage.getItem('google_token');
       const savedPortal = localStorage.getItem('active_portal');
@@ -338,7 +337,6 @@
         currentUser = { name: payload.name, email: payload.email, picture: payload.picture };
         const localCache = localStorage.getItem('master_data_cache_' + currentUser.email);
         if (localCache) masterAuthData = JSON.parse(localCache);
-        
         if (savedPortal) {
           targetPortal = savedPortal;
           document.getElementById('landing-view').classList.add('hidden');
@@ -353,10 +351,9 @@
       return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
     }
 
-    // --- NAVIGATION LOGIC ---
     function updatePortalUI() {
-      const title = targetPortal === 'dashboard' ? 'Executive Dashboard' : 'Data Entry Portal';
-      const switchText = targetPortal === 'dashboard' ? 'Switch to Data Entry' : 'Switch to Dashboard';
+      const title = targetPortal === 'dashboard' ? 'Operations Analytics' : 'Data Entry Portal';
+      const switchText = targetPortal === 'dashboard' ? 'Switch to Data Entry' : 'Switch to Analytics';
       document.getElementById('login-title').innerText = title;
       if(document.getElementById('login-switch-btn')) document.getElementById('login-switch-btn').innerText = switchText;
       if(document.getElementById('denied-switch-btn')) document.getElementById('denied-switch-btn').innerText = switchText;
@@ -402,7 +399,14 @@
       else if (document.exitFullscreen) document.exitFullscreen();
     }
 
-    // --- AUTHENTICATION & ROUTING ---
+    // Request Access Fix
+    function requestAccess() {
+      const btn = document.getElementById('requestBtn'); btn.innerText = "Sending...";
+      callAPI({ action: "requestAccess", email: currentUser.email, name: currentUser.name, requestedApp: targetPortal }, function(data) {
+        btn.classList.add('hidden'); document.getElementById('requestSuccess').classList.remove('hidden');
+      });
+    }
+
     function handleCredentialResponse(response) {
       localStorage.setItem('google_token', response.credential);
       const payload = parseJwt(response.credential);
@@ -413,10 +417,8 @@
     function verifyAndRoute() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('loader-text').innerText = "Authenticating...";
-      
       if (masterAuthData) {
         routeUser(masterAuthData);
-        // Silently update cache
         callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
           localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
           masterAuthData = data;
@@ -460,15 +462,12 @@
       if (data && data.authorizedDashboard) document.getElementById('btn-goto-dash').classList.remove('hidden');
       else document.getElementById('btn-goto-dash').classList.add('hidden');
       
-      if(tsItem) { tsItem.destroy(); tsLine.destroy(); tsTime.destroy(); tsSection.destroy(); }
+      if(tsItem) { tsItem.destroy(); tsLine.destroy(); tsTime.destroy(); }
       
-      const secSelect = document.getElementById('section'); secSelect.innerHTML = ''; 
-      if(data.sections) data.sections.forEach(s => secSelect.add(new Option(s, s)));
       const itemSelect = document.getElementById('item'); itemSelect.innerHTML = ''; data.items.forEach(i => itemSelect.add(new Option(i, i)));
       const lineSelect = document.getElementById('line'); lineSelect.innerHTML = ''; data.lines.forEach(l => lineSelect.add(new Option(l, l)));
       const timeSelect = document.getElementById('time'); timeSelect.innerHTML = ''; data.times.forEach(t => timeSelect.add(new Option(t, t)));
       
-      tsSection = new TomSelect("#section", { allowEmptyOption: true, create: false, placeholder: "Select section..."});
       tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false, placeholder: "Search item..."});
       tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false, placeholder: "Select line..."});
       tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false, placeholder: "Select time slot..."});
@@ -476,20 +475,20 @@
 
     async function submitForm(e) {
       e.preventDefault();
-      const secVal = tsSection.getValue(), itemVal = tsItem.getValue(), lineVal = tsLine.getValue(), timeVal = tsTime.getValue();
+      const itemVal = tsItem.getValue(), lineVal = tsLine.getValue(), timeVal = tsTime.getValue();
       const manpowerVal = document.getElementById('manpower').value, productionVal = document.getElementById('production').value;
       
-      if (!secVal || !itemVal || !lineVal || !timeVal) { alert("Please complete all dropdown selections."); return; }
+      if (!itemVal || !lineVal || !timeVal) { alert("Please complete all dropdown selections."); return; }
       if (!confirm("Submit this production data?")) return;
       
       const btn = document.getElementById('submitBtn'); btn.innerText = 'Submitting...';
-      const formData = { section: secVal, item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal };
+      const formData = { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal };
       
       callAPI({ action: "submit", email: currentUser.email, formData: formData }, function(data) {
         btn.innerText = 'Submit Entry';
         if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
           document.getElementById('manpower').value = ''; document.getElementById('production').value = '';
-          tsItem.clear(); tsLine.clear(); tsTime.clear(); // Keep section selected usually
+          tsItem.clear(); tsLine.clear(); tsTime.clear();
           document.getElementById('successMsg').classList.remove('hidden');
           setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3000);
         } else { alert("Submission failed: " + (data.error || "Check backend setup.")); }
@@ -505,7 +504,6 @@
       document.getElementById('loader-text').innerText = "Loading Analytics...";
       document.getElementById('loader').classList.remove('hidden');
       fetchDashboardData(true);
-      
       syncTimer = setInterval(() => { fetchDashboardData(false); }, 60000);
     }
 
@@ -514,18 +512,13 @@
         if(isInitialLoad) document.getElementById('loader').classList.add('hidden');
         if (data.error) return; 
         rawDashboardData = data.raw; 
-        
-        if(isInitialLoad) {
-          switchDashTab('section'); // Initialize default tab
-        } else {
-          renderDashboard(); // Re-render silently
-        }
+        if(isInitialLoad) switchDashTab('section'); 
+        else renderDashboard(); 
       });
     }
 
     function switchDashTab(tab) {
       activeDashTab = tab;
-      
       ['section', 'master', 'management'].forEach(t => {
         let btn = document.getElementById('tab-' + t);
         let view = document.getElementById('view-' + t);
@@ -539,278 +532,280 @@
           view.classList.add('hidden');
         }
       });
-      
       buildDashboardFilters();
       renderDashboard(); 
     }
 
-    // Dynamic Filter Builder based on Tab
     function buildDashboardFilters() {
       const container = document.getElementById('filter-container');
       let html = '';
       
+      let dates = new Set(), sections = new Set(), pgs = new Set(), items = new Set();
+      if(rawDashboardData.length > 0) {
+        rawDashboardData.forEach(r => { 
+          if(r.date) dates.add(r.date);
+          if(r.section) sections.add(r.section);
+          if(r.pg) pgs.add(r.pg); 
+          if(r.itemCode && r.item) items.add(`[${r.itemCode}] - ${r.item}`);
+        });
+      }
+
+      let todayStr = Utilities_formatDateClient(new Date());
+
       if(activeDashTab === 'section') {
         html = `
           <select id="filter-section" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
             <option value="all">All Sections</option>
+            ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
           </select>
           <select id="filter-date" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-             <option value="today">Today</option>
+             <option value="${todayStr}">${todayStr} (Today)</option>
+             ${Array.from(dates).filter(d => d !== todayStr).sort((a,b) => new Date(b)-new Date(a)).map(d => `<option value="${d}">${d}</option>`).join('')}
           </select>
+          <div class="w-full md:w-[250px]">
+            <select id="filter-visible-charts" multiple placeholder="Filter visible charts..." class="text-xs"></select>
+          </div>
         `;
       } else if (activeDashTab === 'master') {
+        // Master now uses Date Range
+        let defaultStartDate = new Date(); defaultStartDate.setDate(defaultStartDate.getDate() - 7);
+        let startStr = defaultStartDate.toISOString().split('T')[0];
+        let endStr = new Date().toISOString().split('T')[0];
         html = `
-          <select id="filter-date" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-            <option value="today">Today</option><option value="7">Last 7 Days</option><option value="30">Last 30 Days</option><option value="all">All Time</option>
+          <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-md px-2 shadow-sm">
+            <input type="date" id="filter-start" value="${startStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
+            <span class="text-gray-400 text-xs">to</span>
+            <input type="date" id="filter-end" value="${endStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
+          </div>
+          <select id="filter-pg" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[120px] truncate">
+            <option value="all">All PGs</option>
+            ${Array.from(pgs).sort().map(p => `<option value="${p}">${p}</option>`).join('')}
           </select>
-          <select id="filter-pg" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[100px] truncate"><option value="all">All PGs</option></select>
-          <select id="filter-line" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[100px] truncate"><option value="all">All Lines</option></select>
-          <div class="w-full md:w-[200px]"><select id="filter-item" placeholder="Search Item..." class="text-xs"></select></div>
+          <div class="w-full md:w-[300px]"><select id="filter-item" placeholder="Search Item..." class="text-xs"></select></div>
         `;
       } else if (activeDashTab === 'management') {
          html = `
           <select id="filter-date" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-             <option value="today">Today</option>
+             <option value="${todayStr}">${todayStr} (Today)</option>
+             ${Array.from(dates).filter(d => d !== todayStr).sort((a,b) => new Date(b)-new Date(a)).map(d => `<option value="${d}">${d}</option>`).join('')}
           </select>
         `;
       }
       
       container.innerHTML = html;
       
-      // Populate dropdowns based on raw data
-      if (rawDashboardData.length > 0) {
-        let dates = new Set(), sections = new Set(), pgs = new Set(), lines = new Set(), items = new Set();
-        rawDashboardData.forEach(r => { 
-          if(r.date) dates.add(r.date);
-          if(r.section) sections.add(r.section);
-          if(r.pg) pgs.add(r.pg); 
-          if(r.line) lines.add(r.line);
-          if(r.item) items.add(r.item);
-        });
-
-        if(document.getElementById('filter-date') && activeDashTab === 'section') {
-           const dSel = document.getElementById('filter-date');
-           Array.from(dates).sort((a,b) => new Date(b) - new Date(a)).forEach(d => dSel.add(new Option(d, d)));
-           // Try to set to actual today's date if exists, otherwise leave first available
-           let todayStr = Utilities_formatDateClient(new Date());
-           if(Array.from(dates).includes(todayStr)) dSel.value = todayStr;
-           else if (dSel.options.length > 1) dSel.selectedIndex = 1; 
-        }
-
-        if(document.getElementById('filter-section')) {
-          const sSel = document.getElementById('filter-section');
-          Array.from(sections).sort().forEach(s => sSel.add(new Option(s, s)));
-        }
-        if(document.getElementById('filter-pg')) {
-          const pSel = document.getElementById('filter-pg');
-          Array.from(pgs).sort().forEach(p => pSel.add(new Option(p, p)));
-        }
-        if(document.getElementById('filter-line')) {
-          const lSel = document.getElementById('filter-line');
-          Array.from(lines).sort().forEach(l => lSel.add(new Option(l, l)));
-        }
-        if(document.getElementById('filter-item')) {
-          const iSel = document.getElementById('filter-item');
-          iSel.innerHTML = '<option value="all">All Items</option>';
-          Array.from(items).sort().forEach(i => iSel.add(new Option(i, i)));
-          if(tsDashItem) tsDashItem.destroy();
-          tsDashItem = new TomSelect("#filter-item", { allowEmptyOption: false, create: false });
-        }
+      if(activeDashTab === 'master') {
+        const iSel = document.getElementById('filter-item');
+        iSel.innerHTML = '<option value="all">All Items</option>';
+        Array.from(items).sort().forEach(i => iSel.add(new Option(i, i)));
+        if(tsDashItem) tsDashItem.destroy();
+        tsDashItem = new TomSelect("#filter-item", { allowEmptyOption: false, create: false, onChange: function() { renderDashboard(); } });
+      }
+      if(activeDashTab === 'section') {
+        if(tsDashVisibleCharts) tsDashVisibleCharts.destroy();
+        // Options will be populated during render based on available lines
+        tsDashVisibleCharts = new TomSelect("#filter-visible-charts", { plugins: ['remove_button'], create: false, onChange: function() { applyChartVisibility(); }});
       }
     }
 
-    // Client-side date formatter matching GS "MMM dd, yyyy" logic
     function Utilities_formatDateClient(d) {
        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-       let day = d.getDate().toString().padStart(2, '0');
-       let year = d.getFullYear();
-       return `${months[d.getMonth()]} ${day}, ${year}`;
+       return `${months[d.getMonth()]} ${d.getDate().toString().padStart(2, '0')}, ${d.getFullYear()}`;
     }
 
-    // MAIN RENDER ENGINE
+    function toggleMaximize(wrapperId) {
+       const el = document.getElementById(wrapperId);
+       if(el.classList.contains('chart-maximized')) {
+          el.classList.remove('chart-maximized');
+          el.querySelector('.max-btn').innerHTML = '⛶';
+       } else {
+          el.classList.add('chart-maximized');
+          el.querySelector('.max-btn').innerHTML = '✖';
+       }
+       // Tell apexcharts to resize
+       window.dispatchEvent(new Event('resize'));
+    }
+
+    function applyChartVisibility() {
+       if(!tsDashVisibleCharts) return;
+       const selected = tsDashVisibleCharts.getValue(); // array
+       const wrappers = document.querySelectorAll('.sec-chart-wrapper');
+       if(selected.length === 0) {
+          wrappers.forEach(w => w.style.display = 'block'); // show all
+       } else {
+          wrappers.forEach(w => {
+             if(selected.includes(w.dataset.key)) w.style.display = 'block';
+             else w.style.display = 'none';
+          });
+       }
+    }
+
     function renderDashboard() {
       if(!rawDashboardData || rawDashboardData.length === 0) return;
 
-      const dateEl = document.getElementById('filter-date');
-      const sectionEl = document.getElementById('filter-section');
-      const pgEl = document.getElementById('filter-pg');
-      const lineEl = document.getElementById('filter-line');
-      const itemEl = document.getElementById('filter-item');
-
-      const valDate = dateEl ? dateEl.value : 'all';
-      const valSection = sectionEl ? sectionEl.value : 'all';
-      const valPg = pgEl ? pgEl.value : 'all';
-      const valLine = lineEl ? lineEl.value : 'all';
-      const valItem = itemEl ? (tsDashItem ? tsDashItem.getValue() : itemEl.value) : 'all';
-
-      // 1. Core Filter
-      let fData = rawDashboardData.filter(row => {
-        if (valSection !== 'all' && row.section !== valSection) return false;
-        if (valPg !== 'all' && row.pg !== valPg) return false;
-        if (valLine !== 'all' && row.line !== valLine) return false;
-        if (valItem !== 'all' && row.item !== valItem) return false;
-        
-        if (valDate === 'today') {
-           let todayStr = Utilities_formatDateClient(new Date());
-           if (row.date !== todayStr) return false;
-        } else if (valDate !== 'all' && isNaN(parseInt(valDate)) === false) { // 7 or 30 days
-          const rDate = new Date(row.date);
-          const diffDays = Math.ceil(Math.abs(new Date() - rDate) / (1000 * 60 * 60 * 24));
-          if (diffDays > parseInt(valDate)) return false;
-        } else if (valDate !== 'all' && valDate !== 'today') { // specific date selected
-           if (row.date !== valDate) return false;
-        }
-        return true;
-      });
-
+      const isMobile = window.innerWidth < 1024;
       const font = 'Inter, sans-serif';
-      const isMobile = window.innerWidth < 768;
 
-      // ==========================================
-      // TAB 1: SECTION DASHBOARD (Grid of Charts)
-      // ==========================================
       if (activeDashTab === 'section') {
+        const dateVal = document.getElementById('filter-date').value;
+        const secVal = document.getElementById('filter-section').value;
+        
+        let fData = rawDashboardData.filter(row => {
+          if (secVal !== 'all' && row.section !== secVal) return false;
+          if (row.date !== dateVal) return false;
+          return true;
+        });
+
         const grid = document.getElementById('section-charts-grid');
         const emptyMsg = document.getElementById('section-empty-msg');
         
-        // Clean up old charts
-        sectionChartInstances.forEach(c => c.destroy());
-        sectionChartInstances = [];
+        Object.values(sectionChartInstances).forEach(c => c.destroy());
+        sectionChartInstances = {};
         grid.innerHTML = '';
 
-        if (fData.length === 0) {
-          emptyMsg.classList.remove('hidden');
-          return;
-        } else {
-          emptyMsg.classList.add('hidden');
-        }
+        if (fData.length === 0) { emptyMsg.classList.remove('hidden'); return; } 
+        else emptyMsg.classList.add('hidden');
 
-        // Group by Line
-        let lineData = {};
-        // Get all unique times globally for the X-axis sequence
+        // Group by Line + Item! 
+        let lineItemData = {};
         let masterTimesSet = new Set(masterAuthData ? masterAuthData.times : []);
         fData.forEach(r => masterTimesSet.add(r.time));
-        let sortedTimes = Array.from(masterTimesSet).sort(); // Assumes times can be alphabetically sorted properly (e.g. 01, 02...)
-        // Better: rely on the original sequence from masterData if available
-        if (masterAuthData && masterAuthData.times && masterAuthData.times.length > 0) {
-           sortedTimes = masterAuthData.times; 
-        }
+        let sortedTimes = masterAuthData && masterAuthData.times.length > 0 ? masterAuthData.times : Array.from(masterTimesSet).sort();
 
         fData.forEach(row => {
-          if (!lineData[row.line]) lineData[row.line] = {};
-          if (!lineData[row.line][row.time]) lineData[row.line][row.time] = { act: 0, tgt: 0, qty: 0, mp: 0, count: 0 };
+          let key = row.line + '::' + row.itemCode + '::' + row.item;
+          if (!lineItemData[key]) lineItemData[key] = { line: row.line, itemStr: `[${row.itemCode}] - ${row.item}`, times: {} };
+          if (!lineItemData[key].times[row.time]) lineItemData[key].times[row.time] = { act: 0, tgt: 0, qty: 0, mp: 0, count: 0 };
           
-          lineData[row.line][row.time].qty += row.qty;
-          lineData[row.line][row.time].mp += row.mp;
-          lineData[row.line][row.time].act += row.productivity;
-          lineData[row.line][row.time].tgt += row.targetProductivity;
-          lineData[row.line][row.time].count++;
+          lineItemData[key].times[row.time].qty += row.qty;
+          lineItemData[key].times[row.time].mp += row.mp;
+          lineItemData[key].times[row.time].act += row.productivity;
+          lineItemData[key].times[row.time].tgt += row.targetProductivity;
+          lineItemData[key].times[row.time].count++;
         });
 
-        Object.keys(lineData).sort().forEach((lineName, idx) => {
-          // Prepare Arrays for this line based on master times
+        let availableKeys = [];
+
+        Object.keys(lineItemData).sort().forEach((key, idx) => {
+          availableKeys.push({value: key, text: lineItemData[key].line + ' | ' + lineItemData[key].itemStr});
+          
           let actData = [], tgtData = [], qtyArr = [], mpArr = [];
-          let hasData = false;
-          let latestTarget = 0; // For the straight line annotation
+          let hasData = false, latestTarget = 0;
 
           sortedTimes.forEach(t => {
-            let cell = lineData[lineName][t];
+            let cell = lineItemData[key].times[t];
             if (cell) {
                actData.push(parseFloat((cell.act / cell.count).toFixed(1)));
                let tgt = parseFloat((cell.tgt / cell.count).toFixed(1));
-               tgtData.push(tgt);
                if(tgt > 0) latestTarget = tgt; 
-               qtyArr.push(cell.qty);
-               mpArr.push(cell.mp);
+               qtyArr.push(cell.qty); mpArr.push(cell.mp);
                hasData = true;
             } else {
-               actData.push(null); // Leave gap if no data
-               tgtData.push(null);
-               qtyArr.push(0);
-               mpArr.push(0);
+               actData.push(null); qtyArr.push(0); mpArr.push(0);
             }
           });
 
-          if (!hasData) return; // Skip empty charts
+          if (!hasData) return;
 
-          // Create DOM container
-          let chartDivId = 'sec-chart-' + idx;
+          let chartId = 'sec-chart-' + idx;
+          let wrapperId = 'sec-wrap-' + idx;
           let wrapper = document.createElement('div');
-          wrapper.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow";
-          wrapper.innerHTML = `<h3 class="text-xs font-bold text-enovar uppercase tracking-wider mb-2 border-b border-gray-100 pb-1">${lineName}</h3><div id="${chartDivId}" class="w-full h-[250px]"></div>`;
+          wrapper.id = wrapperId;
+          wrapper.className = "sec-chart-wrapper bg-white p-4 rounded-xl shadow-sm border border-gray-200 transition-all flex flex-col";
+          wrapper.dataset.key = key;
+          
+          let headerHtml = `
+            <div class="flex justify-between items-start border-b border-gray-100 pb-2 mb-2">
+              <div>
+                <h3 class="text-sm font-black text-gray-800">${lineItemData[key].line}</h3>
+                <p class="text-[10px] font-bold text-enovar uppercase tracking-wider">${lineItemData[key].itemStr}</p>
+              </div>
+              <button class="max-btn text-gray-400 hover:text-enovar px-2" onclick="toggleMaximize('${wrapperId}')">⛶</button>
+            </div>
+            <div id="${chartId}" class="w-full flex-1 min-h-[250px]"></div>
+          `;
+          wrapper.innerHTML = headerHtml;
           grid.appendChild(wrapper);
 
-          // Render ApexChart
           let options = {
-            chart: { type: 'line', height: 250, toolbar: { show: false }, fontFamily: font, animations: { enabled: false } },
-            series: [
-              { name: 'Actual Prod', data: actData }
-            ],
+            chart: { type: 'line', height: '100%', toolbar: { show: false }, zoom: {enabled: false}, selection: {enabled: false}, fontFamily: font, animations: { enabled: false } },
+            series: [{ name: 'Actual Prod', data: actData }],
             stroke: { width: 3, curve: 'smooth' },
             colors: ['#0D5C58'],
-            markers: { size: 4, hover: { size: 6 } },
+            markers: { size: 5, hover: { size: 7 } },
+            grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } },
+            dataLabels: { enabled: true, offsetY: -5, background: { enabled: true, foreColor: '#fff', borderRadius: 2, borderWidth: 0, dropShadow: {enabled: true, top: 1, left: 1, blur: 1, opacity: 0.2} }, style: { fontSize: '10px', colors: ['#0D5C58'] } },
             xaxis: { 
               categories: sortedTimes,
               labels: {
                 style: { fontSize: '10px', colors: '#6B7280' },
                 formatter: function(value, timestamp, opts) {
-                  if(isMobile || !opts) return value; // Tooltip only on mobile
+                  if(isMobile || !opts) return value; 
                   let dataIdx = opts.dataPointIndex;
                   if(dataIdx === undefined) return value;
-                  let q = qtyArr[dataIdx] || 0;
-                  let m = mpArr[dataIdx] || 0;
+                  let q = qtyArr[dataIdx] || 0; let m = mpArr[dataIdx] || 0;
                   if (q===0 && m===0) return value;
-                  return [value, `Qty: ${q}`, `MP: ${m}`]; // Multi-line!
+                  return [value, `Q: ${q}`, `M: ${m}`]; 
                 }
               }
             },
             yaxis: { title: { text: 'Productivity' }, min: 0 },
-            annotations: {
-              yaxis: latestTarget > 0 ? [{ y: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, label: { text: 'Target', style: {color: '#fff', background: '#EF4444'} } }] : []
-            },
+            annotations: { yaxis: latestTarget > 0 ? [{ y: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, label: { text: 'Target: '+latestTarget, style: {color: '#fff', background: '#EF4444'} } }] : [] },
             tooltip: {
-               y: { formatter: function(val) { return val; } },
+               enabled: isMobile, // Tooltip only on mobile
                custom: function({series, seriesIndex, dataPointIndex, w}) {
-                 // For mobile or detailed view
-                 let q = qtyArr[dataPointIndex] || 0;
-                 let m = mpArr[dataPointIndex] || 0;
+                 let q = qtyArr[dataPointIndex] || 0; let m = mpArr[dataPointIndex] || 0;
                  let p = series[seriesIndex][dataPointIndex] !== null ? series[seriesIndex][dataPointIndex] : 'N/A';
-                 return `<div class="p-2 text-xs shadow-lg bg-white border border-gray-100 rounded-md">
-                   <div class="font-bold border-b border-gray-100 mb-1 pb-1">${sortedTimes[dataPointIndex]}</div>
-                   <div>Prod: <span class="font-bold text-enovar">${p}</span></div>
-                   <div>Qty: <span class="font-semibold">${q}</span></div>
-                   <div>MP: <span class="font-semibold">${m}</span></div>
-                 </div>`;
+                 return `<div class="p-2 text-xs shadow-lg bg-white border border-gray-100 rounded-md"><div class="font-bold border-b border-gray-100 mb-1 pb-1">${sortedTimes[dataPointIndex]}</div><div>Prod: <span class="font-bold text-enovar">${p}</span></div><div>Qty: <span class="font-semibold">${q}</span></div><div>MP: <span class="font-semibold">${m}</span></div></div>`;
                }
             }
           };
 
-          let chart = new ApexCharts(document.getElementById(chartDivId), options);
+          let chart = new ApexCharts(document.getElementById(chartId), options);
           chart.render();
-          sectionChartInstances.push(chart);
+          sectionChartInstances[chartId] = chart;
         });
+
+        // Update TomSelect for visible charts
+        if(tsDashVisibleCharts) {
+           tsDashVisibleCharts.clearOptions();
+           availableKeys.forEach(k => tsDashVisibleCharts.addOption(k));
+           tsDashVisibleCharts.refreshOptions(false);
+        }
       }
 
       // ==========================================
-      // TAB 2: MASTER DASHBOARD (Analysis)
+      // TAB 2: MASTER ANALYTICS (Date Range)
       // ==========================================
       if (activeDashTab === 'master') {
+        const valStart = document.getElementById('filter-start').value;
+        const valEnd = document.getElementById('filter-end').value;
+        const valPg = document.getElementById('filter-pg').value;
+        const valItem = tsDashItem ? tsDashItem.getValue() : 'all';
+
+        let startDate = new Date(valStart); startDate.setHours(0,0,0,0);
+        let endDate = new Date(valEnd); endDate.setHours(23,59,59,999);
+
+        let fData = rawDashboardData.filter(row => {
+          if (valPg !== 'all' && row.pg !== valPg) return false;
+          if (valItem !== 'all' && `[${row.itemCode}] - ${row.item}` !== valItem) return false;
+          let rDate = new Date(row.date);
+          if (rDate < startDate || rDate > endDate) return false;
+          return true;
+        });
+
         let sumQty = 0, sumMp = 0, sumProdWeighted = 0;
         let dateMap = {};
 
         fData.forEach(r => {
           sumQty += r.qty; sumMp += r.mp;
-          sumProdWeighted += (r.productivity * r.mp); // Weight by manpower
-          
+          sumProdWeighted += (r.productivity * r.mp); 
           if(!dateMap[r.date]) dateMap[r.date] = { act: 0, tgt: 0, count: 0 };
           if(r.productivity > 0) { dateMap[r.date].act += r.productivity; dateMap[r.date].tgt += r.targetProductivity; dateMap[r.date].count++; }
         });
 
         let avgProd = sumMp > 0 ? (sumProdWeighted / sumMp).toFixed(1) : "0.0";
-        // Override with simple aggregate if requested item filter is active (better for items)
-        if (valItem !== 'all') {
-           avgProd = sumMp > 0 ? (sumQty / sumMp).toFixed(1) : "0.0";
-        }
+        if (valItem !== 'all') avgProd = sumMp > 0 ? (sumQty / sumMp).toFixed(1) : "0.0";
 
         document.getElementById('master-kpi-prod').innerText = avgProd;
         document.getElementById('master-kpi-output').innerText = sumQty.toLocaleString();
@@ -830,7 +825,7 @@
           colors: ['#0D5C58', '#EF4444'],
           xaxis: { categories: tDates, labels: { style: { colors: '#6B7280' } } },
           fill: { type: ['gradient', 'solid'], gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } },
-          dataLabels: { enabled: false }
+          dataLabels: { enabled: !isMobile } // Enable on desktop, disable on phone
         };
 
         if (masterTrendChart) masterTrendChart.destroy();
@@ -839,17 +834,19 @@
       }
 
       // ==========================================
-      // TAB 3: MANAGEMENT DASHBOARD (Summary)
+      // TAB 3: EXEC SUMMARY
       // ==========================================
       if (activeDashTab === 'management') {
+        const valDate = document.getElementById('filter-date').value;
+        let fData = rawDashboardData.filter(row => row.date === valDate);
+
         let sumQty = 0, sumAchiev = 0, achievCount = 0;
         let lineAchievMap = {};
-        // Passed slots calculation for projection
         let uniqueSlotsPassed = new Set();
 
         fData.forEach(r => {
           sumQty += r.qty;
-          if(r.qty > 0 || r.mp > 0) uniqueSlotsPassed.add(r.line + "_" + r.time); // Approximate slot counting
+          if(r.qty > 0 || r.mp > 0) uniqueSlotsPassed.add(r.line + "_" + r.time); 
 
           if(r.achievement > 0) { 
              sumAchiev += r.achievement; achievCount++; 
@@ -859,7 +856,6 @@
           }
         });
 
-        // 1. Health Gauge
         let overallAchiev = achievCount > 0 ? parseFloat((sumAchiev / achievCount * 100).toFixed(1)) : 0;
         let gaugeColor = overallAchiev >= 90 ? '#10B981' : overallAchiev >= 75 ? '#F59E0B' : '#EF4444';
 
@@ -884,36 +880,28 @@
         gaugeChart = new ApexCharts(document.querySelector("#chart-mgmt-gauge"), gOptions);
         gaugeChart.render();
 
-        // 2. Projected Output Engine
         let totalActiveLines = Object.keys(lineAchievMap).length;
-        // Average slots completed per line today
         let avgSlotsPassed = totalActiveLines > 0 ? (uniqueSlotsPassed.size / totalActiveLines) : 0;
-        
-        let totalShiftSlots = masterAuthData ? masterAuthData.times.length : 12; // Default 12
+        let totalShiftSlots = masterAuthData ? masterAuthData.times.length : 12; 
         let projected = 0;
         
         if (avgSlotsPassed > 0 && avgSlotsPassed <= totalShiftSlots) {
-           let runRate = sumQty / avgSlotsPassed; // Output per slot interval globally
+           let runRate = sumQty / avgSlotsPassed;
            projected = Math.round(runRate * totalShiftSlots);
-        } else {
-           projected = sumQty; // Fallback
-        }
+        } else { projected = sumQty; }
 
         document.getElementById('mgmt-current-output').innerText = sumQty.toLocaleString();
         document.getElementById('mgmt-completed-slots').innerText = avgSlotsPassed.toFixed(1);
         
-        // Counter animation effect for projection
         let projEl = document.getElementById('mgmt-projected-output');
         let currentProj = parseInt(projEl.innerText.replace(/,/g, '')) || 0;
-        let step = (projected - currentProj) / 20;
-        let iter = 0;
+        let step = (projected - currentProj) / 20; let iter = 0;
         let anim = setInterval(() => {
            iter++;
            if(iter >= 20) { clearInterval(anim); projEl.innerText = projected.toLocaleString(); }
            else { projEl.innerText = Math.round(currentProj + (step * iter)).toLocaleString(); }
         }, 30);
 
-        // 3. Leaderboards
         let sortedLines = Object.keys(lineAchievMap).map(l => {
            return { line: l, score: (lineAchievMap[l].achiev / lineAchievMap[l].count * 100) };
         }).sort((a,b) => b.score - a.score);
@@ -927,26 +915,15 @@
            botContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>';
         } else {
            let top3 = sortedLines.slice(0, 3);
-           let bot3 = sortedLines.slice(-3).reverse(); // Reverse so absolute worst is first
+           let bot3 = sortedLines.slice(-3).reverse(); 
 
-           top3.forEach((l, idx) => {
-             topContainer.innerHTML += `<div class="flex justify-between items-center bg-green-50/50 p-2 rounded border border-green-100"><span class="text-xs font-bold text-gray-800">${idx+1}. ${l.line}</span><span class="text-xs font-black text-green-600">${l.score.toFixed(1)}%</span></div>`;
-           });
-           bot3.forEach((l, idx) => {
-             botContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50/50 p-2 rounded border border-red-100"><span class="text-xs font-bold text-gray-800">${sortedLines.length - idx}. ${l.line}</span><span class="text-xs font-black text-red-600">${l.score.toFixed(1)}%</span></div>`;
-           });
+           top3.forEach((l, idx) => { topContainer.innerHTML += `<div class="flex justify-between items-center bg-green-50/50 p-2 rounded border border-green-100"><span class="text-xs font-bold text-gray-800">${idx+1}. ${l.line}</span><span class="text-xs font-black text-green-600">${l.score.toFixed(1)}%</span></div>`; });
+           bot3.forEach((l, idx) => { botContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50/50 p-2 rounded border border-red-100"><span class="text-xs font-bold text-gray-800">${sortedLines.length - idx}. ${l.line}</span><span class="text-xs font-black text-red-600">${l.score.toFixed(1)}%</span></div>`; });
         }
       }
     }
 
     // --- GENERIC API EXECUTOR ---
-    function requestAccess() {
-      const btn = document.getElementById('requestBtn'); btn.innerText = "Sending...";
-      callAPI({ action: "requestAccess", email: currentUser.email, name: currentUser.name, requestedApp: targetPortal }, function() {
-        btn.classList.add('hidden'); document.getElementById('requestSuccess').classList.remove('hidden');
-      });
-    }
-
     function openHistory() {
       document.getElementById('app').classList.add('hidden');
       document.getElementById('loader-text').innerText = "Fetching History...";
