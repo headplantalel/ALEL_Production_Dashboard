@@ -125,7 +125,7 @@
       <img src="alel.png" alt="ALEL" class="h-6 object-contain">
       <div class="flex items-center gap-3">
         <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Analytics</button>
-        <img src="enovar.png" alt="Enovar" class="h-4 object-contain">
+        <img src="enovar.png" alt="Enovar" class="h-5 object-contain">
       </div>
     </div>
     
@@ -199,9 +199,6 @@
         </span>
       </div>
       <div class="flex items-center gap-3">
-        <button onclick="toggleFullscreen()" class="text-gray-500 hover:text-enovar p-1.5 rounded-md hover:bg-gray-100 transition-colors" title="Toggle Fullscreen">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-        </button>
         <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-white bg-enovar hover:bg-enovar-light px-3 py-2 rounded-md shadow-sm uppercase tracking-wider transition-colors">
           Data Entry
         </button>
@@ -214,10 +211,10 @@
     <div class="w-full bg-white border-b border-gray-200 z-10 shrink-0 shadow-sm relative">
       <div class="w-full px-4 sm:px-6 py-2.5 flex flex-col md:flex-row justify-between items-center gap-3">
         
-        <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 w-full md:w-auto overflow-x-auto no-scrollbar">
-          <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Line Grid</button>
-          <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Master Analytics</button>
-          <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Exec Summary</button>
+        <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 w-full md:w-auto overflow-x-auto no-scrollbar shrink-0">
+          <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Line Grid</button>
+          <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Master Analytics</button>
+          <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Exec Summary</button>
         </div>
 
         <div id="filter-container" class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end"></div>
@@ -233,7 +230,7 @@
       </div>
 
       <div id="view-master" class="w-full space-y-4 hidden max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Avg Productivity</span>
               <span id="master-kpi-prod" class="text-3xl font-bold text-enovar">0.0</span>
@@ -243,8 +240,12 @@
               <span id="master-kpi-output" class="text-3xl font-bold text-gray-800">0</span>
            </div>
            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Peak Manpower</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Peak Manpower</span>
               <span id="master-kpi-mp" class="text-3xl font-bold text-gray-800">0</span>
+           </div>
+           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Avg Achievement</span>
+              <span id="master-kpi-achiev" class="text-3xl font-bold text-gray-800">0%</span>
            </div>
         </div>
         <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
@@ -256,7 +257,7 @@
       <div id="view-management" class="w-full space-y-5 hidden max-w-6xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center relative">
-            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest absolute top-5 left-5">Factory Health</h3>
+            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest absolute top-5 left-5">Factory Health (Today)</h3>
             <div id="chart-mgmt-gauge" class="w-full flex justify-center mt-6"></div>
           </div>
           <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-xl shadow-md lg:col-span-2 text-white relative overflow-hidden flex flex-col justify-center">
@@ -271,11 +272,11 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Top 3 Lines (Over-Achieving)</h3>
+            <h3 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Top 3 Lines (Over-Achieving Today)</h3>
             <div id="mgmt-top-lines" class="space-y-3"></div>
           </div>
           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="text-xs font-bold text-red-500 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Bottom 3 Lines (Under-Achieving)</h3>
+            <h3 class="text-xs font-bold text-red-500 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Bottom 3 Lines (Under-Achieving Today)</h3>
             <div id="mgmt-bottom-lines" class="space-y-3"></div>
           </div>
         </div>
@@ -423,6 +424,17 @@
       localStorage.removeItem('google_token'); localStorage.removeItem('active_portal'); location.reload(); 
     }
 
+    function formatTimeSlot(t) {
+        if(!t) return t;
+        return t.split('-').map(s => {
+            let time = s.trim(); let [hh, mm] = time.split(':');
+            if(!hh) return time;
+            let h = parseInt(hh, 10); let ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12; if(h === 0) h = 12;
+            return `${h} ${ampm}`;
+        }).join(' - ');
+    }
+
     // --- DATA ENTRY PORTAL LOGIC ---
     function setupEntryAppUI(data) {
       document.getElementById('bg-elements').classList.remove('hidden');
@@ -436,16 +448,16 @@
       
       if(tsItem) { tsItem.destroy(); tsLine.destroy(); tsTime.destroy(); }
       
-      const itemSelect = document.getElementById('item'); itemSelect.innerHTML = '<option value="">Select Item...</option>'; 
+      const itemSelect = document.getElementById('item'); itemSelect.innerHTML = '<option value=""></option>'; 
       data.items.forEach(i => itemSelect.add(new Option(i, i)));
-      const lineSelect = document.getElementById('line'); lineSelect.innerHTML = '<option value="">Select Line...</option>'; 
+      const lineSelect = document.getElementById('line'); lineSelect.innerHTML = '<option value=""></option>'; 
       data.lines.forEach(l => lineSelect.add(new Option(l, l)));
-      const timeSelect = document.getElementById('time'); timeSelect.innerHTML = '<option value="">Select Time...</option>'; 
+      const timeSelect = document.getElementById('time'); timeSelect.innerHTML = '<option value=""></option>'; 
       data.times.forEach(t => timeSelect.add(new Option(t, t)));
       
-      tsItem = new TomSelect("#item", { allowEmptyOption: false, create: false });
-      tsLine = new TomSelect("#line", { allowEmptyOption: false, create: false });
-      tsTime = new TomSelect("#time", { allowEmptyOption: false, create: false });
+      tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false, placeholder: "Search item..."});
+      tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false, placeholder: "Select line..."});
+      tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false, placeholder: "Select time slot..."});
     }
 
     async function submitForm(e) {
@@ -547,37 +559,36 @@
           </div>
         `;
       } else if (activeDashTab === 'master') {
+        let defaultStartDate = new Date(); defaultStartDate.setDate(defaultStartDate.getDate() - 7);
+        let startStr = defaultStartDate.toISOString().split('T')[0];
+        let endStr = new Date().toISOString().split('T')[0];
         html = `
           <select id="master-date-preset" onchange="toggleMasterDateRange()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
              <option value="today">Today</option><option value="7">Last 7 Days</option><option value="30">Last 30 Days</option><option value="custom">Date Range</option><option value="all">All Time</option>
           </select>
           <div id="master-date-range-container" class="hidden flex items-center gap-1 bg-white border border-gray-200 rounded-md px-2 shadow-sm">
-            <input type="date" id="filter-start" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
+            <input type="date" id="filter-start" value="${startStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
             <span class="text-gray-400 text-xs">to</span>
-            <input type="date" id="filter-end" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
+            <input type="date" id="filter-end" value="${endStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
           </div>
           <select id="filter-pg" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[120px] truncate">
             <option value="all">All PGs</option>
             ${Array.from(pgs).sort().map(p => `<option value="${p}">${p}</option>`).join('')}
           </select>
-          <div class="w-full md:w-[300px]"><select id="filter-item" required></select></div>
+          <div class="w-full md:w-[300px]"><select id="filter-item" placeholder="Search Item..."></select></div>
         `;
       } else if (activeDashTab === 'management') {
-         html = `
-          <select id="filter-date" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-             <option value="${todayStr}">${todayStr} (Today)</option>
-             ${Array.from(dates).filter(d => d !== todayStr).sort((a,b) => new Date(b)-new Date(a)).map(d => `<option value="${d}">${d}</option>`).join('')}
-          </select>
-        `;
+         // No filters for global today view
+         html = ``;
       }
       container.innerHTML = html;
       
       if(activeDashTab === 'master') {
         const iSel = document.getElementById('filter-item');
-        iSel.innerHTML = '<option value="all">All Items</option>';
+        iSel.innerHTML = '<option value=""></option>';
         Array.from(items).sort().forEach(i => iSel.add(new Option(i, i)));
         if(tsDashItem) tsDashItem.destroy();
-        tsDashItem = new TomSelect("#filter-item", { allowEmptyOption: false, create: false, onChange: function() { renderDashboard(); } });
+        tsDashItem = new TomSelect("#filter-item", { allowEmptyOption: true, create: false, onChange: function() { renderDashboard(); } });
       }
     }
 
@@ -594,10 +605,10 @@
        return `${months[d.getMonth()]} ${d.getDate().toString().padStart(2, '0')}, ${d.getFullYear()}`;
     }
 
-    function toggleChartVis(key) {
-      const wrapper = document.querySelector(`.sec-chart-wrapper[data-key="${key}"]`);
+    function toggleChartVis(checkbox) {
+      const wrapper = document.querySelector(`.sec-chart-wrapper[data-key="${checkbox.value}"]`);
       if(wrapper) {
-         if(wrapper.style.display === 'none') wrapper.style.display = 'flex';
+         if(checkbox.checked) wrapper.style.display = 'flex';
          else wrapper.style.display = 'none';
       }
     }
@@ -608,7 +619,7 @@
       const isMobile = window.innerWidth < 1024;
 
       // ==========================================
-      // TAB 1: LINE GRID (Horizontal Bars for Space)
+      // TAB 1: LINE GRID (Vertical Line Charts)
       // ==========================================
       if (activeDashTab === 'section') {
         const dateVal = document.getElementById('filter-date').value;
@@ -650,7 +661,7 @@
         Object.keys(lineItemData).sort().forEach((key, idx) => {
           visListHtml += `
             <label class="flex items-center gap-2 cursor-pointer p-1 hover:bg-gray-50 rounded">
-               <input type="checkbox" checked onchange="toggleChartVis('${key}')" class="rounded text-enovar focus:ring-enovar h-4 w-4">
+               <input type="checkbox" checked value="${key}" onchange="toggleChartVis(this)" class="rounded text-enovar focus:ring-enovar h-4 w-4">
                <span class="text-xs font-medium text-gray-700 truncate">${lineItemData[key].line} | ${lineItemData[key].itemStr}</span>
             </label>
           `;
@@ -674,38 +685,55 @@
 
           let chartId = 'sec-chart-' + idx;
           let wrapper = document.createElement('div');
-          wrapper.className = "sec-chart-wrapper bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0";
+          wrapper.className = "sec-chart-wrapper bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1";
           wrapper.dataset.key = key;
-          
-          let chartHeight = Math.max(250, sortedTimes.length * 35); // Dynamic height based on slots
           
           wrapper.innerHTML = `
             <div class="border-b border-gray-100 pb-2 mb-2 shrink-0">
               <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
               <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
             </div>
-            <div id="${chartId}" class="w-full" style="height: ${chartHeight}px"></div>
+            <div id="${chartId}" class="w-full h-[320px]"></div>
           `;
           grid.appendChild(wrapper);
 
           let options = {
-            chart: { type: 'bar', height: chartHeight, toolbar: { show: false }, fontFamily: font, animations: { enabled: false } },
-            series: [{ name: 'Productivity', data: actData }],
-            plotOptions: { bar: { horizontal: true, borderRadius: 2, dataLabels: { position: 'bottom' } } },
+            chart: { type: 'line', height: 320, toolbar: { show: false }, zoom: {enabled: false}, selection: {enabled: false}, fontFamily: font, animations: { enabled: false } },
+            series: [{ name: 'Actual Prod', data: actData }],
+            stroke: { width: 3, curve: 'smooth' },
             colors: ['#0D5C58'],
+            markers: { size: 5, hover: { size: 7 } },
+            grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } },
             dataLabels: { 
-              enabled: true, textAnchor: 'start', offsetX: 10,
-              style: { colors: ['#374151'], fontSize: '10px', fontFamily: font },
-              formatter: function(val, opts) {
-                if(val === null || val === undefined) return '';
-                let idx = opts.dataPointIndex;
-                return `Prod: ${val} | Qty: ${qtyArr[idx]} | MP: ${mpArr[idx]}`;
+               enabled: true, offsetY: -5, 
+               background: { enabled: true, foreColor: '#fff', borderRadius: 2, borderWidth: 0 }, 
+               style: { fontSize: '10px', colors: ['#0D5C58'] } 
+            },
+            xaxis: { 
+              categories: sortedTimes,
+              labels: {
+                style: { fontSize: '9px', colors: '#6B7280', fontWeight: 600 },
+                formatter: function(value, timestamp, opts) {
+                  let formattedTime = formatTimeSlot(value);
+                  if(isMobile || !opts) return formattedTime; 
+                  let dataIdx = opts.dataPointIndex;
+                  if(dataIdx === undefined) return formattedTime;
+                  let q = qtyArr[dataIdx] || 0; let m = mpArr[dataIdx] || 0;
+                  if (q===0 && m===0) return formattedTime;
+                  return [formattedTime, `Qty: ${q}`, `MP: ${m}`]; // Array makes it multi-line
+                }
               }
             },
-            xaxis: { title: { text: 'Productivity' }, min: 0 },
-            yaxis: { categories: sortedTimes, labels: { style: { colors: '#6B7280', fontSize: '10px', fontWeight: 600 } } },
-            annotations: { xaxis: latestTarget > 0 ? [{ x: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, label: { text: 'Target: '+latestTarget, style: {color: '#fff', background: '#EF4444'} } }] : [] },
-            tooltip: { enabled: isMobile } 
+            yaxis: { title: { text: 'Productivity' }, min: 0 },
+            annotations: { yaxis: latestTarget > 0 ? [{ y: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, label: { text: 'Target: '+latestTarget, style: {color: '#fff', background: '#EF4444'} } }] : [] },
+            tooltip: {
+               enabled: isMobile, // Tooltip only on mobile, desktop sees all text natively
+               custom: function({series, seriesIndex, dataPointIndex, w}) {
+                 let q = qtyArr[dataPointIndex] || 0; let m = mpArr[dataPointIndex] || 0;
+                 let p = series[seriesIndex][dataPointIndex] !== null ? series[seriesIndex][dataPointIndex] : 'N/A';
+                 return `<div class="p-2 text-xs shadow-lg bg-white border border-gray-100 rounded-md"><div class="font-bold border-b border-gray-100 mb-1 pb-1">${formatTimeSlot(sortedTimes[dataPointIndex])}</div><div>Prod: <span class="font-bold text-enovar">${p}</span></div><div>Qty: <span class="font-semibold">${q}</span></div><div>MP: <span class="font-semibold">${m}</span></div></div>`;
+               }
+            }
           };
 
           let chart = new ApexCharts(document.getElementById(chartId), options);
@@ -718,10 +746,10 @@
       }
 
       // ==========================================
-      // TAB 2: MASTER ANALYTICS (Date Range & MP Fix)
+      // TAB 2: MASTER ANALYTICS (Date Range)
       // ==========================================
       if (activeDashTab === 'master') {
-        const preset = document.getElementById('master-date-preset') ? document.getElementById('master-date-preset').value : 'today';
+        const preset = document.getElementById('master-date-preset').value;
         let startDate, endDate;
         let today = new Date(); today.setHours(0,0,0,0);
         
@@ -741,23 +769,24 @@
         }
 
         const valPg = document.getElementById('filter-pg').value;
-        const valItem = tsDashItem ? tsDashItem.getValue() : 'all';
+        const valItem = tsDashItem ? tsDashItem.getValue() : '';
 
         let fData = rawDashboardData.filter(row => {
           if (valPg !== 'all' && row.pg !== valPg) return false;
-          if (valItem !== 'all' && `[${row.itemCode}] - ${row.item}` !== valItem) return false;
+          if (valItem && valItem !== '' && `[${row.itemCode}] - ${row.item}` !== valItem) return false;
           let rDate = new Date(row.date);
           if (rDate < startDate || rDate > endDate) return false;
           return true;
         });
 
-        let sumQty = 0, sumProdWeighted = 0;
+        let sumQty = 0, sumProd = 0, prodCount = 0, achievSum = 0, achievCount = 0;
         let dateMap = {};
-        let dailyLineMp = {}; // For accurate MP calculation
+        let dailyLineMp = {}; 
 
         fData.forEach(r => {
           sumQty += r.qty;
-          sumProdWeighted += (r.productivity * r.mp); 
+          if(r.productivity > 0) { sumProd += r.productivity; prodCount++; }
+          if(r.achievement > 0) { achievSum += r.achievement; achievCount++; }
           
           if(!dateMap[r.date]) dateMap[r.date] = { act: 0, tgt: 0, count: 0 };
           if(r.productivity > 0) { dateMap[r.date].act += r.productivity; dateMap[r.date].tgt += r.targetProductivity; dateMap[r.date].count++; }
@@ -769,12 +798,13 @@
         let totalTrueMp = 0;
         Object.values(dailyLineMp).forEach(lines => { Object.values(lines).forEach(mp => totalTrueMp += mp); });
 
-        let avgProd = totalTrueMp > 0 ? (sumProdWeighted / totalTrueMp).toFixed(1) : "0.0";
-        if (valItem !== 'all') avgProd = totalTrueMp > 0 ? (sumQty / totalTrueMp).toFixed(1) : "0.0";
+        let avgProd = prodCount > 0 ? (sumProd / prodCount).toFixed(1) : "0.0";
+        let avgAchiev = achievCount > 0 ? (achievSum / achievCount).toFixed(1) : "0";
 
         document.getElementById('master-kpi-prod').innerText = avgProd;
         document.getElementById('master-kpi-output').innerText = sumQty.toLocaleString();
         document.getElementById('master-kpi-mp').innerText = totalTrueMp.toLocaleString();
+        document.getElementById('master-kpi-achiev').innerText = avgAchiev + "%";
 
         let tDates = Object.keys(dateMap).sort((a,b) => new Date(a) - new Date(b));
         let actVals = tDates.map(d => dateMap[d].count > 0 ? parseFloat((dateMap[d].act/dateMap[d].count).toFixed(1)) : 0);
@@ -789,7 +819,7 @@
           stroke: { width: [3, 3], curve: 'smooth', dashArray: [0, 4] },
           markers: { size: 5, hover: { size: 7 } },
           colors: ['#0D5C58', '#EF4444'],
-          grid: { xaxis: { lines: { show: true } } }, // Vertical lines
+          grid: { xaxis: { lines: { show: true } } }, 
           xaxis: { categories: tDates, labels: { style: { colors: '#6B7280' } } },
           fill: { type: ['gradient', 'solid'], gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } },
           dataLabels: { enabled: !isMobile, offsetY: -5, background: { enabled: true, foreColor: '#fff', borderRadius: 2, borderWidth: 0 }, style: { fontSize: '10px', colors: ['#0D5C58'] } }
@@ -801,11 +831,11 @@
       }
 
       // ==========================================
-      // TAB 3: EXEC SUMMARY
+      // TAB 3: EXEC SUMMARY (Unfiltered Global)
       // ==========================================
       if (activeDashTab === 'management') {
-        const valDate = document.getElementById('filter-date').value;
-        let fData = rawDashboardData.filter(row => row.date === valDate);
+        let todayStr = Utilities_formatDateClient(new Date());
+        let fData = rawDashboardData.filter(row => row.date === todayStr);
 
         let sumQty = 0, sumAchiev = 0, achievCount = 0;
         let lineAchievMap = {};
@@ -866,7 +896,7 @@
         topContainer.innerHTML = ''; botContainer.innerHTML = '';
 
         if(sortedLines.length === 0) {
-           topContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>'; botContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>';
+           topContainer.innerHTML = '<p class="text-xs text-gray-400">No data today</p>'; botContainer.innerHTML = '<p class="text-xs text-gray-400">No data today</p>';
         } else {
            let top3 = sortedLines.slice(0, 3); let bot3 = sortedLines.slice(-3).reverse(); 
            top3.forEach((l, idx) => { topContainer.innerHTML += `<div class="flex justify-between items-center bg-green-50/50 p-2 rounded border border-green-100"><span class="text-xs font-bold text-gray-800">${idx+1}. ${l.line}</span><span class="text-xs font-black text-green-600">${l.score.toFixed(1)}%</span></div>`; });
