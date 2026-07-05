@@ -199,6 +199,9 @@
         </span>
       </div>
       <div class="flex items-center gap-3">
+        <button onclick="toggleFullScreen()" class="text-gray-500 hover:text-enovar transition-colors p-1" title="Toggle Fullscreen">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+        </button>
         <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-white bg-enovar hover:bg-enovar-light px-3 py-2 rounded-md shadow-sm uppercase tracking-wider transition-colors">
           Data Entry
         </button>
@@ -224,8 +227,7 @@
     <div class="flex-1 w-full overflow-y-auto bg-transparent p-3 sm:p-6 pb-16 relative">
       
       <div id="view-section" class="w-full space-y-4">
-        <div id="section-charts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-          </div>
+        <div id="section-charts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start"></div>
         <div id="section-empty-msg" class="hidden text-center text-gray-500 py-10 font-medium">No data found for this selection.</div>
       </div>
 
@@ -278,13 +280,18 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Top 3 Lines (Highest Avg Prod)</h3>
+            <h3 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Top 3 Performing (Achievement %)</h3>
             <div id="exec-top-lines" class="space-y-3"></div>
           </div>
           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="text-xs font-bold text-red-500 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Bottom 3 Lines (Lowest Avg Prod)</h3>
+            <h3 class="text-xs font-bold text-red-500 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Bottom 3 Performing (Achievement %)</h3>
             <div id="exec-bottom-lines" class="space-y-3"></div>
           </div>
+        </div>
+        
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 mt-5">
+           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Monthly Output Trend</h3>
+           <div id="chart-exec-monthly" class="w-full h-[300px]"></div>
         </div>
       </div>
     </div>
@@ -304,6 +311,7 @@
     let syncTimer = null; 
     let sectionChartInstances = {}; 
     let masterTrendChart = null;
+    let execMonthlyChart = null;
 
     window.onload = function() {
       const savedToken = localStorage.getItem('google_token');
@@ -326,6 +334,36 @@
       var base64Url = token.split('.')[1];
       var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       return JSON.parse(decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.warn(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // --- REUSABLE KPIS ---
+    function calculateGlobalPeakMP(filteredData) {
+      let dailyLineMp = {};
+      filteredData.forEach(r => {
+        if(!dailyLineMp[r.date]) dailyLineMp[r.date] = {};
+        // Get the peak MP for each line on each specific day
+        dailyLineMp[r.date][r.line] = Math.max(dailyLineMp[r.date][r.line] || 0, r.mp);
+      });
+
+      let maxPeak = 0;
+      Object.keys(dailyLineMp).forEach(date => {
+        let daySum = 0;
+        Object.values(dailyLineMp[date]).forEach(mp => daySum += mp);
+        if (daySum > maxPeak) maxPeak = daySum;
+      });
+      return maxPeak;
     }
 
     function updatePortalUI() {
@@ -424,7 +462,6 @@
       localStorage.removeItem('google_token'); localStorage.removeItem('active_portal'); location.reload(); 
     }
 
-    // --- DATA ENTRY PORTAL LOGIC ---
     function setupEntryAppUI(data) {
       document.getElementById('bg-elements').classList.remove('hidden');
       document.getElementById('display-pic').src = currentUser.picture;
@@ -471,7 +508,6 @@
       });
     }
 
-    // --- DASHBOARD LOGIC ---
     function setupDashboardUI(data) {
       document.getElementById('bg-elements').classList.add('hidden');
       document.getElementById('dashboard-app').classList.remove('hidden');
@@ -510,6 +546,22 @@
       });
       buildDashboardFilters();
       renderDashboard(); 
+    }
+
+    function updateMasterItemDropdown() {
+      const valPg = document.getElementById('filter-pg').value;
+      let items = new Set();
+      rawDashboardData.forEach(r => {
+        if (valPg === 'all' || r.pg === valPg) {
+           if(r.itemCode && r.item) items.add(`[${r.itemCode}] - ${r.item}`);
+        }
+      });
+      if(tsDashItem) {
+         tsDashItem.clearOptions();
+         tsDashItem.clear();
+         Array.from(items).sort().forEach(i => tsDashItem.addOption({value: i, text: i}));
+      }
+      renderDashboard();
     }
 
     function buildDashboardFilters() {
@@ -560,7 +612,7 @@
             <span class="text-gray-400 text-xs">to</span>
             <input type="date" id="filter-end" value="${endStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
           </div>
-          <select id="filter-pg" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[120px] truncate">
+          <select id="filter-pg" onchange="updateMasterItemDropdown()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[120px] truncate">
             <option value="all">All PGs</option>
             ${Array.from(pgs).sort().map(p => `<option value="${p}">${p}</option>`).join('')}
           </select>
@@ -606,7 +658,7 @@
       const font = 'Inter, sans-serif';
 
       // ==========================================
-      // TAB 1: LINE GRID (Vertical Hollow Columns)
+      // TAB 1: LINE GRID (Horizontal Columns)
       // ==========================================
       if (activeDashTab === 'section') {
         const dateVal = document.getElementById('filter-date').value;
@@ -630,6 +682,8 @@
         let masterTimesSet = new Set(masterAuthData ? masterAuthData.times : []);
         fData.forEach(r => masterTimesSet.add(r.time));
         let sortedTimes = masterAuthData && masterAuthData.times.length > 0 ? masterAuthData.times : Array.from(masterTimesSet).sort();
+        // Reverse so earlier times show at top in horizontal chart
+        sortedTimes = sortedTimes.reverse();
 
         fData.forEach(row => {
           let key = row.line + '::' + row.itemCode + '::' + row.item;
@@ -665,7 +719,7 @@
                qtyArr.push(cell.qty); mpArr.push(cell.mp);
                hasData = true;
             } else {
-               actData.push(null); tgtData.push(null); qtyArr.push(0); mpArr.push(0);
+               actData.push(0); tgtData.push(0); qtyArr.push(0); mpArr.push(0);
             }
           });
           if (!hasData) return;
@@ -685,41 +739,57 @@
           grid.appendChild(wrapper);
 
           let options = {
-            chart: { type: 'bar', height: 320, toolbar: { show: false }, zoom: {enabled: false}, selection: {enabled: false}, fontFamily: font, animations: { enabled: false }, clip: true },
-            series: [{ name: 'Productivity', data: actData }],
-            plotOptions: { bar: { horizontal: false, columnWidth: '60%', borderRadius: 2, dataLabels: { position: 'top' } } },
-            fill: { opacity: 0 },
-            stroke: { show: true, width: 2, colors: ['#0D5C58'] },
-            grid: { xaxis: { lines: { show: false } }, yaxis: { lines: { show: true } }, padding: { bottom: 20 } },
-            dataLabels: { 
-               enabled: true, offsetY: -20, 
-               background: { enabled: false }, 
-               style: { fontSize: '11px', colors: ['#0D5C58'], fontWeight: 700 },
-               formatter: function(val) { return val; }
+            chart: { 
+                type: 'bar', height: 320, toolbar: { show: false }, 
+                zoom: {enabled: false}, selection: {enabled: false}, 
+                fontFamily: font, animations: { enabled: false }, clip: false 
             },
-            xaxis: { 
-              categories: sortedTimes,
-              labels: {
-                style: { fontSize: '10px', colors: '#6B7280', fontWeight: 600 },
-                formatter: function(value, timestamp, opts) {
-                  if(!opts || opts.dataPointIndex === undefined) return value;
+            series: [{ name: 'Productivity', data: actData }],
+            plotOptions: { 
+                bar: { horizontal: true, barHeight: '70%', borderRadius: 2, 
+                       dataLabels: { position: 'bottom' } // Align left
+                } 
+            },
+            colors: ['#0D5C58'],
+            grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: false } }, padding: { right: 20 } },
+            dataLabels: { 
+               enabled: true, 
+               textAnchor: 'start',
+               offsetX: 10, // Slight padding from left inside the bar
+               style: { fontSize: '11px', colors: ['#fff'], fontWeight: 600 },
+               formatter: function(val, opts) {
                   let idx = opts.dataPointIndex;
                   let q = qtyArr[idx] || 0; let m = mpArr[idx] || 0;
-                  if (q===0 && m===0) return value;
-                  return [value, `Qty: ${q}`, `MP: ${m}`]; 
-                }
-              }
+                  if(q === 0 && m === 0) return '';
+                  return `Qty: ${q} | MP: ${m}`;
+               }
+            },
+            xaxis: { 
+              title: { text: 'Productivity', style: {fontSize: '10px', color: '#9CA3AF'} },
+              labels: { style: { fontSize: '10px', colors: '#6B7280', fontWeight: 600 } },
+              max: function(max) { return latestTarget > max ? latestTarget * 1.15 : max * 1.15; }
             },
             yaxis: { 
-               title: { text: 'Productivity' }, min: 0,
-               max: function(max) { return latestTarget > max ? latestTarget * 1.1 : max * 1.1; }
+               categories: sortedTimes,
+               labels: { style: { fontSize: '10px', colors: '#374151', fontWeight: 600 } }
             },
-            annotations: { yaxis: latestTarget > 0 ? [{ y: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, label: { text: 'Target: '+latestTarget, style: {color: '#fff', background: '#EF4444'} } }] : [] },
-            tooltip: { enabled: false } 
+            annotations: { 
+               xaxis: latestTarget > 0 ? [{ 
+                   x: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, 
+                   label: { text: 'Target: '+latestTarget, style: {color: '#fff', background: '#EF4444', fontSize: '9px'} } 
+               }] : [] 
+            },
+            tooltip: { 
+               enabled: true,
+               y: { formatter: function(val) { return val + " Prod"; } }
+            } 
           };
 
           let chart = new ApexCharts(document.getElementById(chartId), options);
-          chart.render();
+          chart.render().then(() => {
+             // Force resize event slightly after to fix annotation/grid layout overlaps in ApexCharts initial render
+             setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 50);
+          });
           sectionChartInstances[chartId] = chart;
         });
         
@@ -763,7 +833,6 @@
 
         let sumQty = 0, sumProd = 0, prodCount = 0, sumTarget = 0, targetCount = 0;
         let dateMap = {};
-        let dailyLineMp = {}; 
 
         fData.forEach(r => {
           sumQty += r.qty;
@@ -772,13 +841,9 @@
           
           if(!dateMap[r.date]) dateMap[r.date] = { act: 0, tgt: 0, count: 0 };
           if(r.productivity > 0) { dateMap[r.date].act += r.productivity; dateMap[r.date].tgt += r.targetProductivity; dateMap[r.date].count++; }
-          
-          if(!dailyLineMp[r.date]) dailyLineMp[r.date] = {};
-          dailyLineMp[r.date][r.line] = Math.max(dailyLineMp[r.date][r.line] || 0, r.mp);
         });
 
-        let totalTrueMp = 0;
-        Object.values(dailyLineMp).forEach(lines => { Object.values(lines).forEach(mp => totalTrueMp += mp); });
+        let totalTrueMp = calculateGlobalPeakMP(fData);
 
         let avgProd = prodCount > 0 ? (sumProd / prodCount).toFixed(1) : "0.0";
         let avgTarget = targetCount > 0 ? (sumTarget / targetCount).toFixed(1) : "0.0";
@@ -816,28 +881,33 @@
       // TAB 3: EXEC SUMMARY (Global All Time)
       // ==========================================
       if (activeDashTab === 'management') {
-        
         let sumQty = 0, sumProd = 0, prodCount = 0, sumTarget = 0, targetCount = 0;
-        let lineProdMap = {};
-        let dailyLineMp = {};
+        let lineItemAchMap = {}; // line + item -> actual vs target prod tracking
+        let monthlyOutMap = {};
 
         rawDashboardData.forEach(r => {
           sumQty += r.qty;
           if(r.productivity > 0) { sumProd += r.productivity; prodCount++; }
           if(r.targetProductivity > 0) { sumTarget += r.targetProductivity; targetCount++; }
           
-          if(!dailyLineMp[r.date]) dailyLineMp[r.date] = {};
-          dailyLineMp[r.date][r.line] = Math.max(dailyLineMp[r.date][r.line] || 0, r.mp);
+          // For Ranking based on Achievement % (Item & Line)
+          if(r.productivity > 0 && r.targetProductivity > 0) {
+             let groupKey = `${r.line} <br><span class="text-[9px] text-gray-500 font-normal">(${r.itemCode}) ${r.item}</span>`;
+             if(!lineItemAchMap[groupKey]) lineItemAchMap[groupKey] = { act: 0, tgt: 0 };
+             lineItemAchMap[groupKey].act += r.productivity;
+             lineItemAchMap[groupKey].tgt += r.targetProductivity;
+          }
 
-          if(r.productivity > 0) { 
-             if(!lineProdMap[r.line]) lineProdMap[r.line] = { prod: 0, count: 0 };
-             lineProdMap[r.line].prod += r.productivity; 
-             lineProdMap[r.line].count++;
+          // For Monthly Chart
+          if(r.date) {
+             let d = new Date(r.date);
+             let mKey = d.toLocaleString('default', { month: 'short' }) + " '" + String(d.getFullYear()).slice(-2);
+             if(!monthlyOutMap[mKey]) monthlyOutMap[mKey] = 0;
+             monthlyOutMap[mKey] += r.qty;
           }
         });
 
-        let totalTrueMp = 0;
-        Object.values(dailyLineMp).forEach(lines => { Object.values(lines).forEach(mp => totalTrueMp += mp); });
+        let totalTrueMp = calculateGlobalPeakMP(rawDashboardData);
 
         let avgProd = prodCount > 0 ? (sumProd / prodCount).toFixed(1) : "0.0";
         let avgTarget = targetCount > 0 ? (sumTarget / targetCount).toFixed(1) : "0.0";
@@ -847,17 +917,40 @@
         document.getElementById('exec-kpi-output').innerText = sumQty.toLocaleString();
         document.getElementById('exec-kpi-mp').innerText = totalTrueMp.toLocaleString();
 
-        let sortedLines = Object.keys(lineProdMap).map(l => { return { line: l, score: (lineProdMap[l].prod / lineProdMap[l].count) }; }).sort((a,b) => b.score - a.score);
+        // Calculate and Sort Line-Item Achievements
+        let sortedAch = Object.keys(lineItemAchMap).map(k => {
+           let perc = (lineItemAchMap[k].act / lineItemAchMap[k].tgt) * 100;
+           return { name: k, ach: perc };
+        }).sort((a,b) => b.ach - a.ach);
+
         const topContainer = document.getElementById('exec-top-lines'), botContainer = document.getElementById('exec-bottom-lines');
         topContainer.innerHTML = ''; botContainer.innerHTML = '';
 
-        if(sortedLines.length === 0) {
+        if(sortedAch.length === 0) {
            topContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>'; botContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>';
         } else {
-           let top3 = sortedLines.slice(0, 3); let bot3 = sortedLines.slice(-3).reverse(); 
-           top3.forEach((l, idx) => { topContainer.innerHTML += `<div class="flex justify-between items-center bg-green-50/50 p-2 rounded border border-green-100"><span class="text-xs font-bold text-gray-800">${idx+1}. ${l.line}</span><span class="text-xs font-black text-green-600">${l.score.toFixed(1)} Prod</span></div>`; });
-           bot3.forEach((l, idx) => { botContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50/50 p-2 rounded border border-red-100"><span class="text-xs font-bold text-gray-800">${sortedLines.length - idx}. ${l.line}</span><span class="text-xs font-black text-red-600">${l.score.toFixed(1)} Prod</span></div>`; });
+           let top3 = sortedAch.slice(0, 3); let bot3 = sortedAch.slice(-3).reverse(); 
+           top3.forEach((l, idx) => { topContainer.innerHTML += `<div class="flex justify-between items-center bg-green-50/50 p-2.5 rounded border border-green-100"><span class="text-xs font-bold text-gray-800 leading-tight">${idx+1}. ${l.name}</span><span class="text-xs font-black text-green-600 shrink-0">${l.ach.toFixed(1)}%</span></div>`; });
+           bot3.forEach((l, idx) => { botContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50/50 p-2.5 rounded border border-red-100"><span class="text-xs font-bold text-gray-800 leading-tight">${sortedAch.length - idx}. ${l.name}</span><span class="text-xs font-black text-red-600 shrink-0">${l.ach.toFixed(1)}%</span></div>`; });
         }
+
+        // Render Monthly Chart
+        let mKeys = Object.keys(monthlyOutMap);
+        let mVals = mKeys.map(k => monthlyOutMap[k]);
+        
+        let mOptions = {
+          chart: { type: 'bar', height: 300, toolbar: { show: false }, fontFamily: font },
+          series: [{ name: 'Total Output', data: mVals }],
+          plotOptions: { bar: { borderRadius: 4, columnWidth: '40%' } },
+          colors: ['#0D5C58'],
+          dataLabels: { enabled: true, style: { fontSize: '10px' }, formatter: function(val) { return val.toLocaleString(); } },
+          xaxis: { categories: mKeys, labels: { style: { colors: '#6B7280', fontSize: '10px' } } },
+          yaxis: { labels: { formatter: function(val) { return (val/1000).toFixed(0) + "k"; } } }
+        };
+
+        if(execMonthlyChart) execMonthlyChart.destroy();
+        execMonthlyChart = new ApexCharts(document.querySelector("#chart-exec-monthly"), mOptions);
+        execMonthlyChart.render();
       }
     }
 
