@@ -96,7 +96,7 @@
     <button onclick="returnToLanding()" class="absolute top-4 left-4 text-gray-400 hover:text-enovar transition-colors p-2 bg-gray-50 hover:bg-enovar/10 rounded-full">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
     </button>
-    <div class="w-14 h-14 bg-enovar/5 rounded-2xl flex items-center justify-center mb-4 border border-enovar/10">
+    <div class="w-14 h-14 bg-enovar/5 rounded-2xl flex items-center justify-center mb-4 border border-enovar/10 shadow-sm">
       <svg class="w-7 h-7 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
     </div>
     <h1 id="login-title" class="text-xl font-extrabold text-gray-900 tracking-tight">System Login</h1>
@@ -125,7 +125,7 @@
       <img src="alel.png" alt="ALEL" class="h-6 object-contain">
       <div class="flex items-center gap-3">
         <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Analytics</button>
-        <img src="enovar.png" alt="Enovar" class="h-4 object-contain">
+        <img src="enovar.png" alt="Enovar" class="h-5 object-contain opacity-90">
       </div>
     </div>
     
@@ -199,9 +199,6 @@
         </span>
       </div>
       <div class="flex items-center gap-3">
-        <button onclick="toggleFullscreen()" class="text-gray-500 hover:text-enovar p-1.5 rounded-md hover:bg-gray-100 transition-colors" title="Toggle Fullscreen">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-        </button>
         <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-white bg-enovar hover:bg-enovar-light px-3 py-2 rounded-md shadow-sm uppercase tracking-wider transition-colors">
           Data Entry
         </button>
@@ -214,10 +211,10 @@
     <div class="w-full bg-white border-b border-gray-200 z-10 shrink-0 shadow-sm relative">
       <div class="w-full px-4 sm:px-6 py-2.5 flex flex-col md:flex-row justify-between items-center gap-3">
         
-        <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 w-full md:w-auto overflow-x-auto no-scrollbar">
-          <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Line Grid</button>
-          <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Master Analytics</button>
-          <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Exec Summary</button>
+        <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 w-full md:w-auto overflow-x-auto no-scrollbar shrink-0">
+          <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Line Grid</button>
+          <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Master Analytics</button>
+          <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Exec Summary</button>
         </div>
 
         <div id="filter-container" class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end"></div>
@@ -233,17 +230,21 @@
       </div>
 
       <div id="view-master" class="w-full space-y-4 hidden max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Avg Productivity</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Avg Actual Prod</span>
               <span id="master-kpi-prod" class="text-3xl font-bold text-enovar">0.0</span>
            </div>
            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Output</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Avg Target Prod</span>
+              <span id="master-kpi-target" class="text-3xl font-bold text-red-500">0.0</span>
+           </div>
+           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Total Output</span>
               <span id="master-kpi-output" class="text-3xl font-bold text-gray-800">0</span>
            </div>
            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Peak Manpower</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Peak Manpower</span>
               <span id="master-kpi-mp" class="text-3xl font-bold text-gray-800">0</span>
            </div>
         </div>
@@ -254,29 +255,35 @@
       </div>
 
       <div id="view-management" class="w-full space-y-5 hidden max-w-6xl mx-auto">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center relative">
-            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest absolute top-5 left-5">Factory Health</h3>
-            <div id="chart-mgmt-gauge" class="w-full flex justify-center mt-6"></div>
-          </div>
-          <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-xl shadow-md lg:col-span-2 text-white relative overflow-hidden flex flex-col justify-center">
-            <div class="absolute -right-10 -top-10 w-40 h-40 bg-enovar/20 rounded-full blur-2xl"></div>
-            <span class="text-xs font-bold text-enovar-light uppercase tracking-widest mb-2">IE Pacing / Projected Shift Output</span>
-            <div class="flex items-end gap-4 mb-2">
-              <span id="mgmt-projected-output" class="text-5xl font-extrabold text-white">0</span>
-              <span class="text-sm font-medium text-gray-400 mb-1">Units Expected Today</span>
-            </div>
-            <p class="text-[11px] text-gray-400 mt-2 border-t border-gray-700 pt-2">Based on current run rate of <span id="mgmt-current-output" class="font-bold text-gray-200">0</span> units produced in <span id="mgmt-completed-slots" class="font-bold text-gray-200">0</span> time slots.</p>
-          </div>
+        <h2 class="text-xl font-extrabold text-gray-800 mb-2 border-b border-gray-200 pb-2">Global Operations Summary (All Time)</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Avg Actual Prod</span>
+              <span id="exec-kpi-prod" class="text-3xl font-bold text-enovar">0.0</span>
+           </div>
+           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Avg Target Prod</span>
+              <span id="exec-kpi-target" class="text-3xl font-bold text-red-500">0.0</span>
+           </div>
+           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Total Output</span>
+              <span id="exec-kpi-output" class="text-3xl font-bold text-gray-800">0</span>
+           </div>
+           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Peak Manpower</span>
+              <span id="exec-kpi-mp" class="text-3xl font-bold text-gray-800">0</span>
+           </div>
         </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Top 3 Lines (Over-Achieving)</h3>
-            <div id="mgmt-top-lines" class="space-y-3"></div>
+            <h3 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Top 3 Lines (Highest Avg Prod)</h3>
+            <div id="exec-top-lines" class="space-y-3"></div>
           </div>
           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="text-xs font-bold text-red-500 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Bottom 3 Lines (Under-Achieving)</h3>
-            <div id="mgmt-bottom-lines" class="space-y-3"></div>
+            <h3 class="text-xs font-bold text-red-500 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Bottom 3 Lines (Lowest Avg Prod)</h3>
+            <div id="exec-bottom-lines" class="space-y-3"></div>
           </div>
         </div>
       </div>
@@ -287,7 +294,7 @@
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5cZBzzZOjcrKDpuq0TKh0rDf5ExBL45F6FA0c13a1ayOpZMQHLbIVh65LAktUFP9J6g/exec"; 
     
     let tsItem, tsLine, tsTime;
-    let tsDashItem; 
+    let tsDashItem, tsDashVisibleCharts; 
     let currentUser = {};
     let historyCache = {}; 
     let targetPortal = null; 
@@ -297,7 +304,6 @@
     let syncTimer = null; 
     let sectionChartInstances = {}; 
     let masterTrendChart = null;
-    let gaugeChart = null;
 
     window.onload = function() {
       const savedToken = localStorage.getItem('google_token');
@@ -363,11 +369,6 @@
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('landing-view').classList.remove('hidden');
       targetPortal = null;
-    }
-
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(err => {});
-      else if (document.exitFullscreen) document.exitFullscreen();
     }
 
     function requestAccess() {
@@ -443,9 +444,9 @@
       const timeSelect = document.getElementById('time'); timeSelect.innerHTML = '<option value="">Select Time...</option>'; 
       data.times.forEach(t => timeSelect.add(new Option(t, t)));
       
-      tsItem = new TomSelect("#item", { allowEmptyOption: false, create: false });
-      tsLine = new TomSelect("#line", { allowEmptyOption: false, create: false });
-      tsTime = new TomSelect("#time", { allowEmptyOption: false, create: false });
+      tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false, placeholder: "Search item..."});
+      tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false, placeholder: "Select line..."});
+      tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false, placeholder: "Select time slot..."});
     }
 
     async function submitForm(e) {
@@ -547,37 +548,35 @@
           </div>
         `;
       } else if (activeDashTab === 'master') {
+        let defaultStartDate = new Date(); defaultStartDate.setDate(defaultStartDate.getDate() - 7);
+        let startStr = defaultStartDate.toISOString().split('T')[0];
+        let endStr = new Date().toISOString().split('T')[0];
         html = `
           <select id="master-date-preset" onchange="toggleMasterDateRange()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
              <option value="today">Today</option><option value="7">Last 7 Days</option><option value="30">Last 30 Days</option><option value="custom">Date Range</option><option value="all">All Time</option>
           </select>
           <div id="master-date-range-container" class="hidden flex items-center gap-1 bg-white border border-gray-200 rounded-md px-2 shadow-sm">
-            <input type="date" id="filter-start" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
+            <input type="date" id="filter-start" value="${startStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
             <span class="text-gray-400 text-xs">to</span>
-            <input type="date" id="filter-end" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
+            <input type="date" id="filter-end" value="${endStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
           </div>
           <select id="filter-pg" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[120px] truncate">
             <option value="all">All PGs</option>
             ${Array.from(pgs).sort().map(p => `<option value="${p}">${p}</option>`).join('')}
           </select>
-          <div class="w-full md:w-[300px]"><select id="filter-item" required></select></div>
+          <div class="w-full md:w-[250px]"><select id="filter-item" placeholder="Search Item..."></select></div>
         `;
       } else if (activeDashTab === 'management') {
-         html = `
-          <select id="filter-date" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-             <option value="${todayStr}">${todayStr} (Today)</option>
-             ${Array.from(dates).filter(d => d !== todayStr).sort((a,b) => new Date(b)-new Date(a)).map(d => `<option value="${d}">${d}</option>`).join('')}
-          </select>
-        `;
+         html = ``;
       }
       container.innerHTML = html;
       
       if(activeDashTab === 'master') {
         const iSel = document.getElementById('filter-item');
-        iSel.innerHTML = '<option value="all">All Items</option>';
+        iSel.innerHTML = '<option value="">Search Item...</option>';
         Array.from(items).sort().forEach(i => iSel.add(new Option(i, i)));
         if(tsDashItem) tsDashItem.destroy();
-        tsDashItem = new TomSelect("#filter-item", { allowEmptyOption: false, create: false, onChange: function() { renderDashboard(); } });
+        tsDashItem = new TomSelect("#filter-item", { allowEmptyOption: true, create: false, onChange: function() { renderDashboard(); } });
       }
     }
 
@@ -594,10 +593,10 @@
        return `${months[d.getMonth()]} ${d.getDate().toString().padStart(2, '0')}, ${d.getFullYear()}`;
     }
 
-    function toggleChartVis(key) {
-      const wrapper = document.querySelector(`.sec-chart-wrapper[data-key="${key}"]`);
+    function toggleChartVis(checkbox) {
+      const wrapper = document.querySelector(`.sec-chart-wrapper[data-key="${checkbox.value}"]`);
       if(wrapper) {
-         if(wrapper.style.display === 'none') wrapper.style.display = 'flex';
+         if(checkbox.checked) wrapper.style.display = 'flex';
          else wrapper.style.display = 'none';
       }
     }
@@ -605,10 +604,9 @@
     function renderDashboard() {
       if(!rawDashboardData || rawDashboardData.length === 0) return;
       const font = 'Inter, sans-serif';
-      const isMobile = window.innerWidth < 1024;
 
       // ==========================================
-      // TAB 1: LINE GRID (Horizontal Bars for Space)
+      // TAB 1: LINE GRID (Vertical Hollow Columns)
       // ==========================================
       if (activeDashTab === 'section') {
         const dateVal = document.getElementById('filter-date').value;
@@ -650,7 +648,7 @@
         Object.keys(lineItemData).sort().forEach((key, idx) => {
           visListHtml += `
             <label class="flex items-center gap-2 cursor-pointer p-1 hover:bg-gray-50 rounded">
-               <input type="checkbox" checked onchange="toggleChartVis('${key}')" class="rounded text-enovar focus:ring-enovar h-4 w-4">
+               <input type="checkbox" checked value="${key}" onchange="toggleChartVis(this)" class="rounded text-enovar focus:ring-enovar h-4 w-4">
                <span class="text-xs font-medium text-gray-700 truncate">${lineItemData[key].line} | ${lineItemData[key].itemStr}</span>
             </label>
           `;
@@ -674,38 +672,50 @@
 
           let chartId = 'sec-chart-' + idx;
           let wrapper = document.createElement('div');
-          wrapper.className = "sec-chart-wrapper bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0";
+          wrapper.className = "sec-chart-wrapper bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1";
           wrapper.dataset.key = key;
-          
-          let chartHeight = Math.max(250, sortedTimes.length * 35); // Dynamic height based on slots
           
           wrapper.innerHTML = `
             <div class="border-b border-gray-100 pb-2 mb-2 shrink-0">
               <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
               <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
             </div>
-            <div id="${chartId}" class="w-full" style="height: ${chartHeight}px"></div>
+            <div id="${chartId}" class="w-full h-[320px]"></div>
           `;
           grid.appendChild(wrapper);
 
           let options = {
-            chart: { type: 'bar', height: chartHeight, toolbar: { show: false }, fontFamily: font, animations: { enabled: false } },
+            chart: { type: 'bar', height: 320, toolbar: { show: false }, zoom: {enabled: false}, selection: {enabled: false}, fontFamily: font, animations: { enabled: false }, clip: true },
             series: [{ name: 'Productivity', data: actData }],
-            plotOptions: { bar: { horizontal: true, borderRadius: 2, dataLabels: { position: 'bottom' } } },
-            colors: ['#0D5C58'],
+            plotOptions: { bar: { horizontal: false, columnWidth: '60%', borderRadius: 2, dataLabels: { position: 'top' } } },
+            fill: { opacity: 0 },
+            stroke: { show: true, width: 2, colors: ['#0D5C58'] },
+            grid: { xaxis: { lines: { show: false } }, yaxis: { lines: { show: true } }, padding: { bottom: 20 } },
             dataLabels: { 
-              enabled: true, textAnchor: 'start', offsetX: 10,
-              style: { colors: ['#374151'], fontSize: '10px', fontFamily: font },
-              formatter: function(val, opts) {
-                if(val === null || val === undefined) return '';
-                let idx = opts.dataPointIndex;
-                return `Prod: ${val} | Qty: ${qtyArr[idx]} | MP: ${mpArr[idx]}`;
+               enabled: true, offsetY: -20, 
+               background: { enabled: false }, 
+               style: { fontSize: '11px', colors: ['#0D5C58'], fontWeight: 700 },
+               formatter: function(val) { return val; }
+            },
+            xaxis: { 
+              categories: sortedTimes,
+              labels: {
+                style: { fontSize: '10px', colors: '#6B7280', fontWeight: 600 },
+                formatter: function(value, timestamp, opts) {
+                  if(!opts || opts.dataPointIndex === undefined) return value;
+                  let idx = opts.dataPointIndex;
+                  let q = qtyArr[idx] || 0; let m = mpArr[idx] || 0;
+                  if (q===0 && m===0) return value;
+                  return [value, `Qty: ${q}`, `MP: ${m}`]; 
+                }
               }
             },
-            xaxis: { title: { text: 'Productivity' }, min: 0 },
-            yaxis: { categories: sortedTimes, labels: { style: { colors: '#6B7280', fontSize: '10px', fontWeight: 600 } } },
-            annotations: { xaxis: latestTarget > 0 ? [{ x: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, label: { text: 'Target: '+latestTarget, style: {color: '#fff', background: '#EF4444'} } }] : [] },
-            tooltip: { enabled: isMobile } 
+            yaxis: { 
+               title: { text: 'Productivity' }, min: 0,
+               max: function(max) { return latestTarget > max ? latestTarget * 1.1 : max * 1.1; }
+            },
+            annotations: { yaxis: latestTarget > 0 ? [{ y: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, label: { text: 'Target: '+latestTarget, style: {color: '#fff', background: '#EF4444'} } }] : [] },
+            tooltip: { enabled: false } 
           };
 
           let chart = new ApexCharts(document.getElementById(chartId), options);
@@ -718,10 +728,10 @@
       }
 
       // ==========================================
-      // TAB 2: MASTER ANALYTICS (Date Range & MP Fix)
+      // TAB 2: MASTER ANALYTICS
       // ==========================================
       if (activeDashTab === 'master') {
-        const preset = document.getElementById('master-date-preset') ? document.getElementById('master-date-preset').value : 'today';
+        const preset = document.getElementById('master-date-preset').value;
         let startDate, endDate;
         let today = new Date(); today.setHours(0,0,0,0);
         
@@ -741,23 +751,24 @@
         }
 
         const valPg = document.getElementById('filter-pg').value;
-        const valItem = tsDashItem ? tsDashItem.getValue() : 'all';
+        const valItem = tsDashItem ? tsDashItem.getValue() : '';
 
         let fData = rawDashboardData.filter(row => {
           if (valPg !== 'all' && row.pg !== valPg) return false;
-          if (valItem !== 'all' && `[${row.itemCode}] - ${row.item}` !== valItem) return false;
+          if (valItem && valItem !== '' && `[${row.itemCode}] - ${row.item}` !== valItem) return false;
           let rDate = new Date(row.date);
           if (rDate < startDate || rDate > endDate) return false;
           return true;
         });
 
-        let sumQty = 0, sumProdWeighted = 0;
+        let sumQty = 0, sumProd = 0, prodCount = 0, sumTarget = 0, targetCount = 0;
         let dateMap = {};
-        let dailyLineMp = {}; // For accurate MP calculation
+        let dailyLineMp = {}; 
 
         fData.forEach(r => {
           sumQty += r.qty;
-          sumProdWeighted += (r.productivity * r.mp); 
+          if(r.productivity > 0) { sumProd += r.productivity; prodCount++; }
+          if(r.targetProductivity > 0) { sumTarget += r.targetProductivity; targetCount++; }
           
           if(!dateMap[r.date]) dateMap[r.date] = { act: 0, tgt: 0, count: 0 };
           if(r.productivity > 0) { dateMap[r.date].act += r.productivity; dateMap[r.date].tgt += r.targetProductivity; dateMap[r.date].count++; }
@@ -769,10 +780,11 @@
         let totalTrueMp = 0;
         Object.values(dailyLineMp).forEach(lines => { Object.values(lines).forEach(mp => totalTrueMp += mp); });
 
-        let avgProd = totalTrueMp > 0 ? (sumProdWeighted / totalTrueMp).toFixed(1) : "0.0";
-        if (valItem !== 'all') avgProd = totalTrueMp > 0 ? (sumQty / totalTrueMp).toFixed(1) : "0.0";
+        let avgProd = prodCount > 0 ? (sumProd / prodCount).toFixed(1) : "0.0";
+        let avgTarget = targetCount > 0 ? (sumTarget / targetCount).toFixed(1) : "0.0";
 
         document.getElementById('master-kpi-prod').innerText = avgProd;
+        document.getElementById('master-kpi-target').innerText = avgTarget;
         document.getElementById('master-kpi-output').innerText = sumQty.toLocaleString();
         document.getElementById('master-kpi-mp').innerText = totalTrueMp.toLocaleString();
 
@@ -789,10 +801,10 @@
           stroke: { width: [3, 3], curve: 'smooth', dashArray: [0, 4] },
           markers: { size: 5, hover: { size: 7 } },
           colors: ['#0D5C58', '#EF4444'],
-          grid: { xaxis: { lines: { show: true } } }, // Vertical lines
+          grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } }, 
           xaxis: { categories: tDates, labels: { style: { colors: '#6B7280' } } },
           fill: { type: ['gradient', 'solid'], gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } },
-          dataLabels: { enabled: !isMobile, offsetY: -5, background: { enabled: true, foreColor: '#fff', borderRadius: 2, borderWidth: 0 }, style: { fontSize: '10px', colors: ['#0D5C58'] } }
+          dataLabels: { enabled: true, offsetY: -5, background: { enabled: true, foreColor: '#fff', borderRadius: 2, borderWidth: 0 }, style: { fontSize: '10px', colors: ['#0D5C58'] } }
         };
 
         if (masterTrendChart) masterTrendChart.destroy();
@@ -801,76 +813,50 @@
       }
 
       // ==========================================
-      // TAB 3: EXEC SUMMARY
+      // TAB 3: EXEC SUMMARY (Global All Time)
       // ==========================================
       if (activeDashTab === 'management') {
-        const valDate = document.getElementById('filter-date').value;
-        let fData = rawDashboardData.filter(row => row.date === valDate);
+        
+        let sumQty = 0, sumProd = 0, prodCount = 0, sumTarget = 0, targetCount = 0;
+        let lineProdMap = {};
+        let dailyLineMp = {};
 
-        let sumQty = 0, sumAchiev = 0, achievCount = 0;
-        let lineAchievMap = {};
-        let uniqueSlotsPassed = new Set();
-
-        fData.forEach(r => {
+        rawDashboardData.forEach(r => {
           sumQty += r.qty;
-          if(r.qty > 0 || r.mp > 0) uniqueSlotsPassed.add(r.line + "_" + r.time); 
-          if(r.achievement > 0) { 
-             sumAchiev += r.achievement; achievCount++; 
-             if(!lineAchievMap[r.line]) lineAchievMap[r.line] = { achiev: 0, count: 0 };
-             lineAchievMap[r.line].achiev += r.achievement; lineAchievMap[r.line].count++;
+          if(r.productivity > 0) { sumProd += r.productivity; prodCount++; }
+          if(r.targetProductivity > 0) { sumTarget += r.targetProductivity; targetCount++; }
+          
+          if(!dailyLineMp[r.date]) dailyLineMp[r.date] = {};
+          dailyLineMp[r.date][r.line] = Math.max(dailyLineMp[r.date][r.line] || 0, r.mp);
+
+          if(r.productivity > 0) { 
+             if(!lineProdMap[r.line]) lineProdMap[r.line] = { prod: 0, count: 0 };
+             lineProdMap[r.line].prod += r.productivity; 
+             lineProdMap[r.line].count++;
           }
         });
 
-        let overallAchiev = achievCount > 0 ? parseFloat((sumAchiev / achievCount * 100).toFixed(1)) : 0;
-        let gaugeColor = overallAchiev >= 90 ? '#10B981' : overallAchiev >= 75 ? '#F59E0B' : '#EF4444';
+        let totalTrueMp = 0;
+        Object.values(dailyLineMp).forEach(lines => { Object.values(lines).forEach(mp => totalTrueMp += mp); });
 
-        let gOptions = {
-          series: [overallAchiev], chart: { type: 'radialBar', height: 250, fontFamily: font },
-          plotOptions: {
-            radialBar: {
-              startAngle: -135, endAngle: 135, hollow: { size: '60%' },
-              dataLabels: {
-                name: { fontSize: '12px', color: '#6B7280', offsetY: 20 },
-                value: { fontSize: '28px', fontWeight: 800, color: gaugeColor, offsetY: -10, formatter: function (val) { return val + "%" } }
-              }
-            }
-          },
-          fill: { colors: [gaugeColor] }, stroke: { lineCap: 'round' }, labels: ['Achievement']
-        };
-        if(gaugeChart) gaugeChart.destroy();
-        gaugeChart = new ApexCharts(document.querySelector("#chart-mgmt-gauge"), gOptions);
-        gaugeChart.render();
+        let avgProd = prodCount > 0 ? (sumProd / prodCount).toFixed(1) : "0.0";
+        let avgTarget = targetCount > 0 ? (sumTarget / targetCount).toFixed(1) : "0.0";
 
-        let totalActiveLines = Object.keys(lineAchievMap).length;
-        let avgSlotsPassed = totalActiveLines > 0 ? (uniqueSlotsPassed.size / totalActiveLines) : 0;
-        let totalShiftSlots = masterAuthData ? masterAuthData.times.length : 12; 
-        let projected = 0;
-        if (avgSlotsPassed > 0 && avgSlotsPassed <= totalShiftSlots) {
-           let runRate = sumQty / avgSlotsPassed; projected = Math.round(runRate * totalShiftSlots);
-        } else { projected = sumQty; }
+        document.getElementById('exec-kpi-prod').innerText = avgProd;
+        document.getElementById('exec-kpi-target').innerText = avgTarget;
+        document.getElementById('exec-kpi-output').innerText = sumQty.toLocaleString();
+        document.getElementById('exec-kpi-mp').innerText = totalTrueMp.toLocaleString();
 
-        document.getElementById('mgmt-current-output').innerText = sumQty.toLocaleString();
-        document.getElementById('mgmt-completed-slots').innerText = avgSlotsPassed.toFixed(1);
-        
-        let projEl = document.getElementById('mgmt-projected-output');
-        let currentProj = parseInt(projEl.innerText.replace(/,/g, '')) || 0;
-        let step = (projected - currentProj) / 20; let iter = 0;
-        let anim = setInterval(() => {
-           iter++;
-           if(iter >= 20) { clearInterval(anim); projEl.innerText = projected.toLocaleString(); }
-           else { projEl.innerText = Math.round(currentProj + (step * iter)).toLocaleString(); }
-        }, 30);
-
-        let sortedLines = Object.keys(lineAchievMap).map(l => { return { line: l, score: (lineAchievMap[l].achiev / lineAchievMap[l].count * 100) }; }).sort((a,b) => b.score - a.score);
-        const topContainer = document.getElementById('mgmt-top-lines'), botContainer = document.getElementById('mgmt-bottom-lines');
+        let sortedLines = Object.keys(lineProdMap).map(l => { return { line: l, score: (lineProdMap[l].prod / lineProdMap[l].count) }; }).sort((a,b) => b.score - a.score);
+        const topContainer = document.getElementById('exec-top-lines'), botContainer = document.getElementById('exec-bottom-lines');
         topContainer.innerHTML = ''; botContainer.innerHTML = '';
 
         if(sortedLines.length === 0) {
            topContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>'; botContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>';
         } else {
            let top3 = sortedLines.slice(0, 3); let bot3 = sortedLines.slice(-3).reverse(); 
-           top3.forEach((l, idx) => { topContainer.innerHTML += `<div class="flex justify-between items-center bg-green-50/50 p-2 rounded border border-green-100"><span class="text-xs font-bold text-gray-800">${idx+1}. ${l.line}</span><span class="text-xs font-black text-green-600">${l.score.toFixed(1)}%</span></div>`; });
-           bot3.forEach((l, idx) => { botContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50/50 p-2 rounded border border-red-100"><span class="text-xs font-bold text-gray-800">${sortedLines.length - idx}. ${l.line}</span><span class="text-xs font-black text-red-600">${l.score.toFixed(1)}%</span></div>`; });
+           top3.forEach((l, idx) => { topContainer.innerHTML += `<div class="flex justify-between items-center bg-green-50/50 p-2 rounded border border-green-100"><span class="text-xs font-bold text-gray-800">${idx+1}. ${l.line}</span><span class="text-xs font-black text-green-600">${l.score.toFixed(1)} Prod</span></div>`; });
+           bot3.forEach((l, idx) => { botContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50/50 p-2 rounded border border-red-100"><span class="text-xs font-bold text-gray-800">${sortedLines.length - idx}. ${l.line}</span><span class="text-xs font-black text-red-600">${l.score.toFixed(1)} Prod</span></div>`; });
         }
       }
     }
