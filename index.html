@@ -37,25 +37,18 @@
     .live-pulse { animation: pulse 2s infinite; }
     @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(13, 92, 88, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(13, 92, 88, 0); } 100% { box-shadow: 0 0 0 0 rgba(13, 92, 88, 0); } }
 
-    /* Custom scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    
-    /* Maximize Chart Class */
-    .chart-maximized { position: fixed !important; top: 20px; left: 20px; right: 20px; bottom: 20px; z-index: 9999 !important; background: white; height: calc(100vh - 40px) !important; width: calc(100vw - 40px) !important; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border-radius: 12px; display: flex; flex-col; padding: 24px; }
-    .chart-maximized .apexcharts-canvas { height: 100% !important; flex: 1; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
   
-  <!-- BACKGROUND ELEMENTS -->
   <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
     <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px); background-size: 20px 20px; opacity: 0.04;"></div>
   </div>
 
-  <!-- 1. LANDING PAGE VIEW -->
   <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-between z-10 relative pt-5 pb-6 md:pt-8 md:pb-10">
     <div class="w-full flex justify-center animate-fade-up opacity-0">
       <img src="alel.png" alt="ALEL Logo" class="h-[50px] md:h-[60px] object-contain drop-shadow-sm">
@@ -70,18 +63,16 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full px-2 animate-fade-up opacity-0 delay-200">
-        <!-- Entry Card -->
         <button onclick="openLogin('entry')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1">
-          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors">
+          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors border border-gray-100/50">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
           </div>
           <h3 class="text-xl font-bold text-gray-900 mb-2">Data Entry</h3>
           <p class="text-xs text-gray-500 font-medium mb-5">Input shift details, manpower, and realtime production yields.</p>
         </button>
 
-        <!-- Dashboard Card -->
         <button onclick="openLogin('dashboard')" class="group relative bg-white/70 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/30 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1">
-          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors">
+          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors border border-gray-100/50">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           </div>
           <h3 class="text-xl font-bold text-gray-900 mb-2">Operations Analytics</h3>
@@ -90,7 +81,6 @@
       </div>
     </div>
     
-    <!-- Footer with Quotes & Colored Logo -->
     <div class="w-full flex justify-between items-end px-4 sm:px-10 animate-fade-up opacity-0 delay-200">
       <div class="hidden md:block max-w-[220px] opacity-40">
         <p class="font-serif italic text-sm leading-relaxed">"Improved productivity means less human sweat, not more."</p>
@@ -102,7 +92,6 @@
     </div>
   </div>
 
-  <!-- 2. LOGIN SCREEN -->
   <div id="login-screen" class="hidden bg-white/80 backdrop-blur-xl p-8 sm:p-10 rounded-2xl shadow-xl text-center max-w-md w-full border border-white flex flex-col items-center relative z-20">
     <button onclick="returnToLanding()" class="absolute top-4 left-4 text-gray-400 hover:text-enovar transition-colors p-2 bg-gray-50 hover:bg-enovar/10 rounded-full">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
@@ -117,28 +106,25 @@
     <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"></div>
   </div>
 
-  <!-- 3. LOADER -->
   <div id="loader" class="hidden text-center text-enovar font-medium text-sm flex flex-col items-center bg-white/90 p-8 rounded-2xl shadow-xl backdrop-blur-md z-50 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-enovar/20">
     <svg class="animate-spin h-10 w-10 text-enovar mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
     <span id="loader-text">Loading Data...</span>
   </div>
   
-  <!-- 4. DENIED SCREEN -->
   <div id="denied" class="hidden bg-white/90 backdrop-blur-lg p-8 rounded-2xl shadow-xl text-center max-w-md w-full border-t-4 border-red-500 z-20">
     <h2 class="text-lg font-bold text-gray-900 mb-1">Access Denied</h2>
     <p class="text-gray-500 text-xs mb-6">User <span id="user-email" class="font-bold text-gray-800"></span> lacks authorization.</p>
-    <button onclick="requestAccess()" class="w-full bg-enovar hover:bg-enovar-light text-white font-medium text-sm py-2.5 rounded-xl transition-all shadow-sm mb-2.5">Request Admin Access</button>
+    <button id="requestBtn" onclick="requestAccess()" class="w-full bg-enovar hover:bg-enovar-light text-white font-medium text-sm py-2.5 rounded-xl transition-all shadow-sm mb-2.5">Request Admin Access</button>
     <button onclick="togglePortalTarget()" id="denied-switch-btn" class="w-full bg-enovar/10 hover:bg-enovar/20 text-enovar font-medium text-sm py-2.5 rounded-xl transition-all mb-2.5">Switch to Other Portal</button>
     <button onclick="logout()" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium text-sm py-2.5 rounded-xl transition-all border border-gray-200">Switch Account</button>
     <div id="requestSuccess" class="hidden mt-4 text-green-700 font-medium bg-green-50 p-3 rounded-xl border border-green-200 text-xs">Request sent to Administration.</div>
   </div>
   
-  <!-- 5. DATA ENTRY PORTAL -->
   <div id="app" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-xl w-full border border-white z-20">
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
       <img src="alel.png" alt="ALEL" class="h-6 object-contain">
       <div class="flex items-center gap-3">
-        <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Dashboard</button>
+        <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Analytics</button>
         <img src="enovar.png" alt="Enovar" class="h-4 object-contain">
       </div>
     </div>
@@ -189,7 +175,6 @@
     </div>
   </div>
 
-  <!-- ENTRY HISTORY VIEW -->
   <div id="history-view" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-2xl w-full border border-white z-20">
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
       <h2 class="text-lg font-bold text-gray-900">Entry History</h2>
@@ -202,10 +187,8 @@
     <div id="entries-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
   </div>
 
-  <!-- 6. ANALYTICS PORTAL (FULL SCREEN) -->
   <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-[#F8FAFC] z-50 flex flex-col overflow-hidden">
     
-    <!-- Dashboard Header -->
     <div class="flex justify-between items-center px-4 sm:px-6 py-3 bg-white shadow-sm border-b border-gray-200 w-full z-20 relative shrink-0">
       <div class="flex items-center gap-3 sm:gap-5">
         <img src="alel.png" alt="ALEL" class="h-6 sm:h-8 object-contain">
@@ -228,41 +211,31 @@
       </div>
     </div>
 
-    <!-- Dashboard Sub-Header (Tabs & Filters) -->
-    <div class="w-full bg-white border-b border-gray-200 z-10 shrink-0 shadow-sm">
+    <div class="w-full bg-white border-b border-gray-200 z-10 shrink-0 shadow-sm relative">
       <div class="w-full px-4 sm:px-6 py-2.5 flex flex-col md:flex-row justify-between items-center gap-3">
         
-        <!-- View Tabs -->
         <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 w-full md:w-auto overflow-x-auto no-scrollbar">
           <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Line Grid</button>
           <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Master Analytics</button>
           <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Exec Summary</button>
         </div>
 
-        <!-- Dynamic Filters Area -->
-        <div id="filter-container" class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end">
-          <!-- Injected by JS -->
-        </div>
+        <div id="filter-container" class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end"></div>
       </div>
     </div>
 
-    <!-- Scrollable Content Area -->
     <div class="flex-1 w-full overflow-y-auto bg-transparent p-3 sm:p-6 pb-16 relative">
       
-      <!-- TAB 1: LINE GRID -->
       <div id="view-section" class="w-full space-y-4">
-        <!-- Strictly 2 Columns on Desktop -->
-        <div id="section-charts-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Charts injected here -->
-        </div>
+        <div id="section-charts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+          </div>
         <div id="section-empty-msg" class="hidden text-center text-gray-500 py-10 font-medium">No data found for this selection.</div>
       </div>
 
-      <!-- TAB 2: MASTER ANALYTICS -->
       <div id="view-master" class="w-full space-y-4 hidden max-w-7xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Productivity (Weighted)</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Avg Productivity</span>
               <span id="master-kpi-prod" class="text-3xl font-bold text-enovar">0.0</span>
            </div>
            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
@@ -270,7 +243,7 @@
               <span id="master-kpi-output" class="text-3xl font-bold text-gray-800">0</span>
            </div>
            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Manpower Deployed</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Peak Manpower</span>
               <span id="master-kpi-mp" class="text-3xl font-bold text-gray-800">0</span>
            </div>
         </div>
@@ -280,7 +253,6 @@
         </div>
       </div>
 
-      <!-- TAB 3: EXEC SUMMARY -->
       <div id="view-management" class="w-full space-y-5 hidden max-w-6xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center relative">
@@ -314,9 +286,8 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5cZBzzZOjcrKDpuq0TKh0rDf5ExBL45F6FA0c13a1ayOpZMQHLbIVh65LAktUFP9J6g/exec"; 
     
-    // Global States
     let tsItem, tsLine, tsTime;
-    let tsDashItem, tsDashVisibleCharts; 
+    let tsDashItem; 
     let currentUser = {};
     let historyCache = {}; 
     let targetPortal = null; 
@@ -324,7 +295,7 @@
     let rawDashboardData = []; 
     let activeDashTab = 'section';
     let syncTimer = null; 
-    let sectionChartInstances = {}; // mapped by id
+    let sectionChartInstances = {}; 
     let masterTrendChart = null;
     let gaugeChart = null;
 
@@ -399,9 +370,10 @@
       else if (document.exitFullscreen) document.exitFullscreen();
     }
 
-    // Request Access Fix
     function requestAccess() {
-      const btn = document.getElementById('requestBtn'); btn.innerText = "Sending...";
+      const btn = document.getElementById('requestBtn'); 
+      if(!btn) return;
+      btn.innerText = "Sending...";
       callAPI({ action: "requestAccess", email: currentUser.email, name: currentUser.name, requestedApp: targetPortal }, function(data) {
         btn.classList.add('hidden'); document.getElementById('requestSuccess').classList.remove('hidden');
       });
@@ -464,13 +436,16 @@
       
       if(tsItem) { tsItem.destroy(); tsLine.destroy(); tsTime.destroy(); }
       
-      const itemSelect = document.getElementById('item'); itemSelect.innerHTML = ''; data.items.forEach(i => itemSelect.add(new Option(i, i)));
-      const lineSelect = document.getElementById('line'); lineSelect.innerHTML = ''; data.lines.forEach(l => lineSelect.add(new Option(l, l)));
-      const timeSelect = document.getElementById('time'); timeSelect.innerHTML = ''; data.times.forEach(t => timeSelect.add(new Option(t, t)));
+      const itemSelect = document.getElementById('item'); itemSelect.innerHTML = '<option value="">Select Item...</option>'; 
+      data.items.forEach(i => itemSelect.add(new Option(i, i)));
+      const lineSelect = document.getElementById('line'); lineSelect.innerHTML = '<option value="">Select Line...</option>'; 
+      data.lines.forEach(l => lineSelect.add(new Option(l, l)));
+      const timeSelect = document.getElementById('time'); timeSelect.innerHTML = '<option value="">Select Time...</option>'; 
+      data.times.forEach(t => timeSelect.add(new Option(t, t)));
       
-      tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false, placeholder: "Search item..."});
-      tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false, placeholder: "Select line..."});
-      tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false, placeholder: "Select time slot..."});
+      tsItem = new TomSelect("#item", { allowEmptyOption: false, create: false });
+      tsLine = new TomSelect("#line", { allowEmptyOption: false, create: false });
+      tsTime = new TomSelect("#time", { allowEmptyOption: false, create: false });
     }
 
     async function submitForm(e) {
@@ -549,7 +524,6 @@
           if(r.itemCode && r.item) items.add(`[${r.itemCode}] - ${r.item}`);
         });
       }
-
       let todayStr = Utilities_formatDateClient(new Date());
 
       if(activeDashTab === 'section') {
@@ -562,26 +536,31 @@
              <option value="${todayStr}">${todayStr} (Today)</option>
              ${Array.from(dates).filter(d => d !== todayStr).sort((a,b) => new Date(b)-new Date(a)).map(d => `<option value="${d}">${d}</option>`).join('')}
           </select>
-          <div class="w-full md:w-[250px]">
-            <select id="filter-visible-charts" multiple placeholder="Filter visible charts..." class="text-xs"></select>
+          
+          <div class="relative inline-block text-left">
+            <button onclick="document.getElementById('chart-vis-menu').classList.toggle('hidden')" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 hover:bg-gray-50 shadow-sm flex items-center gap-2">
+              Filter Charts <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div id="chart-vis-menu" class="hidden absolute right-0 mt-2 w-64 rounded-md shadow-xl bg-white ring-1 ring-black ring-opacity-5 z-50 p-3 max-h-64 overflow-y-auto">
+               <div id="chart-vis-list" class="space-y-2"></div>
+            </div>
           </div>
         `;
       } else if (activeDashTab === 'master') {
-        // Master now uses Date Range
-        let defaultStartDate = new Date(); defaultStartDate.setDate(defaultStartDate.getDate() - 7);
-        let startStr = defaultStartDate.toISOString().split('T')[0];
-        let endStr = new Date().toISOString().split('T')[0];
         html = `
-          <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-md px-2 shadow-sm">
-            <input type="date" id="filter-start" value="${startStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
+          <select id="master-date-preset" onchange="toggleMasterDateRange()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
+             <option value="today">Today</option><option value="7">Last 7 Days</option><option value="30">Last 30 Days</option><option value="custom">Date Range</option><option value="all">All Time</option>
+          </select>
+          <div id="master-date-range-container" class="hidden flex items-center gap-1 bg-white border border-gray-200 rounded-md px-2 shadow-sm">
+            <input type="date" id="filter-start" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
             <span class="text-gray-400 text-xs">to</span>
-            <input type="date" id="filter-end" value="${endStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
+            <input type="date" id="filter-end" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
           </div>
           <select id="filter-pg" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[120px] truncate">
             <option value="all">All PGs</option>
             ${Array.from(pgs).sort().map(p => `<option value="${p}">${p}</option>`).join('')}
           </select>
-          <div class="w-full md:w-[300px]"><select id="filter-item" placeholder="Search Item..." class="text-xs"></select></div>
+          <div class="w-full md:w-[300px]"><select id="filter-item" required></select></div>
         `;
       } else if (activeDashTab === 'management') {
          html = `
@@ -591,7 +570,6 @@
           </select>
         `;
       }
-      
       container.innerHTML = html;
       
       if(activeDashTab === 'master') {
@@ -601,11 +579,14 @@
         if(tsDashItem) tsDashItem.destroy();
         tsDashItem = new TomSelect("#filter-item", { allowEmptyOption: false, create: false, onChange: function() { renderDashboard(); } });
       }
-      if(activeDashTab === 'section') {
-        if(tsDashVisibleCharts) tsDashVisibleCharts.destroy();
-        // Options will be populated during render based on available lines
-        tsDashVisibleCharts = new TomSelect("#filter-visible-charts", { plugins: ['remove_button'], create: false, onChange: function() { applyChartVisibility(); }});
-      }
+    }
+
+    function toggleMasterDateRange() {
+      const preset = document.getElementById('master-date-preset').value;
+      const container = document.getElementById('master-date-range-container');
+      if (preset === 'custom') container.classList.remove('hidden');
+      else container.classList.add('hidden');
+      renderDashboard();
     }
 
     function Utilities_formatDateClient(d) {
@@ -613,39 +594,22 @@
        return `${months[d.getMonth()]} ${d.getDate().toString().padStart(2, '0')}, ${d.getFullYear()}`;
     }
 
-    function toggleMaximize(wrapperId) {
-       const el = document.getElementById(wrapperId);
-       if(el.classList.contains('chart-maximized')) {
-          el.classList.remove('chart-maximized');
-          el.querySelector('.max-btn').innerHTML = '⛶';
-       } else {
-          el.classList.add('chart-maximized');
-          el.querySelector('.max-btn').innerHTML = '✖';
-       }
-       // Tell apexcharts to resize
-       window.dispatchEvent(new Event('resize'));
-    }
-
-    function applyChartVisibility() {
-       if(!tsDashVisibleCharts) return;
-       const selected = tsDashVisibleCharts.getValue(); // array
-       const wrappers = document.querySelectorAll('.sec-chart-wrapper');
-       if(selected.length === 0) {
-          wrappers.forEach(w => w.style.display = 'block'); // show all
-       } else {
-          wrappers.forEach(w => {
-             if(selected.includes(w.dataset.key)) w.style.display = 'block';
-             else w.style.display = 'none';
-          });
-       }
+    function toggleChartVis(key) {
+      const wrapper = document.querySelector(`.sec-chart-wrapper[data-key="${key}"]`);
+      if(wrapper) {
+         if(wrapper.style.display === 'none') wrapper.style.display = 'flex';
+         else wrapper.style.display = 'none';
+      }
     }
 
     function renderDashboard() {
       if(!rawDashboardData || rawDashboardData.length === 0) return;
-
-      const isMobile = window.innerWidth < 1024;
       const font = 'Inter, sans-serif';
+      const isMobile = window.innerWidth < 1024;
 
+      // ==========================================
+      // TAB 1: LINE GRID (Horizontal Bars for Space)
+      // ==========================================
       if (activeDashTab === 'section') {
         const dateVal = document.getElementById('filter-date').value;
         const secVal = document.getElementById('filter-section').value;
@@ -658,15 +622,12 @@
 
         const grid = document.getElementById('section-charts-grid');
         const emptyMsg = document.getElementById('section-empty-msg');
-        
         Object.values(sectionChartInstances).forEach(c => c.destroy());
-        sectionChartInstances = {};
-        grid.innerHTML = '';
+        sectionChartInstances = {}; grid.innerHTML = '';
 
         if (fData.length === 0) { emptyMsg.classList.remove('hidden'); return; } 
         else emptyMsg.classList.add('hidden');
 
-        // Group by Line + Item! 
         let lineItemData = {};
         let masterTimesSet = new Set(masterAuthData ? masterAuthData.times : []);
         fData.forEach(r => masterTimesSet.add(r.time));
@@ -684,10 +645,15 @@
           lineItemData[key].times[row.time].count++;
         });
 
-        let availableKeys = [];
+        let visListHtml = '';
 
         Object.keys(lineItemData).sort().forEach((key, idx) => {
-          availableKeys.push({value: key, text: lineItemData[key].line + ' | ' + lineItemData[key].itemStr});
+          visListHtml += `
+            <label class="flex items-center gap-2 cursor-pointer p-1 hover:bg-gray-50 rounded">
+               <input type="checkbox" checked onchange="toggleChartVis('${key}')" class="rounded text-enovar focus:ring-enovar h-4 w-4">
+               <span class="text-xs font-medium text-gray-700 truncate">${lineItemData[key].line} | ${lineItemData[key].itemStr}</span>
+            </label>
+          `;
           
           let actData = [], tgtData = [], qtyArr = [], mpArr = [];
           let hasData = false, latestTarget = 0;
@@ -701,90 +667,81 @@
                qtyArr.push(cell.qty); mpArr.push(cell.mp);
                hasData = true;
             } else {
-               actData.push(null); qtyArr.push(0); mpArr.push(0);
+               actData.push(null); tgtData.push(null); qtyArr.push(0); mpArr.push(0);
             }
           });
-
           if (!hasData) return;
 
           let chartId = 'sec-chart-' + idx;
-          let wrapperId = 'sec-wrap-' + idx;
           let wrapper = document.createElement('div');
-          wrapper.id = wrapperId;
-          wrapper.className = "sec-chart-wrapper bg-white p-4 rounded-xl shadow-sm border border-gray-200 transition-all flex flex-col";
+          wrapper.className = "sec-chart-wrapper bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0";
           wrapper.dataset.key = key;
           
-          let headerHtml = `
-            <div class="flex justify-between items-start border-b border-gray-100 pb-2 mb-2">
-              <div>
-                <h3 class="text-sm font-black text-gray-800">${lineItemData[key].line}</h3>
-                <p class="text-[10px] font-bold text-enovar uppercase tracking-wider">${lineItemData[key].itemStr}</p>
-              </div>
-              <button class="max-btn text-gray-400 hover:text-enovar px-2" onclick="toggleMaximize('${wrapperId}')">⛶</button>
+          let chartHeight = Math.max(250, sortedTimes.length * 35); // Dynamic height based on slots
+          
+          wrapper.innerHTML = `
+            <div class="border-b border-gray-100 pb-2 mb-2 shrink-0">
+              <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
+              <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
             </div>
-            <div id="${chartId}" class="w-full flex-1 min-h-[250px]"></div>
+            <div id="${chartId}" class="w-full" style="height: ${chartHeight}px"></div>
           `;
-          wrapper.innerHTML = headerHtml;
           grid.appendChild(wrapper);
 
           let options = {
-            chart: { type: 'line', height: '100%', toolbar: { show: false }, zoom: {enabled: false}, selection: {enabled: false}, fontFamily: font, animations: { enabled: false } },
-            series: [{ name: 'Actual Prod', data: actData }],
-            stroke: { width: 3, curve: 'smooth' },
+            chart: { type: 'bar', height: chartHeight, toolbar: { show: false }, fontFamily: font, animations: { enabled: false } },
+            series: [{ name: 'Productivity', data: actData }],
+            plotOptions: { bar: { horizontal: true, borderRadius: 2, dataLabels: { position: 'bottom' } } },
             colors: ['#0D5C58'],
-            markers: { size: 5, hover: { size: 7 } },
-            grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } },
-            dataLabels: { enabled: true, offsetY: -5, background: { enabled: true, foreColor: '#fff', borderRadius: 2, borderWidth: 0, dropShadow: {enabled: true, top: 1, left: 1, blur: 1, opacity: 0.2} }, style: { fontSize: '10px', colors: ['#0D5C58'] } },
-            xaxis: { 
-              categories: sortedTimes,
-              labels: {
-                style: { fontSize: '10px', colors: '#6B7280' },
-                formatter: function(value, timestamp, opts) {
-                  if(isMobile || !opts) return value; 
-                  let dataIdx = opts.dataPointIndex;
-                  if(dataIdx === undefined) return value;
-                  let q = qtyArr[dataIdx] || 0; let m = mpArr[dataIdx] || 0;
-                  if (q===0 && m===0) return value;
-                  return [value, `Q: ${q}`, `M: ${m}`]; 
-                }
+            dataLabels: { 
+              enabled: true, textAnchor: 'start', offsetX: 10,
+              style: { colors: ['#374151'], fontSize: '10px', fontFamily: font },
+              formatter: function(val, opts) {
+                if(val === null || val === undefined) return '';
+                let idx = opts.dataPointIndex;
+                return `Prod: ${val} | Qty: ${qtyArr[idx]} | MP: ${mpArr[idx]}`;
               }
             },
-            yaxis: { title: { text: 'Productivity' }, min: 0 },
-            annotations: { yaxis: latestTarget > 0 ? [{ y: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, label: { text: 'Target: '+latestTarget, style: {color: '#fff', background: '#EF4444'} } }] : [] },
-            tooltip: {
-               enabled: isMobile, // Tooltip only on mobile
-               custom: function({series, seriesIndex, dataPointIndex, w}) {
-                 let q = qtyArr[dataPointIndex] || 0; let m = mpArr[dataPointIndex] || 0;
-                 let p = series[seriesIndex][dataPointIndex] !== null ? series[seriesIndex][dataPointIndex] : 'N/A';
-                 return `<div class="p-2 text-xs shadow-lg bg-white border border-gray-100 rounded-md"><div class="font-bold border-b border-gray-100 mb-1 pb-1">${sortedTimes[dataPointIndex]}</div><div>Prod: <span class="font-bold text-enovar">${p}</span></div><div>Qty: <span class="font-semibold">${q}</span></div><div>MP: <span class="font-semibold">${m}</span></div></div>`;
-               }
-            }
+            xaxis: { title: { text: 'Productivity' }, min: 0 },
+            yaxis: { categories: sortedTimes, labels: { style: { colors: '#6B7280', fontSize: '10px', fontWeight: 600 } } },
+            annotations: { xaxis: latestTarget > 0 ? [{ x: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, label: { text: 'Target: '+latestTarget, style: {color: '#fff', background: '#EF4444'} } }] : [] },
+            tooltip: { enabled: isMobile } 
           };
 
           let chart = new ApexCharts(document.getElementById(chartId), options);
           chart.render();
           sectionChartInstances[chartId] = chart;
         });
-
-        // Update TomSelect for visible charts
-        if(tsDashVisibleCharts) {
-           tsDashVisibleCharts.clearOptions();
-           availableKeys.forEach(k => tsDashVisibleCharts.addOption(k));
-           tsDashVisibleCharts.refreshOptions(false);
-        }
+        
+        let listEl = document.getElementById('chart-vis-list');
+        if(listEl) listEl.innerHTML = visListHtml;
       }
 
       // ==========================================
-      // TAB 2: MASTER ANALYTICS (Date Range)
+      // TAB 2: MASTER ANALYTICS (Date Range & MP Fix)
       // ==========================================
       if (activeDashTab === 'master') {
-        const valStart = document.getElementById('filter-start').value;
-        const valEnd = document.getElementById('filter-end').value;
+        const preset = document.getElementById('master-date-preset') ? document.getElementById('master-date-preset').value : 'today';
+        let startDate, endDate;
+        let today = new Date(); today.setHours(0,0,0,0);
+        
+        if (preset === 'today') {
+           startDate = today; endDate = new Date(today.getTime() + 86399999);
+        } else if (preset === '7') {
+           startDate = new Date(today); startDate.setDate(startDate.getDate() - 6);
+           endDate = new Date(today.getTime() + 86399999);
+        } else if (preset === '30') {
+           startDate = new Date(today); startDate.setDate(startDate.getDate() - 29);
+           endDate = new Date(today.getTime() + 86399999);
+        } else if (preset === 'custom') {
+           startDate = new Date(document.getElementById('filter-start').value); startDate.setHours(0,0,0,0);
+           endDate = new Date(document.getElementById('filter-end').value); endDate.setHours(23,59,59,999);
+        } else {
+           startDate = new Date(0); endDate = new Date(8640000000000000); 
+        }
+
         const valPg = document.getElementById('filter-pg').value;
         const valItem = tsDashItem ? tsDashItem.getValue() : 'all';
-
-        let startDate = new Date(valStart); startDate.setHours(0,0,0,0);
-        let endDate = new Date(valEnd); endDate.setHours(23,59,59,999);
 
         let fData = rawDashboardData.filter(row => {
           if (valPg !== 'all' && row.pg !== valPg) return false;
@@ -794,22 +751,30 @@
           return true;
         });
 
-        let sumQty = 0, sumMp = 0, sumProdWeighted = 0;
+        let sumQty = 0, sumProdWeighted = 0;
         let dateMap = {};
+        let dailyLineMp = {}; // For accurate MP calculation
 
         fData.forEach(r => {
-          sumQty += r.qty; sumMp += r.mp;
+          sumQty += r.qty;
           sumProdWeighted += (r.productivity * r.mp); 
+          
           if(!dateMap[r.date]) dateMap[r.date] = { act: 0, tgt: 0, count: 0 };
           if(r.productivity > 0) { dateMap[r.date].act += r.productivity; dateMap[r.date].tgt += r.targetProductivity; dateMap[r.date].count++; }
+          
+          if(!dailyLineMp[r.date]) dailyLineMp[r.date] = {};
+          dailyLineMp[r.date][r.line] = Math.max(dailyLineMp[r.date][r.line] || 0, r.mp);
         });
 
-        let avgProd = sumMp > 0 ? (sumProdWeighted / sumMp).toFixed(1) : "0.0";
-        if (valItem !== 'all') avgProd = sumMp > 0 ? (sumQty / sumMp).toFixed(1) : "0.0";
+        let totalTrueMp = 0;
+        Object.values(dailyLineMp).forEach(lines => { Object.values(lines).forEach(mp => totalTrueMp += mp); });
+
+        let avgProd = totalTrueMp > 0 ? (sumProdWeighted / totalTrueMp).toFixed(1) : "0.0";
+        if (valItem !== 'all') avgProd = totalTrueMp > 0 ? (sumQty / totalTrueMp).toFixed(1) : "0.0";
 
         document.getElementById('master-kpi-prod').innerText = avgProd;
         document.getElementById('master-kpi-output').innerText = sumQty.toLocaleString();
-        document.getElementById('master-kpi-mp').innerText = sumMp.toLocaleString();
+        document.getElementById('master-kpi-mp').innerText = totalTrueMp.toLocaleString();
 
         let tDates = Object.keys(dateMap).sort((a,b) => new Date(a) - new Date(b));
         let actVals = tDates.map(d => dateMap[d].count > 0 ? parseFloat((dateMap[d].act/dateMap[d].count).toFixed(1)) : 0);
@@ -822,10 +787,12 @@
             { name: 'Target Productivity', type: 'line', data: tgtVals }
           ],
           stroke: { width: [3, 3], curve: 'smooth', dashArray: [0, 4] },
+          markers: { size: 5, hover: { size: 7 } },
           colors: ['#0D5C58', '#EF4444'],
+          grid: { xaxis: { lines: { show: true } } }, // Vertical lines
           xaxis: { categories: tDates, labels: { style: { colors: '#6B7280' } } },
           fill: { type: ['gradient', 'solid'], gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } },
-          dataLabels: { enabled: !isMobile } // Enable on desktop, disable on phone
+          dataLabels: { enabled: !isMobile, offsetY: -5, background: { enabled: true, foreColor: '#fff', borderRadius: 2, borderWidth: 0 }, style: { fontSize: '10px', colors: ['#0D5C58'] } }
         };
 
         if (masterTrendChart) masterTrendChart.destroy();
@@ -847,12 +814,10 @@
         fData.forEach(r => {
           sumQty += r.qty;
           if(r.qty > 0 || r.mp > 0) uniqueSlotsPassed.add(r.line + "_" + r.time); 
-
           if(r.achievement > 0) { 
              sumAchiev += r.achievement; achievCount++; 
              if(!lineAchievMap[r.line]) lineAchievMap[r.line] = { achiev: 0, count: 0 };
-             lineAchievMap[r.line].achiev += r.achievement;
-             lineAchievMap[r.line].count++;
+             lineAchievMap[r.line].achiev += r.achievement; lineAchievMap[r.line].count++;
           }
         });
 
@@ -860,21 +825,17 @@
         let gaugeColor = overallAchiev >= 90 ? '#10B981' : overallAchiev >= 75 ? '#F59E0B' : '#EF4444';
 
         let gOptions = {
-          series: [overallAchiev],
-          chart: { type: 'radialBar', height: 250, fontFamily: font },
+          series: [overallAchiev], chart: { type: 'radialBar', height: 250, fontFamily: font },
           plotOptions: {
             radialBar: {
-              startAngle: -135, endAngle: 135,
-              hollow: { size: '60%' },
+              startAngle: -135, endAngle: 135, hollow: { size: '60%' },
               dataLabels: {
                 name: { fontSize: '12px', color: '#6B7280', offsetY: 20 },
                 value: { fontSize: '28px', fontWeight: 800, color: gaugeColor, offsetY: -10, formatter: function (val) { return val + "%" } }
               }
             }
           },
-          fill: { colors: [gaugeColor] },
-          stroke: { lineCap: 'round' },
-          labels: ['Achievement']
+          fill: { colors: [gaugeColor] }, stroke: { lineCap: 'round' }, labels: ['Achievement']
         };
         if(gaugeChart) gaugeChart.destroy();
         gaugeChart = new ApexCharts(document.querySelector("#chart-mgmt-gauge"), gOptions);
@@ -884,10 +845,8 @@
         let avgSlotsPassed = totalActiveLines > 0 ? (uniqueSlotsPassed.size / totalActiveLines) : 0;
         let totalShiftSlots = masterAuthData ? masterAuthData.times.length : 12; 
         let projected = 0;
-        
         if (avgSlotsPassed > 0 && avgSlotsPassed <= totalShiftSlots) {
-           let runRate = sumQty / avgSlotsPassed;
-           projected = Math.round(runRate * totalShiftSlots);
+           let runRate = sumQty / avgSlotsPassed; projected = Math.round(runRate * totalShiftSlots);
         } else { projected = sumQty; }
 
         document.getElementById('mgmt-current-output').innerText = sumQty.toLocaleString();
@@ -902,21 +861,14 @@
            else { projEl.innerText = Math.round(currentProj + (step * iter)).toLocaleString(); }
         }, 30);
 
-        let sortedLines = Object.keys(lineAchievMap).map(l => {
-           return { line: l, score: (lineAchievMap[l].achiev / lineAchievMap[l].count * 100) };
-        }).sort((a,b) => b.score - a.score);
-
-        const topContainer = document.getElementById('mgmt-top-lines');
-        const botContainer = document.getElementById('mgmt-bottom-lines');
+        let sortedLines = Object.keys(lineAchievMap).map(l => { return { line: l, score: (lineAchievMap[l].achiev / lineAchievMap[l].count * 100) }; }).sort((a,b) => b.score - a.score);
+        const topContainer = document.getElementById('mgmt-top-lines'), botContainer = document.getElementById('mgmt-bottom-lines');
         topContainer.innerHTML = ''; botContainer.innerHTML = '';
 
         if(sortedLines.length === 0) {
-           topContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>';
-           botContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>';
+           topContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>'; botContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>';
         } else {
-           let top3 = sortedLines.slice(0, 3);
-           let bot3 = sortedLines.slice(-3).reverse(); 
-
+           let top3 = sortedLines.slice(0, 3); let bot3 = sortedLines.slice(-3).reverse(); 
            top3.forEach((l, idx) => { topContainer.innerHTML += `<div class="flex justify-between items-center bg-green-50/50 p-2 rounded border border-green-100"><span class="text-xs font-bold text-gray-800">${idx+1}. ${l.line}</span><span class="text-xs font-black text-green-600">${l.score.toFixed(1)}%</span></div>`; });
            bot3.forEach((l, idx) => { botContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50/50 p-2 rounded border border-red-100"><span class="text-xs font-bold text-gray-800">${sortedLines.length - idx}. ${l.line}</span><span class="text-xs font-black text-red-600">${l.score.toFixed(1)}%</span></div>`; });
         }
