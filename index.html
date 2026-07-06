@@ -709,6 +709,18 @@
           });
           if (!hasData) return;
 
+          // REVERSE ARRAYS: This puts the earliest time slot at the BOTTOM of the chart
+          let revTimes = [...sortedTimes].reverse(); 
+          let revActData = [...actData].reverse();
+          let revQtyArr = [...qtyArr].reverse();
+          let revMpArr = [...mpArr].reverse();
+
+          // DYNAMIC MAX VALUE: Fixes the grid/target line overflowing the chart
+          let maxAct = Math.max(...revActData.filter(v => v !== null));
+          if (maxAct === -Infinity) maxAct = 0;
+          let chartMax = Math.max(maxAct, latestTarget) * 1.15; // 15% buffer
+          if (chartMax === 0) chartMax = 100;
+
           let chartId = 'sec-chart-' + idx;
           let wrapper = document.createElement('div');
           wrapper.className = "sec-chart-wrapper bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
@@ -726,12 +738,18 @@
           grid.appendChild(wrapper);
 
           let options = {
-            chart: { type: 'bar', height: chartHeight, toolbar: { show: false }, zoom: {enabled: false}, selection: {enabled: false}, fontFamily: font, animations: { enabled: false } },
-            series: [{ name: 'Productivity', data: actData }],
-            plotOptions: { bar: { horizontal: true, borderRadius: 2, dataLabels: { position: 'bottom' } } },
-            fill: { opacity: 0 },
-            stroke: { show: true, width: 2, colors: ['#0D5C58'] },
-            grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: false } } },
+            chart: { type: 'bar', height: chartHeight, toolbar: { show: false }, zoom: {enabled: false}, selection: {enabled: false}, fontFamily: font, animations: { enabled: false }, clip: false },
+            series: [{ name: 'Productivity', data: revActData }], // Uses reversed data
+            plotOptions: { 
+              bar: { horizontal: true, borderRadius: 2, dataLabels: { position: 'bottom' } } 
+            },
+            fill: { opacity: 0 }, // Hollow bars
+            stroke: { show: true, width: 2, colors: ['#0D5C58'] }, // Outline color
+            grid: { 
+              xaxis: { lines: { show: true } }, 
+              yaxis: { lines: { show: false } },
+              padding: { right: 35, left: 10 } // Prevents target line from cutting off at the edge
+            },
             dataLabels: { 
                enabled: true, textAnchor: 'start', offsetX: 10,
                background: { enabled: false }, 
@@ -739,13 +757,29 @@
                formatter: function(val, opts) {
                   if(val === null || val === undefined) return '';
                   let idx = opts.dataPointIndex;
-                  return `Prod: ${val}  |  Qty: ${qtyArr[idx]}  |  MP: ${mpArr[idx]}`;
+                  // Displays MP, Prod, and Productivity inline inside the hollow bar
+                  return `MP: ${revMpArr[idx]}, Prod: ${revQtyArr[idx]}    ➔    ${val}`;
                }
             },
-            xaxis: { title: { text: 'Productivity' }, min: 0, max: function(max) { return latestTarget > max ? latestTarget * 1.1 : max * 1.1; } },
-            yaxis: { categories: sortedTimes, labels: { style: { colors: '#6B7280', fontSize: '11px', fontWeight: 600 } } },
-            annotations: { xaxis: latestTarget > 0 ? [{ x: latestTarget, borderColor: '#EF4444', strokeDashArray: 4, label: { text: 'Target: '+latestTarget, style: {color: '#fff', background: '#EF4444'} } }] : [] },
-            tooltip: { enabled: false } // Text is natively visible inside hollow bar
+            xaxis: { 
+              title: { text: 'Productivity' }, 
+              min: 0, 
+              max: chartMax, // Applied dynamically calculated max
+              tickAmount: 5
+            },
+            yaxis: { 
+              categories: revTimes, // Uses raw times from your sheet, reversed
+              labels: { style: { colors: '#6B7280', fontSize: '11px', fontWeight: 600 } } 
+            },
+            annotations: { 
+              xaxis: latestTarget > 0 ? [{ 
+                x: latestTarget, 
+                borderColor: '#EF4444', 
+                strokeDashArray: 4, 
+                label: { text: 'Target: '+latestTarget, style: {color: '#fff', background: '#EF4444'} } 
+              }] : [] 
+            },
+            tooltip: { enabled: false } 
           };
 
           let chart = new ApexCharts(document.getElementById(chartId), options);
