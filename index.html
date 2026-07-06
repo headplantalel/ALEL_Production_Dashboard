@@ -45,43 +45,39 @@
 /* FULL SCREEN OVERRIDES */
     #dashboard-app.fullscreen-active {
         height: 100vh !important;
-        overflow-y: auto !important; 
-        background-color: #f9fafb !important;
+        overflow-y: auto !important; /* Enables scrolling if there are >6 charts */
+        background-color: #f9fafb !important; /* Keeps the background clean */
     }
     #dashboard-app.fullscreen-active .hide-in-fullscreen {
         display: none !important;
     }
     
-    /* 1. Strip the padding from the outer main container */
-    #dashboard-app.fullscreen-active > .flex-1,
-    #dashboard-app.fullscreen-active .p-6 {
-        padding: 0.25rem !important;
+    /* 1. Minimize outer padding and grid gaps */
+    #dashboard-app.fullscreen-active .flex-1 {
+        padding: 0.5rem !important; 
     }
-    
-    /* 2. Shrink the gap between the charts (Vertical & Horizontal) */
     #dashboard-app.fullscreen-active #section-charts-grid {
-        gap: 0.25rem !important; 
+        gap: 0.5rem !important; 
     }
     
-    /* 3. Squeeze the padding INSIDE each white chart card */
+    /* 2. Force the cards to be exactly 48% of the screen height (Fits 2 rows perfectly) */
     #dashboard-app.fullscreen-active .sec-chart-wrapper {
-        padding: 0.25rem 0.5rem !important; /* Top/Bottom 4px, Left/Right 8px */
-        height: 48.5vh !important; /* 48.5% of the screen height */
+        padding: 0.5rem !important; 
+        height: 48vh !important; 
         display: flex !important;
         flex-direction: column !important;
     }
     
-    /* 4. Eliminate the empty space between the Line/Item title and the chart */
+    /* 3. Reduce the empty space under the card titles */
     #dashboard-app.fullscreen-active .sec-chart-wrapper > div:first-child {
-        padding-bottom: 0 !important;
-        margin-bottom: 0 !important;
-        border-bottom: transparent !important;
+        padding-bottom: 0.25rem !important;
+        margin-bottom: 0.25rem !important;
     }
     
-    /* 5. Force the ApexChart canvas to obey the new tight boundaries */
+    /* 4. Force the chart container and SVG to compress into the remaining card space */
     #dashboard-app.fullscreen-active .sec-chart-wrapper > div[id^="sec-chart-"] {
         flex: 1 1 auto !important;
-        height: calc(100% - 25px) !important; /* Leaves exactly enough room for the title */
+        height: 100% !important;
         min-height: 0 !important;
     }
     #dashboard-app.fullscreen-active .apexcharts-canvas,
