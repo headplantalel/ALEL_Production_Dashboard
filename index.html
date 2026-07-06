@@ -644,7 +644,132 @@
       if(!rawDashboardData || rawDashboardData.length === 0) return;
       const font = 'Inter, sans-serif';
 
-      let options = {
+      // ==========================================
+      // TAB 1: LINE GRID (Horizontal Hollow Bars)
+      // ==========================================
+      if (activeDashTab === 'section') {
+        const dateVal = document.getElementById('filter-date').value;
+        const secVal = document.getElementById('filter-section').value;
+        
+        let fData = rawDashboardData.filter(row => {
+          if (secVal !== 'all' && row.section !== secVal) return false;
+          if (row.date !== dateVal) return false;
+          return true;
+        });
+
+        const grid = document.getElementById('section-charts-grid');
+        const emptyMsg = document.getElementById('section-empty-msg');
+        Object.values(sectionChartInstances).forEach(c => c.destroy());
+        sectionChartInstances = {}; grid.innerHTML = '';
+
+        if (fData.length === 0) { emptyMsg.classList.remove('hidden'); return; } 
+        else emptyMsg.classList.add('hidden');
+
+        let lineItemData = {};
+        
+        // ADDED: .map(t => t.trim()) to prevent Google Sheet trailing space errors dropping data
+        let masterTimesSet = new Set(masterAuthData ? masterAuthData.times.map(t => t.trim()) : []);
+        fData.forEach(r => masterTimesSet.add(r.time.trim()));
+        
+        let sortedTimes = masterAuthData && masterAuthData.times.length > 0 
+           ? masterAuthData.times.map(t => t.trim()) 
+           : Array.from(masterTimesSet).sort();
+
+        fData.forEach(row => {
+          let t = row.time.trim(); // Trims potential sheet typos
+          let key = row.line + '::' + row.itemCode + '::' + row.item;
+          if (!lineItemData[key]) lineItemData[key] = { line: row.line, itemStr: `[${row.itemCode}] - ${row.item}`, times: {} };
+          if (!lineItemData[key].times[t]) lineItemData[key].times[t] = { act: 0, tgt: 0, qty: 0, mp: 0, count: 0 };
+          
+          lineItemData[key].times[t].qty += row.qty;
+          lineItemData[key].times[t].mp += row.mp;
+          lineItemData[key].times[t].act += row.productivity;
+          lineItemData[key].times[t].tgt += row.targetProductivity;
+          lineItemData[key].times[t].count++;
+        });
+
+        let visListHtml = '';
+
+        const getOrdinal = (n) => {
+           const s = ["th", "st", "nd", "rd"];
+           const v = n % 100;
+           return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        };
+
+        Object.keys(lineItemData).sort().forEach((key, idx) => {
+          visListHtml += `
+            <label class="flex items-center gap-2 cursor-pointer p-1 hover:bg-gray-50 rounded">
+               <input type="checkbox" checked value="${key}" onchange="toggleChartVis(this)" class="rounded text-enovar focus:ring-enovar h-4 w-4">
+               <span class="text-xs font-medium text-gray-700 truncate">${lineItemData[key].line} | ${lineItemData[key].itemStr}</span>
+            </label>
+          `;
+          
+          let actData = [], targetArr = [], qtyArr = [], mpArr = [];
+          let hasData = false, latestTarget = 0;
+
+          sortedTimes.forEach(t => {
+            let cell = lineItemData[key].times[t];
+            if (cell) {
+               let act = parseFloat((cell.act / cell.count).toFixed(1));
+               let tgt = parseFloat((cell.tgt / cell.count).toFixed(1));
+               
+               actData.push(act);
+               targetArr.push(tgt);
+               if(tgt > 0) latestTarget = tgt; 
+               qtyArr.push(cell.qty); mpArr.push(cell.mp);
+               hasData = true;
+            } else {
+               actData.push(null); targetArr.push(0); qtyArr.push(0); mpArr.push(0);
+            }
+          });
+          if (!hasData) return;
+
+          let revTimes = [...sortedTimes].reverse(); 
+          let revActData = [...actData].reverse();
+          let revTargetArr = [...targetArr].reverse();
+          let revQtyArr = [...qtyArr].reverse();
+          let revMpArr = [...mpArr].reverse();
+
+          let barColors = [];
+          let seriesData = revTimes.map((t, i) => {
+             let act = revActData[i] !== null ? revActData[i] : 0;
+             let tgtForThisHour = revTargetArr[i] > 0 ? revTargetArr[i] : latestTarget;
+             let isUnderperforming = (act > 0 && act < (0.9 * tgtForThisHour));
+             
+             barColors.push(isUnderperforming ? '#EF4444' : '#0D5C58');
+
+             return {
+                 x: getOrdinal(sortedTimes.indexOf(t) + 1), 
+                 y: act,
+                 realTime: t,
+                 qty: revQtyArr[i],
+                 mp: revMpArr[i]
+             };
+          });
+
+          // TIGHTENED MULTIPLIER: Changed 1.15 to 1.05 to stretch the bars closer to the edge
+          let maxAct = Math.max(...revActData.filter(v => v !== null));
+          if (maxAct === -Infinity) maxAct = 0;
+          let chartMax = Math.max(maxAct, latestTarget) * 1.05; 
+          if (chartMax === 0) chartMax = 100;
+
+          let chartId = 'sec-chart-' + idx;
+          let wrapper = document.createElement('div');
+          wrapper.className = "sec-chart-wrapper bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
+          wrapper.dataset.key = key;
+          
+          let chartHeight = Math.max(250, sortedTimes.length * 35); 
+          
+          wrapper.innerHTML = `
+            <div class="border-b border-gray-100 pb-2 mb-2 shrink-0">
+              <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
+              <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
+            </div>
+            <div id="${chartId}" class="w-full" style="height: ${chartHeight}px"></div>
+          `;
+          grid.appendChild(wrapper);
+
+          let options = {
             chart: { 
                type: 'bar', height: chartHeight, toolbar: { show: false }, zoom: {enabled: false}, 
                selection: {enabled: false}, fontFamily: typeof font !== 'undefined' ? font : 'Inter, sans-serif', 
@@ -712,6 +837,15 @@
                }
             } 
           };
+
+          let chart = new ApexCharts(document.getElementById(chartId), options);
+          chart.render();
+          sectionChartInstances[chartId] = chart;
+        });
+        
+        let listEl = document.getElementById('chart-vis-list');
+        if(listEl) listEl.innerHTML = visListHtml;
+      }
       // ==========================================
       // TAB 2: MASTER ANALYTICS (Date Range & Filters)
       // ==========================================
