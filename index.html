@@ -727,7 +727,7 @@
 
         let lineItemData = {};
         
-        // ADDED: .map(t => t.trim()) to prevent Google Sheet trailing space errors dropping data
+        // Trimming spaces to prevent missing data
         let masterTimesSet = new Set(masterAuthData ? masterAuthData.times.map(t => t.trim()) : []);
         fData.forEach(r => masterTimesSet.add(r.time.trim()));
         
@@ -736,7 +736,7 @@
            : Array.from(masterTimesSet).sort();
 
         fData.forEach(row => {
-          let t = row.time.trim(); // Trims potential sheet typos
+          let t = row.time.trim(); 
           let key = row.line + '::' + row.itemCode + '::' + row.item;
           if (!lineItemData[key]) lineItemData[key] = { line: row.line, itemStr: `[${row.itemCode}] - ${row.item}`, times: {} };
           if (!lineItemData[key].times[t]) lineItemData[key].times[t] = { act: 0, tgt: 0, qty: 0, mp: 0, count: 0 };
@@ -749,12 +749,6 @@
         });
 
         let visListHtml = '';
-
-        const getOrdinal = (n) => {
-           const s = ["th", "st", "nd", "rd"];
-           const v = n % 100;
-           return n + (s[(v - 20) % 10] || s[v] || s[0]);
-        };
 
         Object.keys(lineItemData).sort().forEach((key, idx) => {
           visListHtml += `
@@ -769,7 +763,7 @@
 
           sortedTimes.forEach(t => {
             let cell = lineItemData[key].times[t];
-            if (cell) {
+            if (cell && cell.count > 0) {
                let act = parseFloat((cell.act / cell.count).toFixed(1));
                let tgt = parseFloat((cell.tgt / cell.count).toFixed(1));
                
@@ -779,11 +773,13 @@
                qtyArr.push(cell.qty); mpArr.push(cell.mp);
                hasData = true;
             } else {
-               actData.push(null); targetArr.push(0); qtyArr.push(0); mpArr.push(0);
+               // Push 0 instead of null to ensure the Time Slot is always visible on Y-Axis
+               actData.push(0); targetArr.push(0); qtyArr.push(0); mpArr.push(0);
             }
           });
           if (!hasData) return;
 
+          // REVERSE ARRAYS: Places earliest time at the bottom
           let revTimes = [...sortedTimes].reverse(); 
           let revActData = [...actData].reverse();
           let revTargetArr = [...targetArr].reverse();
@@ -792,25 +788,22 @@
 
           let barColors = [];
           let seriesData = revTimes.map((t, i) => {
-             let act = revActData[i] !== null ? revActData[i] : 0;
+             let act = revActData[i];
              let tgtForThisHour = revTargetArr[i] > 0 ? revTargetArr[i] : latestTarget;
              let isUnderperforming = (act > 0 && act < (0.9 * tgtForThisHour));
              
              barColors.push(isUnderperforming ? '#EF4444' : '#0D5C58');
 
              return {
-                 x: getOrdinal(sortedTimes.indexOf(t) + 1), 
+                 x: t, // FIXED: Now uses the exact Time Slot string (e.g. "08 AM - 09 AM")
                  y: act,
-                 realTime: t,
                  qty: revQtyArr[i],
                  mp: revMpArr[i]
              };
           });
 
-          // TIGHTENED MULTIPLIER: Changed 1.15 to 1.05 to stretch the bars closer to the edge
-          let maxAct = Math.max(...revActData.filter(v => v !== null));
-          if (maxAct === -Infinity) maxAct = 0;
-          let chartMax = Math.max(maxAct, latestTarget) * 1.05; 
+          let maxAct = Math.max(...revActData);
+          let chartMax = Math.max(maxAct, latestTarget) * 1.15; // Increased buffer to prevent target line overflow
           if (chartMax === 0) chartMax = 100;
 
           let chartId = 'sec-chart-' + idx;
@@ -818,7 +811,7 @@
           wrapper.className = "sec-chart-wrapper bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
           wrapper.dataset.key = key;
           
-          let chartHeight = Math.max(250, sortedTimes.length * 30); 
+          let chartHeight = Math.max(250, sortedTimes.length * 35); 
           
           wrapper.innerHTML = `
             <div class="border-b border-gray-100 pb-2 mb-2 shrink-0">
@@ -842,7 +835,7 @@
                  horizontal: true, 
                  distributed: true, 
                  borderRadius: 2, 
-                 dataLabels: { position: 'bottom' } 
+                 dataLabels: { position: 'bottom' } // Anchors text to the left side
               } 
             },
             legend: { show: false },
@@ -851,25 +844,25 @@
             grid: { 
               xaxis: { lines: { show: true } }, 
               yaxis: { lines: { show: false } }, 
-              padding: { top: 0, right: 25, bottom: 0, left: 10 } 
+              padding: { top: 0, right: 35, bottom: 0, left: 10 } 
             },
             dataLabels: { 
                enabled: true, 
                textAnchor: 'start', 
-               offsetX: 20, // INCREASED: Adds a larger gap between the left bar outline and the text
+               offsetX: 10,
                background: { enabled: false }, 
                style: { fontSize: '11px', colors: ['#374151'], fontWeight: 700 },
                formatter: function(val, opts) {
-                  if(val === 0 || val === null || val === undefined) return '';
                   let d = opts.w.config.series[opts.seriesIndex].data[opts.dataPointIndex];
-                  // RENAMED TERMS: MP, Qty., and UPMH
-                  return `MP: ${d.mp}, Qty.: ${d.qty}   |   UPMH: ${val}`;
+                  if(d.qty === 0 && d.mp === 0) return val; // For empty 0 slots
+                  // Separates MP/Prod on the left, and pushes Productivity to the right with spacing
+                  return `MP: ${d.mp}, Prod: ${d.qty}            ${val}`;
                }
             },
             xaxis: { 
-               title: { text: 'Units per Man-Hour' }, // CHANGED X-AXIS TITLE
+               title: { text: 'Productivity' },
                min: 0, max: chartMax, 
-               tickAmount: 10 
+               tickAmount: 5 
             },
             yaxis: { 
                labels: { style: { colors: '#6B7280', fontSize: '11px', fontWeight: 600 } } 
@@ -888,14 +881,7 @@
                   } 
                }] : [] 
             },
-            tooltip: { 
-               enabled: true,
-               intersect: false,
-               custom: function({series, seriesIndex, dataPointIndex, w}) {
-                  let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-                  return `<div style="padding: 6px 10px; font-size: 12px; font-weight: 600; background: #1F2937; color: #fff; border-radius: 4px;">${data.realTime}</div>`;
-               }
-            } 
+            tooltip: { enabled: false } 
           };
 
           let chart = new ApexCharts(document.getElementById(chartId), options);
