@@ -60,12 +60,13 @@
         gap: 0.5rem !important; 
     }
     
-    /* 2. Force the cards to be exactly 48% of the screen height (Fits 2 rows perfectly) */
+    /* 2. Force the cards to fit perfectly without hiding the X-axis */
     #dashboard-app.fullscreen-active .sec-chart-wrapper {
         padding: 0.5rem !important; 
-        height: 48vh !important; 
+        height: 45vh !important; 
         display: flex !important;
         flex-direction: column !important;
+        min-height: 0 !important;
     }
     
     /* 3. Reduce the empty space under the card titles */
@@ -836,7 +837,9 @@
 
           let options = {
             chart: { 
-               type: 'bar', height: chartHeight, toolbar: { show: false }, zoom: {enabled: false}, 
+               type: 'bar', 
+               height: '100%', // FIXED: This forces the chart to stay inside the box and prevents the title from hiding
+               toolbar: { show: false }, zoom: {enabled: false}, 
                selection: {enabled: false}, fontFamily: typeof font !== 'undefined' ? font : 'Inter, sans-serif', 
                animations: { enabled: false }, clip: false, parentHeightOffset: 0 
             },
@@ -852,30 +855,31 @@
             },
             legend: { show: false },
             fill: { opacity: 0 }, 
-            // DASHED OUTLINE APPLIED HERE
-            stroke: { show: true, width: 2, dashArray: 4 }, 
+            stroke: { show: true, width: 2 },
             grid: { 
               xaxis: { lines: { show: true } }, 
               yaxis: { lines: { show: false } }, 
-              padding: { top: 0, right: 25, bottom: 0, left: 10 } 
+              // FIXED: Negative bottom padding removes the extra dead space below the title
+              padding: { top: 0, right: 25, bottom: -15, left: 10 } 
             },
             dataLabels: { 
                enabled: true, 
                textAnchor: 'start', 
-               offsetX: 20,
+               offsetX: 20, 
                background: { enabled: false }, 
                style: { fontSize: '11px', colors: ['#374151'], fontWeight: 700 },
                formatter: function(val, opts) {
                   if(val === 0 || val === null || val === undefined) return '';
                   let d = opts.w.config.series[opts.seriesIndex].data[opts.dataPointIndex];
-                  // UPDATED TEXT FORMAT
-                  return `${d.qty} (${d.mp}) | ${val}`;
+                  return `MP: ${d.mp}, Qty.: ${d.qty}   |   UPMH: ${val}`;
                }
             },
             xaxis: { 
-               title: { text: 'Units per Man-Hour' }, 
-               min: chartMin, // DYNAMIC MINIMUM APPLIED
-               max: chartMax, 
+               title: { 
+                  text: 'Units per Man-Hour',
+                  offsetY: -5 // FIXED: Pulls the title slightly upward so it doesn't get clipped
+               }, 
+               min: 0, max: chartMax, 
                tickAmount: 10 
             },
             yaxis: { 
@@ -884,14 +888,14 @@
             annotations: { 
                xaxis: latestTarget > 0 ? [{ 
                   x: latestTarget, 
-                  borderColor: '#475569', // CHANGED TO DARK SLATE
+                  borderColor: '#EF4444', 
                   strokeDashArray: 4, 
                   label: { 
                      text: 'Target: '+latestTarget, 
                      position: 'top', 
                      textAnchor: 'start', 
                      offsetX: 5,
-                     style: {color: '#fff', background: '#475569'} // CHANGED TO DARK SLATE
+                     style: {color: '#fff', background: '#EF4444'} 
                   } 
                }] : [] 
             },
@@ -904,7 +908,6 @@
                }
             } 
           };
-
           let chart = new ApexCharts(document.getElementById(chartId), options);
           chart.render();
           sectionChartInstances[chartId] = chart;
