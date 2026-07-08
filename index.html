@@ -45,36 +45,33 @@
 /* FULL SCREEN OVERRIDES */
     #dashboard-app.fullscreen-active {
         height: 100vh !important;
-        overflow-y: auto !important; /* Enables scrolling if there are >6 charts */
-        background-color: #f9fafb !important; /* Keeps the background clean */
+        overflow-y: auto !important; 
+        background-color: #f9fafb !important;
     }
     #dashboard-app.fullscreen-active .hide-in-fullscreen {
         display: none !important;
     }
     
-    /* 1. Minimize outer padding and grid gaps */
-    #dashboard-app.fullscreen-active .flex-1 {
-        padding: 0.5rem !important; 
+    /* Strip padding from the outer main container */
+    #dashboard-app.fullscreen-active > .flex-1,
+    #dashboard-app.fullscreen-active .p-6 {
+        padding: 0.25rem !important;
     }
+    
+    /* Shrink the gap between the charts */
     #dashboard-app.fullscreen-active #section-charts-grid {
         gap: 0.5rem !important; 
     }
     
-    /* 2. Force the cards to be exactly 48% of the screen height (Fits 2 rows perfectly) */
+    /* Force cards to fit 2 rows perfectly (47vh leaves room for padding) */
     #dashboard-app.fullscreen-active .sec-chart-wrapper {
         padding: 0.5rem !important; 
-        height: 48vh !important; 
+        height: 47vh !important; /* Overrides the 'h-fit' from JS */
         display: flex !important;
         flex-direction: column !important;
     }
     
-    /* 3. Reduce the empty space under the card titles */
-    #dashboard-app.fullscreen-active .sec-chart-wrapper > div:first-child {
-        padding-bottom: 0.25rem !important;
-        margin-bottom: 0.25rem !important;
-    }
-    
-    /* 4. Force the chart container and SVG to compress into the remaining card space */
+    /* Force the ApexChart canvas to obey the boundaries so the X-axis doesn't hide */
     #dashboard-app.fullscreen-active .sec-chart-wrapper > div[id^="sec-chart-"] {
         flex: 1 1 auto !important;
         height: 100% !important;
@@ -818,11 +815,12 @@
           let chartId = 'sec-chart-' + idx;
           let wrapper = document.createElement('div');
           
-          // APPLIED p-2 TO REDUCE PADDING
-          wrapper.className = "sec-chart-wrapper bg-white p-2 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
+          // CHANGED flex-1 h-full TO h-fit so the card perfectly hugs the chart height
+          wrapper.className = "sec-chart-wrapper bg-white p-2 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 h-fit";
           wrapper.dataset.key = key;
           
-          let chartHeight = Math.max(250, sortedTimes.length * 35); 
+          // Lowered the base height slightly for a tighter fit
+          let chartHeight = Math.max(180, sortedTimes.length * 35); 
           
           wrapper.innerHTML = `
             <div class="border-b border-gray-100 pb-1 mb-1 shrink-0">
@@ -843,7 +841,6 @@
                fontFamily: typeof font !== 'undefined' ? font : 'Inter, sans-serif', 
                animations: { enabled: false }, 
                clip: false
-               // parentHeightOffset has been removed to stop it from cropping the X-axis title
             },
             series: [{ name: 'Productivity', data: seriesData }],
             colors: barColors, 
@@ -861,8 +858,8 @@
             grid: { 
               xaxis: { lines: { show: true } }, 
               yaxis: { lines: { show: false } }, 
-              // RESTORED BOTTOM PADDING TO 0 SO TITLE IS NOT CUT OFF
-              padding: { top: -10, right: 15, bottom: 0, left: 5 } 
+              // ADDED 5px bottom padding to prevent full-screen cropping
+              padding: { top: -10, right: 15, bottom: 5, left: 5 } 
             },
             dataLabels: { 
                enabled: true, 
@@ -877,7 +874,8 @@
                }
             },
             xaxis: { 
-               title: { text: 'Units per Man-Hour' }, 
+               // ADDED offsetY: -5 to pull the title upward and reduce white space
+               title: { text: 'Units per Man-Hour', offsetY: -5 }, 
                min: chartMin, 
                max: chartMax, 
                tickAmount: 10 
