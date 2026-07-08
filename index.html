@@ -80,10 +80,7 @@
         height: 100% !important;
         min-height: 0 !important;
     }
-    #dashboard-app.fullscreen-active .apexcharts-canvas,
-    #dashboard-app.fullscreen-active .apexcharts-canvas svg {
-        height: 100% !important;
-    }
+  
     
   </style>
 </head>
@@ -830,13 +827,13 @@
               <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
               <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
             </div>
-            <div id="${chartId}" class="w-full" style="height: ${chartHeight}px"></div>
+            <div id="${chartId}" class="w-full" style="height: 100%; min-height: ${chartHeight}px;"></div>
           `;
           grid.appendChild(wrapper);
 
           let options = {
             chart: { 
-               type: 'bar', height: chartHeight, toolbar: { show: false }, zoom: {enabled: false}, 
+               type: 'bar', height: '100%', toolbar: { show: false }, zoom: {enabled: false}, 
                selection: {enabled: false}, fontFamily: typeof font !== 'undefined' ? font : 'Inter, sans-serif', 
                animations: { enabled: false }, clip: false, parentHeightOffset: 0 
             },
@@ -857,7 +854,7 @@
             grid: { 
               xaxis: { lines: { show: true } }, 
               yaxis: { lines: { show: false } }, 
-              padding: { top: 0, right: 25, bottom: 0, left: 10 } 
+              padding: { top: 0, right: 25, bottom: -15, left: 10 } // Changed bottom to -15
             },
             dataLabels: { 
                enabled: true, 
@@ -873,10 +870,11 @@
                }
             },
             xaxis: { 
-               title: { text: 'Units per Man-Hour' }, 
-               min: chartMin, // DYNAMIC MINIMUM APPLIED
+               title: { text: 'Units per Man-Hour', offsetY: -5 }, // Added offsetY to nudge title up
+               min: chartMin, 
                max: chartMax, 
-               tickAmount: 10 
+               tickAmount: 10,
+               labels: { offsetY: -2 } // Optional: Nudges the numbers up slightly as well
             },
             yaxis: { 
                labels: { style: { colors: '#6B7280', fontSize: '11px', fontWeight: 600 } } 
