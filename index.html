@@ -828,6 +828,14 @@
           // Set the minimum to 80% of the lowest value so it doesn't cut off completely
           let chartMin = minAct > 0 ? Math.floor(minAct * 0.8) : 0; 
 
+          // --- MISSING CODE ADDED BACK HERE ---
+          let chartId = 'sec-chart-' + idx;
+          let wrapper = document.createElement('div');
+          wrapper.className = "sec-chart-wrapper bg-white px-4 pt-4 pb-1 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
+          wrapper.dataset.key = key;
+          
+          let chartHeight = Math.max(250, sortedTimes.length * 30); 
+
           wrapper.innerHTML = `
   <div class="border-b border-gray-100 pb-2 mb-0 shrink-0 flex justify-between items-start gap-2">
     
