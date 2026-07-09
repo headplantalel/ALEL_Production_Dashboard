@@ -766,12 +766,21 @@
           
           let actData = [], targetArr = [], qtyArr = [], mpArr = [];
           let hasData = false, latestTarget = 0;
+          
+          // NEW: Variables to track the last updated hour's data
+          let lastValidTime = "N/A", lastQty = 0, lastMp = 0, lastAct = 0;
 
           sortedTimes.forEach(t => {
             let cell = lineItemData[key].times[t];
             if (cell) {
                let act = parseFloat((cell.act / cell.count).toFixed(1));
                let tgt = parseFloat((cell.tgt / cell.count).toFixed(1));
+               
+               // NEW: Continually update these as we loop chronologically
+               lastValidTime = t;
+               lastQty = cell.qty;
+               lastMp = cell.mp;
+               lastAct = act;
                
                actData.push(act);
                targetArr.push(tgt);
@@ -819,20 +828,28 @@
           // Set the minimum to 80% of the lowest value so it doesn't cut off completely
           let chartMin = minAct > 0 ? Math.floor(minAct * 0.8) : 0; 
 
-          let chartId = 'sec-chart-' + idx;
-          let wrapper = document.createElement('div');
-          wrapper.className = "sec-chart-wrapper bg-white px-4 pt-4 pb-1 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
-          wrapper.dataset.key = key;
-          
-          let chartHeight = Math.max(250, sortedTimes.length * 30); 
-          
           wrapper.innerHTML = `
-            <div class="border-b border-gray-100 pb-0 mb-0 shrink-0">
-              <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
-              <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
-            </div>
-            <div id="${chartId}" class="w-full" style="height: ${chartHeight}px"></div>
-          `;
+  <div class="border-b border-gray-100 pb-2 mb-0 shrink-0 flex justify-between items-start gap-2">
+    
+    <div class="min-w-0 flex-1">
+      <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
+      <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
+    </div>
+    
+    ${lastValidTime !== "N/A" ? `
+    <div class="text-right shrink-0 bg-gray-50 rounded-lg px-2 py-1 border border-gray-200 shadow-sm">
+      <div class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Last Entry: ${lastValidTime}</div>
+      <div class="flex items-center justify-end gap-2.5 text-[11px] font-bold">
+        <span class="text-blue-500" title="Production Quantity">Q: ${lastQty}</span>
+        <span class="text-red-400" title="Manpower">M: ${lastMp}</span>
+        <span class="text-enovar" title="Productivity (Act)">P: ${lastAct}</span>
+      </div>
+    </div>
+    ` : ''}
+    
+  </div>
+  <div id="${chartId}" class="w-full mt-1" style="height: ${chartHeight}px"></div>
+`;
           grid.appendChild(wrapper);
 
           let options = {
