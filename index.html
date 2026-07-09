@@ -820,25 +820,25 @@
           let chartMin = minAct > 0 ? Math.floor(minAct * 0.8) : 0; 
 
           let chartId = 'sec-chart-' + idx;
-          let wrapper = document.createElement("div");
-wrapper.className = "sec-chart-wrapper bg-white px-4 pt-4 pb-1 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
-
-// 1. Generate the Last Hour Summary HTML 
-let lastHourHTML = '';
-if (typeof sortedTimes !== 'undefined' && sortedTimes.length > 0) {
-    const lastSlot = sortedTimes[sortedTimes.length - 1];
-    lastHourHTML = `
-        <div class="flex items-center gap-1.5 text-[10px] bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md text-gray-500 font-medium shadow-2xs">
-            <span class="bg-gray-200 text-gray-700 px-1 rounded font-bold text-[9px]">${lastSlot.realTime || lastSlot.x}</span>
-            <span>Q: <strong class="text-blue-600 font-semibold">${lastSlot.qty}</strong></span>
-            <span>M: <strong class="text-red-500 font-semibold">${lastSlot.mp}</strong></span>
-            <span class="border-l border-gray-200 pl-1.5 font-bold text-emerald-600">${lastSlot.y}</span>
-        </div>
-    `;
-}
-
-// 2. Inject everything into the Wrapper (FIXED: Back to original variables!)
-wrapper.innerHTML = `
+          let wrapper = document.createElement('div');
+          wrapper.className = "sec-chart-wrapper bg-white px-4 pt-4 pb-1 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
+          let lastHourHTML = '';
+        if (chartData && chartData.length > 0) {
+            const lastSlot = chartData[chartData.length - 1];
+            lastHourHTML = `
+                <div class="flex items-center gap-1.5 text-[10px] bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md text-gray-500 font-medium shadow-2xs">
+                    <span class="bg-gray-200 text-gray-700 px-1 rounded font-bold text-[9px]">${lastSlot.realTime}</span>
+                    <span>Q: <strong class="text-blue-600 font-semibold">${lastSlot.qty}</strong></span>
+                    <span>M: <strong class="text-red-500 font-semibold">${lastSlot.mp}</strong></span>
+                    <span class="border-l border-gray-200 pl-1.5 font-bold text-emerald-600">${lastSlot.y}</span>
+                </div>
+            `;
+        }
+          wrapper.dataset.key = key;
+          
+          let chartHeight = Math.max(250, sortedTimes.length * 30); 
+          
+          wrapper.innerHTML = `
     <div class="border-b border-gray-100 pb-1 mb-0 shrink-0 flex justify-between items-center gap-2">
         <div class="min-w-0">
             <div class="text-[13px] font-bold text-gray-800 truncate">${lineName}</div>
@@ -852,9 +852,8 @@ wrapper.innerHTML = `
         <div id="chart-${lineId}-${itemId}" class="absolute inset-0 w-full h-full"></div>
     </div>
 `;
+          grid.appendChild(wrapper);
 
-// 3. Append it to the grid container
-document.getElementById("section-charts-grid").appendChild(wrapper);
           let options = {
             chart: { 
                type: 'bar', height: chartHeight, toolbar: { show: false }, zoom: {enabled: false}, 
