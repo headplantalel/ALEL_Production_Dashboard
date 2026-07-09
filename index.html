@@ -823,7 +823,7 @@
           let wrapper = document.createElement("div");
 wrapper.className = "sec-chart-wrapper bg-white px-4 pt-4 pb-1 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
 
-// 1. Generate the Last Hour Summary HTML (FIXED: Using 'sortedTimes' instead of 'chartData')
+// 1. Generate the Last Hour Summary HTML 
 let lastHourHTML = '';
 if (typeof sortedTimes !== 'undefined' && sortedTimes.length > 0) {
     const lastSlot = sortedTimes[sortedTimes.length - 1];
@@ -837,25 +837,24 @@ if (typeof sortedTimes !== 'undefined' && sortedTimes.length > 0) {
     `;
 }
 
-// 2. Inject everything into the Wrapper (FIXED: Using 'line' and 'item')
+// 2. Inject everything into the Wrapper (FIXED: Back to original variables!)
 wrapper.innerHTML = `
     <div class="border-b border-gray-100 pb-1 mb-0 shrink-0 flex justify-between items-center gap-2">
         <div class="min-w-0">
-            <div class="text-[13px] font-bold text-gray-800 truncate">${line}</div>
-            <div class="text-[11px] font-medium text-gray-400 truncate">${item}</div>
+            <div class="text-[13px] font-bold text-gray-800 truncate">${lineName}</div>
+            <div class="text-[11px] font-medium text-gray-400 truncate">${itemName}</div>
         </div>
         <div class="shrink-0">
             ${lastHourHTML}
         </div>
     </div>
     <div class="flex-1 min-h-0 relative">
-        <div id="chart-${line.replace(/\s+/g, '')}-${item.replace(/\s+/g, '')}" class="absolute inset-0 w-full h-full"></div>
+        <div id="chart-${lineId}-${itemId}" class="absolute inset-0 w-full h-full"></div>
     </div>
 `;
 
 // 3. Append it to the grid container
 document.getElementById("section-charts-grid").appendChild(wrapper);
-
           let options = {
             chart: { 
                type: 'bar', height: chartHeight, toolbar: { show: false }, zoom: {enabled: false}, 
