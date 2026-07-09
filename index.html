@@ -822,17 +822,36 @@
           let chartId = 'sec-chart-' + idx;
           let wrapper = document.createElement('div');
           wrapper.className = "sec-chart-wrapper bg-white px-4 pt-4 pb-1 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
+          let lastHourHTML = '';
+        if (chartData && chartData.length > 0) {
+            const lastSlot = chartData[chartData.length - 1];
+            lastHourHTML = `
+                <div class="flex items-center gap-1.5 text-[10px] bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md text-gray-500 font-medium shadow-2xs">
+                    <span class="bg-gray-200 text-gray-700 px-1 rounded font-bold text-[9px]">${lastSlot.realTime}</span>
+                    <span>Q: <strong class="text-blue-600 font-semibold">${lastSlot.qty}</strong></span>
+                    <span>M: <strong class="text-red-500 font-semibold">${lastSlot.mp}</strong></span>
+                    <span class="border-l border-gray-200 pl-1.5 font-bold text-emerald-600">${lastSlot.y}</span>
+                </div>
+            `;
+        }
           wrapper.dataset.key = key;
           
           let chartHeight = Math.max(250, sortedTimes.length * 30); 
           
           wrapper.innerHTML = `
-            <div class="border-b border-gray-100 pb-0 mb-0 shrink-0">
-              <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
-              <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
-            </div>
-            <div id="${chartId}" class="w-full" style="height: ${chartHeight}px"></div>
-          `;
+    <div class="border-b border-gray-100 pb-1 mb-0 shrink-0 flex justify-between items-center gap-2">
+        <div class="min-w-0">
+            <div class="text-[13px] font-bold text-gray-800 truncate">${lineName}</div>
+            <div class="text-[11px] font-medium text-gray-400 truncate">${itemName}</div>
+        </div>
+        <div class="shrink-0">
+            ${lastHourHTML}
+        </div>
+    </div>
+    <div class="flex-1 min-h-0 relative">
+        <div id="chart-${lineId}-${itemId}" class="absolute inset-0 w-full h-full"></div>
+    </div>
+`;
           grid.appendChild(wrapper);
 
           let options = {
