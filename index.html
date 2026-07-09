@@ -62,17 +62,18 @@
     
     /* 2. Force the cards to be exactly 48% of the screen height (Fits 2 rows perfectly) */
     #dashboard-app.fullscreen-active .sec-chart-wrapper {
-        padding: 0.5rem !important; 
-        height: 48vh !important; 
-        display: flex !important;
-        flex-direction: column !important;
-    }
+    /* Set bottom padding to 0rem, keep others at 0.5rem */
+    padding: 0.5rem 0.5rem 0rem 0.5rem !important; 
+    height: 48vh !important; 
+    display: flex !important;
+    flex-direction: column !important;
+}
     
     /* 3. Reduce the empty space under the card titles */
     #dashboard-app.fullscreen-active .sec-chart-wrapper > div:first-child {
-        padding-bottom: 0.25rem !important;
-        margin-bottom: 0.25rem !important;
-    }
+    padding-bottom: 0rem !important;
+    margin-bottom: 0rem !important;
+}
     
     /* 4. Force the chart container and SVG to compress into the remaining card space */
     #dashboard-app.fullscreen-active .sec-chart-wrapper > div[id^="sec-chart-"] {
