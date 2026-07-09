@@ -867,11 +867,10 @@
                background: { enabled: false }, 
                style: { fontSize: '11px', colors: ['#374151'], fontWeight: 700 },
                formatter: function(val, opts) {
-                  if(val === 0 || val === null || val === undefined) return '';
-                  let d = opts.w.config.series[opts.seriesIndex].data[opts.dataPointIndex];
-                  // UPDATED TEXT FORMAT
-                  return `${d.qty} (${d.mp}) | ${val}`;
-               }
+    if(val === 0 || val === null || val === undefined) return '';
+    // Show only the productivity value on the bar
+    return `${val}`;
+}
             },
             xaxis: { 
                title: { text: 'Units per Man-Hour' }, 
@@ -896,14 +895,19 @@
                   } 
                }] : [] 
             },
-            tooltip: { 
-               enabled: true,
-               intersect: false,
-               custom: function({series, seriesIndex, dataPointIndex, w}) {
-                  let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-                  return `<div style="padding: 6px 10px; font-size: 12px; font-weight: 600; background: #1F2937; color: #fff; border-radius: 4px;">${data.realTime}</div>`;
-               }
-            } 
+            tooltip: {
+    enabled: true,
+    intersect: false,
+    custom: function({series, seriesIndex, dataPointIndex, w}) {
+        let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+        // Tooltip showing ONLY Time Slot, Production Qty, and Manpower
+        return `<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; background: #1F2937; color: white; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+            <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #374151; color: #9CA3AF; font-size: 10px; text-transform: uppercase;">Time Slot: ${data.realTime}</div>
+            <div style="margin-bottom: 2px;">Prod Qty: <span style="color: #60A5FA;">${data.qty}</span></div>
+            <div>Manpower: <span style="color: #F87171;">${data.mp}</span></div>
+        </div>`;
+    }
+}
           };
 
           let chart = new ApexCharts(document.getElementById(chartId), options);
