@@ -820,13 +820,13 @@
 
           let chartId = 'sec-chart-' + idx;
           let wrapper = document.createElement('div');
-          wrapper.className = "sec-chart-wrapper bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
+          wrapper.className = "sec-chart-wrapper bg-white px-4 pt-4 pb-1 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
           wrapper.dataset.key = key;
           
           let chartHeight = Math.max(200, sortedTimes.length * 30); 
           
           wrapper.innerHTML = `
-            <div class="border-b border-gray-100 pb-2 mb-2 shrink-0">
+            <div class="border-b border-gray-100 pb-1 mb-0 shrink-0">
               <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
               <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
             </div>
