@@ -64,7 +64,7 @@
     #dashboard-app.fullscreen-active .sec-chart-wrapper {
     /* Set bottom padding to 0rem, keep others at 0.5rem */
     padding: 0.5rem 0.5rem 0rem 0.5rem !important; 
-    height: 48vh !important; 
+    /*height: 48vh !important; */
     display: flex !important;
     flex-direction: column !important;
 }
@@ -272,7 +272,7 @@
     <div class="flex-1 w-full overflow-y-auto bg-transparent p-3 sm:p-6 pb-16 relative">
       
       <div id="view-section" class="w-full space-y-4">
-        <div id="section-charts-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div id="section-charts-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-2 items-start">
           </div>
         <div id="section-empty-msg" class="hidden text-center text-gray-500 py-10 font-medium">No data found for this selection.</div>
       </div>
@@ -824,7 +824,7 @@
           wrapper.className = "sec-chart-wrapper bg-white px-4 pt-4 pb-1 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
           wrapper.dataset.key = key;
           
-          let chartHeight = Math.max(200, sortedTimes.length * 30); 
+          let chartHeight = Math.max(250, sortedTimes.length * 35); 
           
           wrapper.innerHTML = `
             <div class="border-b border-gray-100 pb-1 mb-0 shrink-0">
