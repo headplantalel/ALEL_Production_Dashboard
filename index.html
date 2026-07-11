@@ -992,7 +992,8 @@
                title: { text: currentMetric === 'productivity' ? 'Units per Man-Hour' : 'Total Units Produced' }, 
                min: chartMin, 
                max: chartMax, 
-               tickAmount: 10 
+               // Dynamically reduce the number of axis labels on phone screens to prevent overlapping
+               tickAmount: window.innerWidth < 640 ? 5 : 10 
             },
             yaxis: { 
                labels: { style: { colors: '#6B7280', fontSize: '11px', fontWeight: 600 } } 
