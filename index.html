@@ -874,7 +874,8 @@
 
           let chartId = 'sec-chart-' + idx;
           let wrapper = document.createElement('div');
-          wrapper.className = "sec-chart-wrapper bg-white px-4 pt-4 pb-1 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full";
+          // Removed horizontal and bottom padding (px-4, pb-1) and added overflow-hidden so the chart fills the rounded corners
+          wrapper.className = "sec-chart-wrapper bg-white pt-4 rounded-xl shadow-sm border border-gray-200 flex flex-col min-w-0 flex-1 h-full overflow-hidden";
           wrapper.dataset.key = key;
           
           let chartHeight = Math.max(250, sortedTimes.length * 30); 
@@ -894,16 +895,16 @@
               </div>`;
           }
 
-          // Added flex-col and sm:flex-row to make it wrap properly on mobile phones
+          // Restored px-4 ONLY to the header so the titles maintain their margins, and removed the mt-1 from the chart container
           wrapper.innerHTML = `
-            <div class="border-b border-gray-100 pb-2 mb-0 shrink-0 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+            <div class="border-b border-gray-100 pb-2 mb-0 shrink-0 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 px-4">
               <div class="min-w-0 flex-1">
                 <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
                 <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
               </div>
               ${rightHeaderHTML}
             </div>
-            <div id="${chartId}" class="w-full mt-1" style="height: ${chartHeight}px"></div>
+            <div id="${chartId}" class="w-full" style="height: ${chartHeight}px"></div>
           `;
           grid.appendChild(wrapper);
 
@@ -975,7 +976,8 @@
             grid: { 
               xaxis: { lines: { show: true } }, 
               yaxis: { lines: { show: false } }, 
-              padding: { top: 0, right: 25, bottom: 0, left: 10 } 
+              // Shrunk all internal margins. Right padding is kept at 20 to protect the custom quantity text labels from being cut off.
+              padding: { top: 0, right: 20, bottom: -15, left: -5 } 
             },
             dataLabels: { 
                enabled: true, 
