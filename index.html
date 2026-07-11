@@ -845,8 +845,8 @@
           let maxTarget = Math.max(...revTargetArr);
           if (maxTarget === -Infinity) maxTarget = 0;
           
-          // Expand the chart further in Quantity mode to leave room for the right-side text labels
-          let chartMax = Math.max(maxAct, maxTarget) * (currentMetric === 'quantity' ? 1.15 : 1.05); 
+          // Reduced the buffer from 1.15 down to 1.08 to minimize empty space while still protecting labels
+          let chartMax = Math.max(maxAct, maxTarget) * (currentMetric === 'quantity' ? 1.08 : 1.05); 
           if (chartMax === 0) chartMax = 100;
 
           let minAct = Math.min(...revActData.filter(v => v !== null && v > 0));
@@ -1002,9 +1002,20 @@
               custom: function({series, seriesIndex, dataPointIndex, w}) {
                   let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
                   
+                  // Dynamically swap the tooltip metric based on what the chart is showing
+                  let dynamicMetricHTML = '';
+                  if (currentMetric === 'quantity') {
+                      // If chart shows Qty, calculate and show Productivity in the tooltip
+                      let prodVal = data.mp > 0 ? (data.qty / data.mp).toFixed(1) : 0;
+                      dynamicMetricHTML = `<div style="margin-bottom: 2px;">Productivity: <span style="color: #10B981;">${prodVal}</span></div>`;
+                  } else {
+                      // If chart shows Productivity, show Qty in the tooltip
+                      dynamicMetricHTML = `<div style="margin-bottom: 2px;">Prod Qty: <span style="color: #60A5FA;">${data.qty}</span></div>`;
+                  }
+                  
                   return `<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; background: #1F2937; color: white; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                       <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #374151; color: #9CA3AF; font-size: 10px; text-transform: uppercase;">Time Slot: ${data.realTime}</div>
-                      <div style="margin-bottom: 2px;">Prod Qty: <span style="color: #60A5FA;">${data.qty}</span></div>
+                      ${dynamicMetricHTML}
                       <div>Manpower: <span style="color: #F87171;">${data.mp}</span></div>
                   </div>`;
               }
