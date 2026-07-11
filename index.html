@@ -167,9 +167,10 @@
   
   <!-- Added overflow-hidden to prevent any horizontal scrolling issues from inner elements -->
   <div id="app" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-xl w-full border border-white z-20 overflow-hidden box-border">
-    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-      <img src="alel.png" alt="ALEL" class="h-6 object-contain">
-      <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Go to Dashboard</button>
+<!-- Added a gap-4 to ensure they never collide, scaled down the logo slightly on mobile, and shrank the button padding/text on mobile -->
+    <div class="flex justify-between items-center gap-4 mb-6 pb-4 border-b border-gray-100">
+      <img src="alel.png" alt="ALEL" class="h-5 sm:h-6 object-contain shrink-0">
+      <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[9px] sm:text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-enovar px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors shrink-0">Go to Dashboard</button>
     </div>
     
     <form id="prodForm" onsubmit="submitForm(event)" class="space-y-4">
@@ -241,14 +242,15 @@
     <div class="flex justify-between items-center px-3 sm:px-6 py-3 bg-white shadow-sm border-b border-gray-200 w-full z-20 relative shrink-0">
       
       <!-- Left Side: Logos and Dashboard Title -->
-      <div class="flex items-center gap-2 sm:gap-4 overflow-hidden">
+      <!-- Removed overflow-hidden and truncate so the box-shadow animation can expand freely -->
+      <div class="flex items-center gap-3 sm:gap-4 shrink-0">
         <img src="alel.png" alt="ALEL" class="h-5 sm:h-7 object-contain shrink-0">
-        <!-- Enovar logo hidden on phone view, visible next to ALEL on laptop -->
         <img src="enovar.png" alt="Enovar" class="h-3 sm:h-4 object-contain opacity-90 hidden sm:block shrink-0">
         <div class="w-px h-5 bg-gray-300 hidden sm:block shrink-0"></div>
-        <span class="text-xs sm:text-sm font-extrabold text-gray-800 tracking-wide flex items-center gap-1.5 truncate">
+        <span class="text-xs sm:text-sm font-extrabold text-gray-800 tracking-wide flex items-center gap-1.5">
           Dashboard
-          <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 live-pulse shrink-0" title="Live Auto-Sync"></span>
+          <!-- Added mr-2 to provide physical space for the pulse shadow to expand into -->
+          <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 live-pulse shrink-0 ml-1 mr-2" title="Live Auto-Sync"></span>
         </span>
       </div>
       
