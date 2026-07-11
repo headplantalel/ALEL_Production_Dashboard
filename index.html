@@ -260,7 +260,7 @@
       <div class="w-full px-4 sm:px-6 py-2.5 flex flex-col md:flex-row justify-between items-center gap-3">
         
         <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 w-full md:w-auto overflow-x-auto no-scrollbar shrink-0">
-          <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Line Grid</button>
+          <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Daily Status</button>
           <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Master Analytics</button>
           <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Exec Summary</button>
         </div>
@@ -773,7 +773,6 @@
           let actData = [], targetArr = [], qtyArr = [], mpArr = [];
           let hasData = false, latestTarget = 0;
           
-          // Track values for the real-time card headers
           let lastValidTime = "N/A", lastQty = 0, lastMp = 0, lastAct = 0, lastTgt = 0;
 
           sortedTimes.forEach(t => {
@@ -783,7 +782,6 @@
                let tgt = parseFloat((cell.tgt / cell.count).toFixed(1));
                let expectedQty = parseFloat((tgt * cell.mp).toFixed(0));
                
-               // Continually re-save so the final iteration matches the latest chronological time slot
                lastValidTime = t;
                lastQty = cell.qty;
                lastMp = cell.mp;
@@ -818,12 +816,8 @@
              let actVal = revActData[i] !== null ? revActData[i] : 0;
              let tgtForThisHour = revTargetArr[i] > 0 ? revTargetArr[i] : (currentMetric === 'productivity' ? latestTarget : 0);
              
-             let isUnderperforming;
-             if (currentMetric === 'productivity') {
-                 isUnderperforming = (actVal > 0 && actVal < (0.9 * tgtForThisHour));
-             } else {
-                 isUnderperforming = (actVal > 0 && actVal < tgtForThisHour);
-             }
+             // BOTH metrics now use the 90% threshold for turning red
+             let isUnderperforming = (actVal > 0 && actVal < (0.9 * tgtForThisHour));
              
              barColors.push(isUnderperforming ? '#EF4444' : '#0D5C58');
 
@@ -833,21 +827,11 @@
                  realTime: t,
                  qty: revQtyArr[i],
                  mp: revMpArr[i],
-                 target: tgtForThisHour,
-                 // Renders goal marker target lines directly onto horizontal bars
-                 goals: tgtForThisHour > 0 ? [
-                   {
-                     name: 'Target',
-                     value: tgtForThisHour,
-                     strokeWidth: 4,
-                     strokeHeight: 14,
-                     strokeColor: '#334155'
-                   }
-                 ] : []
+                 target: tgtForThisHour
+                 // Goals removed to return to the vertical line style
              };
           });
 
-          // Compute max range based on either actual volumes or metric targets
           let maxAct = Math.max(...revActData.filter(v => v !== null));
           if (maxAct === -Infinity) maxAct = 0;
           let maxTarget = Math.max(...revTargetArr);
@@ -867,12 +851,11 @@
           
           let chartHeight = Math.max(250, sortedTimes.length * 30); 
 
-          // Build out right side header preview markup
           let rightHeaderHTML = '';
           if (lastValidTime !== "N/A") {
              let headerDisplayTgt = currentMetric === 'productivity' ? lastTgt : Math.round(lastTgt * lastMp);
              rightHeaderHTML = `
-              <div class="text-right shrink-0 bg-gray-50 rounded-lg px-2 py-1 border border-gray-200 shadow-sm">
+              <div class="text-right shrink-0 bg-gray-50 rounded-lg px-2 py-1 border border-gray-200 shadow-sm self-start">
                 <div class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Last Hour: ${lastValidTime}</div>
                 <div class="flex items-center justify-end gap-2 text-[10px] font-bold">
                   <span class="text-blue-600" title="Production Qty">Q:${lastQty}</span>
@@ -883,8 +866,9 @@
               </div>`;
           }
 
+          // Added flex-col and sm:flex-row to make it wrap properly on mobile phones
           wrapper.innerHTML = `
-            <div class="border-b border-gray-100 pb-2 mb-0 shrink-0 flex justify-between items-start gap-2">
+            <div class="border-b border-gray-100 pb-2 mb-0 shrink-0 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
               <div class="min-w-0 flex-1">
                 <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
                 <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
@@ -894,6 +878,10 @@
             <div id="${chartId}" class="w-full mt-1" style="height: ${chartHeight}px"></div>
           `;
           grid.appendChild(wrapper);
+
+          // Calculate where the vertical line should be placed
+          let annotationVal = currentMetric === 'productivity' ? latestTarget : Math.round(latestTarget * lastMp);
+          let annotationText = currentMetric === 'productivity' ? 'Target: ' + latestTarget : 'Target Qty: ' + annotationVal;
 
           let options = {
             chart: { 
@@ -940,21 +928,40 @@
                labels: { style: { colors: '#6B7280', fontSize: '11px', fontWeight: 600 } } 
             },
             annotations: {
-               xaxis: [] // Targets are individual markers drawn on bars, global line annotation cleared
+               // Adds the thin dashed line and text label for both metrics
+               xaxis: annotationVal > 0 ? [{ 
+                  x: annotationVal, 
+                  borderColor: '#475569', 
+                  strokeDashArray: 4, 
+                  strokeWidth: 1, // Makes the line thin
+                  label: { 
+                     text: annotationText, 
+                     position: 'top', 
+                     textAnchor: 'start', 
+                     offsetX: 5,
+                     style: {color: '#fff', background: '#475569'} 
+                  } 
+               }] : []
             },
             tooltip: {
               enabled: true,
               intersect: false,
               custom: function({series, seriesIndex, dataPointIndex, w}) {
                   let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-                  let targetLabel = currentMetric === 'productivity' ? 'Target Prod' : 'Target Qty';
+                  
+                  // Target only shows in tooltip if we are in Quantity view
+                  let targetHTML = '';
+                  if (currentMetric === 'quantity') {
+                      targetHTML = `<div style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed #4B5563; font-size: 11px;">
+                          Target Qty: <span style="color: #FBBF24;">${data.target}</span>
+                      </div>`;
+                  }
+                  
                   return `<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; background: #1F2937; color: white; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                       <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #374151; color: #9CA3AF; font-size: 10px; text-transform: uppercase;">Time Slot: ${data.realTime}</div>
                       <div style="margin-bottom: 2px;">Prod Qty: <span style="color: #60A5FA;">${data.qty}</span></div>
                       <div style="margin-bottom: 2px;">Manpower: <span style="color: #F87171;">${data.mp}</span></div>
-                      <div style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed #4B5563; font-size: 11px;">
-                          ${targetLabel}: <span style="color: #FBBF24;">${data.target}</span>
-                      </div>
+                      ${targetHTML}
                   </div>`;
               }
             }
