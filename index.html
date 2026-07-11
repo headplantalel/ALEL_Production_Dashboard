@@ -908,20 +908,23 @@
                       
                       // Find the exact middle bar of this group to place the label
                       let midIndex = Math.floor((start + end) / 2);
+                      let barCount = end - start + 1; // Count how many bars share this target
                       
                       qtyAnnotations.push({
                           x: val,
-                          y: seriesData[midIndex].x, // Connects to the specific bar (e.g., "2nd")
-                          marker: { size: 0 }, // Hides the default dot
+                          y: seriesData[midIndex].x, // Connects to the specific bar
+                          marker: { size: 0 }, 
                           label: {
                               text: String(val),
-                              offsetX: 15, // Pushes text nicely to the right of the dashed marker
-                              offsetY: 1,
+                              offsetX: 26, // INCREASED to push text away from the dashed target marker
+                              // DYNAMIC OFFSET: If the group has an even number of bars, push down 16px to sit perfectly between them
+                              offsetY: (barCount % 2 === 0) ? 16 : 1, 
                               style: {
                                   color: '#374151',
-                                  background: 'rgba(255,255,255,0.75)', // Transparent background avoids gridline clashes
+                                  background: 'rgba(255,255,255,0.9)', // Made slightly more opaque
                                   fontSize: '10px',
-                                  fontWeight: 700
+                                  fontWeight: 700,
+                                  padding: { left: 4, right: 4, top: 2, bottom: 2 } // Gives the box cleaner margins
                               }
                           }
                       });
@@ -999,23 +1002,13 @@
               custom: function({series, seriesIndex, dataPointIndex, w}) {
                   let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
                   
-                  // Target only shows in tooltip if we are in Quantity view
-                  let targetHTML = '';
-                  if (currentMetric === 'quantity') {
-                      targetHTML = `<div style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed #4B5563; font-size: 11px;">
-                          Target Qty: <span style="color: #FBBF24;">${data.target}</span>
-                      </div>`;
-                  }
-                  
                   return `<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; background: #1F2937; color: white; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                       <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #374151; color: #9CA3AF; font-size: 10px; text-transform: uppercase;">Time Slot: ${data.realTime}</div>
                       <div style="margin-bottom: 2px;">Prod Qty: <span style="color: #60A5FA;">${data.qty}</span></div>
-                      <div style="margin-bottom: 2px;">Manpower: <span style="color: #F87171;">${data.mp}</span></div>
-                      ${targetHTML}
+                      <div>Manpower: <span style="color: #F87171;">${data.mp}</span></div>
                   </div>`;
               }
             }
-          };
 
           let chart = new ApexCharts(document.getElementById(chartId), options);
           chart.render();
