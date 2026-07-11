@@ -827,8 +827,16 @@
                  realTime: t,
                  qty: revQtyArr[i],
                  mp: revMpArr[i],
-                 target: tgtForThisHour
-                 // Goals removed to return to the vertical line style
+                 target: tgtForThisHour,
+                 // ONLY add individual bar markers if we are in Quantity mode
+                 goals: (currentMetric === 'quantity' && tgtForThisHour > 0) ? [{
+                     name: 'Target',
+                     value: tgtForThisHour,
+                     strokeWidth: 2,
+                     strokeHeight: 14,
+                     strokeColor: '#374151',
+                     strokeDashArray: 2 // Makes the individual bar markers dashed
+                 }] : []
              };
           });
 
@@ -837,7 +845,8 @@
           let maxTarget = Math.max(...revTargetArr);
           if (maxTarget === -Infinity) maxTarget = 0;
           
-          let chartMax = Math.max(maxAct, maxTarget) * 1.05; 
+          // Expand the chart further in Quantity mode to leave room for the right-side text labels
+          let chartMax = Math.max(maxAct, maxTarget) * (currentMetric === 'quantity' ? 1.15 : 1.05); 
           if (chartMax === 0) chartMax = 100;
 
           let minAct = Math.min(...revActData.filter(v => v !== null && v > 0));
@@ -882,6 +891,45 @@
           // Calculate where the vertical line should be placed
           let annotationVal = currentMetric === 'productivity' ? latestTarget : Math.round(latestTarget * lastMp);
           let annotationText = currentMetric === 'productivity' ? 'Target: ' + latestTarget : 'Target Qty: ' + annotationVal;
+
+          // NEW: Algorithm to group consecutive identical targets and place a single label
+          let qtyAnnotations = [];
+          if (currentMetric === 'quantity') {
+              let i = 0;
+              while (i < revTargetArr.length) {
+                  let val = revTargetArr[i];
+                  if (val > 0) {
+                      let start = i;
+                      // Scan forward to group identical consecutive targets
+                      while (i < revTargetArr.length && revTargetArr[i] === val) {
+                          i++;
+                      }
+                      let end = i - 1;
+                      
+                      // Find the exact middle bar of this group to place the label
+                      let midIndex = Math.floor((start + end) / 2);
+                      
+                      qtyAnnotations.push({
+                          x: val,
+                          y: seriesData[midIndex].x, // Connects to the specific bar (e.g., "2nd")
+                          marker: { size: 0 }, // Hides the default dot
+                          label: {
+                              text: String(val),
+                              offsetX: 15, // Pushes text nicely to the right of the dashed marker
+                              offsetY: 1,
+                              style: {
+                                  color: '#374151',
+                                  background: 'rgba(255,255,255,0.75)', // Transparent background avoids gridline clashes
+                                  fontSize: '10px',
+                                  fontWeight: 700
+                              }
+                          }
+                      });
+                  } else {
+                      i++;
+                  }
+              }
+          }
 
           let options = {
             chart: { 
@@ -928,8 +976,8 @@
                labels: { style: { colors: '#6B7280', fontSize: '11px', fontWeight: 600 } } 
             },
             annotations: {
-               // Adds the thin dashed line and text label for both metrics
-               xaxis: annotationVal > 0 ? [{ 
+               // ONLY show the global straight dashed line in Productivity mode
+               xaxis: (annotationVal > 0 && currentMetric === 'productivity') ? [{ 
                   x: annotationVal, 
                   borderColor: '#475569', 
                   strokeDashArray: 4, 
@@ -941,7 +989,9 @@
                      offsetX: 5,
                      style: {color: '#fff', background: '#475569'} 
                   } 
-               }] : []
+               }] : [],
+               // INJECT the grouped quantity labels here
+               points: qtyAnnotations
             },
             tooltip: {
               enabled: true,
