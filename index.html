@@ -274,7 +274,7 @@
         
         <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 w-full md:w-auto overflow-x-auto no-scrollbar shrink-0">
           <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Daily Status</button>
-          <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Master Analytics</button>
+          <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Analytics</button>
           <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Exec Summary</button>
         </div>
 
@@ -1084,14 +1084,22 @@
           return true;
         });
 
-        let sumQty = 0, prodSum = 0, prodCount = 0, tgtSum = 0, tgtCount = 0;
+        let sumQty = 0;
+        let weightedProdSum = 0;
+        let weightedTgtSum = 0;
         let dateMap = {};
         let dailyLineMp = {}; 
 
         fData.forEach(r => {
           sumQty += r.qty;
-          if(r.productivity > 0) { prodSum += r.productivity; prodCount++; }
-          if(r.targetProductivity > 0) { tgtSum += r.targetProductivity; tgtCount++; }
+          
+          // Use Weighted Average logic (Productivity * Quantity)
+          if(r.productivity > 0) { 
+              weightedProdSum += (r.productivity * r.qty); 
+          }
+          if(r.targetProductivity > 0) { 
+              weightedTgtSum += (r.targetProductivity * r.qty); 
+          }
           
           if(!dateMap[r.date]) dateMap[r.date] = { act: 0, tgt: 0, count: 0 };
           if(r.productivity > 0) { dateMap[r.date].act += r.productivity; dateMap[r.date].tgt += r.targetProductivity; dateMap[r.date].count++; }
@@ -1109,8 +1117,10 @@
         });
 
         let avgDailyMp = activeDays > 0 ? Math.round(dailyMpSums / activeDays) : 0;
-        let avgProd = prodCount > 0 ? (prodSum / prodCount).toFixed(1) : "0.0";
-        let avgTarget = tgtCount > 0 ? (tgtSum / tgtCount).toFixed(1) : "0.0";
+        
+        // Final division by the total quantity to get the weighted average
+        let avgProd = sumQty > 0 ? (weightedProdSum / sumQty).toFixed(1) : "0.0";
+        let avgTarget = sumQty > 0 ? (weightedTgtSum / sumQty).toFixed(1) : "0.0";
 
         document.getElementById('master-kpi-prod').innerText = avgProd;
         document.getElementById('master-kpi-target').innerText = avgTarget;
