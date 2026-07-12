@@ -28,6 +28,10 @@
     body { background: linear-gradient(135deg, #F4F7F6 0%, #E6EDEB 100%); background-attachment: fixed; }
     .ts-control { padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; background-color: rgba(255,255,255,0.8); transition: all 0.3s ease; }
     .ts-control.focus { border-color: #0D5C58; box-shadow: 0 0 0 3px rgba(13, 92, 88, 0.15); background-color: #FFF; }
+    /* TomSelect single-line formatting fix */
+    .ts-control { display: flex !important; align-items: center; overflow: hidden; }
+    .ts-control > input { flex: 1; min-width: 0 !important; margin-bottom: 0 !important; }
+    .ts-control .item { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 95%; margin-bottom: 0 !important; }
     
     @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -312,6 +316,14 @@
         <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Productivity Trend Analysis</h3>
            <div id="chart-master-trend" class="w-full h-[350px]"></div>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 mt-4">
+           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Month-over-Month Productivity</h3>
+           <div id="chart-master-monthly" class="w-full h-[300px]"></div>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 mt-4">
+           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Manpower Efficiency (Manpower vs. Productivity)</h3>
+           <div id="chart-master-scatter" class="w-full h-[350px]"></div>
         </div>
       </div>
 
@@ -680,6 +692,10 @@
           <select id="filter-section-master" onchange="updateMasterDropdowns()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
             <option value="all">All Sections</option>
             ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
+          </select>
+          <select id="filter-pg-master" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
+            <option value="all">All PGs</option>
+            ${Array.from(pgs).sort().map(p => `<option value="${p}">${p}</option>`).join('')}
           </select>
           <select id="master-date-preset" onchange="toggleMasterDateRange()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
              <option value="today">Today</option><option value="7">Last 7 Days</option><option value="30">Last 30 Days</option><option value="custom">Date Range</option><option value="all">All Time</option>
@@ -1074,6 +1090,7 @@
         }
 
         const valSec = document.getElementById('filter-section-master') ? document.getElementById('filter-section-master').value : 'all';
+        const valPg = document.getElementById('filter-pg-master') ? document.getElementById('filter-pg-master').value : 'all'; // NEW PG VARIABLE
         const valItem = tsDashItem ? tsDashItem.getValue() : '';
 
         let fData = rawDashboardData.filter(row => {
@@ -1149,6 +1166,123 @@
         if (masterTrendChart) masterTrendChart.destroy();
         masterTrendChart = new ApexCharts(document.querySelector("#chart-master-trend"), options);
         masterTrendChart.render();
+        // --- NEW: Month-wise Aggregation ---
+        let monthlyData = {};
+        fData.forEach(r => {
+           let rDate = new Date(r.date);
+           let mKey = rDate.getFullYear() + "-" + String(rDate.getMonth() + 1).padStart(2, '0');
+           let mLabel = rDate.toLocaleString('default', { month: 'short', year: 'numeric' });
+           
+           if(!monthlyData[mKey]) monthlyData[mKey] = { label: mLabel, qty: 0, wProd: 0, wTgt: 0 };
+           
+           monthlyData[mKey].qty += r.qty;
+           if(r.productivity > 0) monthlyData[mKey].wProd += (r.productivity * r.qty);
+           if(r.targetProductivity > 0) monthlyData[mKey].wTgt += (r.targetProductivity * r.qty);
+        });
+
+        let mKeys = Object.keys(monthlyData).sort();
+        let monthLabels = mKeys.map(k => monthlyData[k].label);
+        let monthActuals = mKeys.map(k => monthlyData[k].qty > 0 ? parseFloat((monthlyData[k].wProd / monthlyData[k].qty).toFixed(1)) : 0);
+        let monthTargets = mKeys.map(k => monthlyData[k].qty > 0 ? parseFloat((monthlyData[k].wTgt / monthlyData[k].qty).toFixed(1)) : 0);
+
+        let monthlyOptions = {
+          chart: { type: 'bar', height: 300, toolbar: { show: false }, fontFamily: font },
+          series: [
+            { name: 'Actual Productivity', data: monthActuals },
+            { name: 'Target Productivity', data: monthTargets }
+          ],
+          plotOptions: { bar: { horizontal: false, columnWidth: '50%', borderRadius: 3 } },
+          dataLabels: { enabled: false },
+          stroke: { show: true, width: 2, colors: ['transparent'] },
+          colors: ['#0D5C58', '#EF4444'],
+          xaxis: { categories: monthLabels, labels: { style: { colors: '#6B7280' } } },
+          yaxis: { title: { text: 'Weighted Avg Productivity', style: { color: '#6B7280' } } },
+          fill: { opacity: 1 },
+          legend: { position: 'top', horizontalAlign: 'right' }
+        };
+
+        if (window.masterMonthlyChart) window.masterMonthlyChart.destroy();
+        window.masterMonthlyChart = new ApexCharts(document.querySelector("#chart-master-monthly"), monthlyOptions);
+        window.masterMonthlyChart.render();
+        // --- NEW: Manpower Efficiency Scatter Plot ---
+        let scatterSeriesData = {};
+        
+        // 1. Group the filtered data by Line
+        fData.forEach(r => {
+            // Only plot points that have both manpower and productivity recorded
+            if (r.mp > 0 && r.productivity > 0) {
+                if (!scatterSeriesData[r.line]) {
+                    scatterSeriesData[r.line] = [];
+                }
+                // Push data as [X-axis (Manpower), Y-axis (Productivity)]
+                scatterSeriesData[r.line].push([r.mp, r.productivity]);
+            }
+        });
+
+        // 2. Format it into the structure ApexCharts expects
+        let scatterSeries = Object.keys(scatterSeriesData).map(lineName => {
+            return {
+                name: lineName,
+                data: scatterSeriesData[lineName]
+            };
+        });
+
+        // 3. Configure the Scatter Plot
+        let scatterOptions = {
+            chart: { 
+                type: 'scatter', 
+                height: 350, 
+                toolbar: { show: true, tools: { download: false, selection: true, zoom: true, pan: true } }, 
+                fontFamily: font,
+                animations: { enabled: false }
+            },
+            series: scatterSeries,
+            colors: ['#0D5C58', '#EF4444', '#3B82F6', '#F59E0B', '#10B981', '#8B5CF6', '#EC4899', '#6366F1'], // Distinct colors for different lines
+            xaxis: { 
+                title: { text: 'Manpower Allocated (Headcount)', style: { fontWeight: 600, color: '#6B7280' } },
+                tickAmount: 10,
+                labels: { 
+                    formatter: function(val) { return parseFloat(val).toFixed(0); },
+                    style: { colors: '#6B7280' }
+                },
+                axisBorder: { show: true }
+            },
+            yaxis: { 
+                title: { text: 'Actual Productivity', style: { fontWeight: 600, color: '#6B7280' } },
+                labels: { style: { colors: '#6B7280' } }
+            },
+            markers: { 
+                size: 5, 
+                hover: { size: 7 },
+                strokeWidth: 0
+            },
+            grid: { 
+                xaxis: { lines: { show: true } }, 
+                yaxis: { lines: { show: true } },
+                borderColor: '#E5E7EB'
+            },
+            legend: { 
+                position: 'top', 
+                horizontalAlign: 'right',
+                markers: { radius: 12 }
+            },
+            tooltip: {
+                custom: function({series, seriesIndex, dataPointIndex, w}) {
+                    let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                    let lineName = w.globals.initialSeries[seriesIndex].name;
+                    return `<div style="padding: 10px; font-size: 12px; font-family: ${font}; background: #1F2937; color: white; border-radius: 6px;">
+                        <div style="font-weight: 700; color: #9CA3AF; margin-bottom: 4px; border-bottom: 1px solid #374151; padding-bottom: 4px;">${lineName}</div>
+                        <div>Manpower: <span style="color: #F87171; font-weight: 700;">${data[0]}</span></div>
+                        <div>Productivity: <span style="color: #10B981; font-weight: 700;">${data[1]}</span></div>
+                    </div>`;
+                }
+            }
+        };
+
+        // 4. Render the Scatter Chart
+        if (window.masterScatterChart) window.masterScatterChart.destroy();
+        window.masterScatterChart = new ApexCharts(document.querySelector("#chart-master-scatter"), scatterOptions);
+        window.masterScatterChart.render();
       }
 
       // ==========================================
