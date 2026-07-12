@@ -314,16 +314,11 @@
            </div>
         </div>
         <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Productivity Trend Analysis</h3>
+           <div class="flex justify-between items-center mb-2">
+             <h3 id="chart-master-title" class="text-xs font-bold text-gray-800 uppercase tracking-widest text-left">Productivity Trend Analysis</h3>
+             <span class="text-[9px] text-gray-400 font-medium">Use chart tools to zoom/pan</span>
+           </div>
            <div id="chart-master-trend" class="w-full h-[350px]"></div>
-        </div>
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 mt-4">
-           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Month-over-Month Productivity</h3>
-           <div id="chart-master-monthly" class="w-full h-[300px]"></div>
-        </div>
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 mt-4">
-           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Manpower Efficiency (Manpower vs. Productivity)</h3>
-           <div id="chart-master-scatter" class="w-full h-[350px]"></div>
         </div>
       </div>
 
@@ -624,20 +619,37 @@
       }, 50);
     }
 
-    // Update Dropdowns dynamically based on Section
+    function updateMasterViewType(isInit = false) {
+      const viewType = document.getElementById('master-view-type') ? document.getElementById('master-view-type').value : 'daily';
+      const presetSelect = document.getElementById('master-date-preset');
+      if (!presetSelect) return;
+      
+      if (viewType === 'daily') {
+          presetSelect.innerHTML = `<option value="7">Last 7 Days</option><option value="30">Last 30 Days</option><option value="today">Today</option><option value="custom">Date Range</option><option value="all">All Time</option>`;
+      } else {
+          presetSelect.innerHTML = `<option value="6m">Last 6 Months</option><option value="1y">Last 1 Year</option><option value="all">All Time</option>`;
+      }
+      
+      if(!isInit) { toggleMasterDateRange(); }
+    }
+
+    // Update Dropdowns dynamically based on Product Group (PG)
     function updateMasterDropdowns() {
-      let secVal = document.getElementById('filter-section-master') ? document.getElementById('filter-section-master').value : 'all';
+      if (activeDashTab !== 'master') return;
+      let pgVal = document.getElementById('filter-pg-master') ? document.getElementById('filter-pg-master').value : 'all';
       let items = new Set();
       
       rawDashboardData.forEach(r => { 
-        if(secVal === 'all' || r.section === secVal) {
+        // Only collect items that belong to the selected PG
+        if(pgVal === 'all' || r.pg === pgVal) {
            if(r.itemCode && r.item) items.add(`[${r.itemCode}] - ${r.item}`);
         }
       });
       
       const iSel = document.getElementById('filter-item');
       if(iSel && tsDashItem) {
-         tsDashItem.clearOptions();
+         tsDashItem.clear(); // Clear current selection
+         tsDashItem.clearOptions(); // Remove old options
          Array.from(items).sort().forEach(i => tsDashItem.addOption({value: i, text: i}));
          tsDashItem.refreshOptions(false);
       }
@@ -689,14 +701,39 @@
         let startStr = defaultStartDate.toISOString().split('T')[0];
         let endStr = new Date().toISOString().split('T')[0];
         html = `
-          <select id="filter-section-master" onchange="updateMasterDropdowns()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-            <option value="all">All Sections</option>
-            ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
+          <select id="master-view-type" onchange="updateMasterViewType()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm bg-enovar/5">
+            <option value="daily">Daily View</option>
+            <option value="monthly">Monthly View</option>
           </select>
-          <select id="filter-pg-master" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
+          <select id="filter-pg-master" onchange="this.classList.toggle('text-enovar', this.value !== 'all'); this.classList.toggle('border-enovar', this.value !== 'all'); updateMasterDropdowns();" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm transition-colors">
             <option value="all">All PGs</option>
             ${Array.from(pgs).sort().map(p => `<option value="${p}">${p}</option>`).join('')}
           </select>
+          <select id="master-date-preset" onchange="toggleMasterDateRange()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
+             <!-- Options populated by JS -->
+          </select>
+          <div id="master-date-range-container" class="hidden flex items-center gap-1 bg-white border border-gray-200 rounded-md px-2 shadow-sm">
+            <input type="date" id="filter-start" value="${startStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
+            <span class="text-gray-400 text-xs">to</span>
+            <input type="date" id="filter-end" value="${endStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
+          </div>
+          <div class="w-full md:w-[300px]"><select id="filter-item" placeholder="Search Item..."></select></div>
+        `;
+      }
+      container.innerHTML = html;
+      
+      if(activeDashTab === 'master') {
+        updateMasterViewType(true); // Initialize the date presets immediately
+        
+        const iSel = document.getElementById('filter-item');
+        iSel.innerHTML = '<option value="">Search Item...</option>';
+        Array.from(items).sort().forEach(i => iSel.add(new Option(i, i)));
+        if(tsDashItem) tsDashItem.destroy();
+        tsDashItem = new TomSelect("#filter-item", { allowEmptyOption: true, create: false, onChange: function() { renderDashboard(); } });
+        
+        // Force the dropdown to respect PG if one was already selected
+        updateMasterDropdowns(); 
+      }
           <select id="master-date-preset" onchange="toggleMasterDateRange()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
              <option value="today">Today</option><option value="7">Last 7 Days</option><option value="30">Last 30 Days</option><option value="custom">Date Range</option><option value="all">All Time</option>
           </select>
@@ -1070,61 +1107,73 @@
       // TAB 2: MASTER ANALYTICS (Date Range & Filters)
       // ==========================================
       if (activeDashTab === 'master') {
+        const viewType = document.getElementById('master-view-type') ? document.getElementById('master-view-type').value : 'daily';
         const preset = document.getElementById('master-date-preset').value;
-        let startDate, endDate;
+        let startDate = new Date(0), endDate = new Date(8640000000000000);
         let today = new Date(); today.setHours(0,0,0,0);
         
         if (preset === 'today') {
            startDate = today; endDate = new Date(today.getTime() + 86399999);
         } else if (preset === '7') {
-           startDate = new Date(today); startDate.setDate(startDate.getDate() - 6);
-           endDate = new Date(today.getTime() + 86399999);
+           startDate = new Date(today); startDate.setDate(startDate.getDate() - 6); endDate = new Date(today.getTime() + 86399999);
         } else if (preset === '30') {
-           startDate = new Date(today); startDate.setDate(startDate.getDate() - 29);
-           endDate = new Date(today.getTime() + 86399999);
+           startDate = new Date(today); startDate.setDate(startDate.getDate() - 29); endDate = new Date(today.getTime() + 86399999);
+        } else if (preset === '6m') {
+           startDate = new Date(today); startDate.setMonth(startDate.getMonth() - 6); endDate = new Date(today.getTime() + 86399999);
+        } else if (preset === '1y') {
+           startDate = new Date(today); startDate.setFullYear(startDate.getFullYear() - 1); endDate = new Date(today.getTime() + 86399999);
         } else if (preset === 'custom') {
            startDate = new Date(document.getElementById('filter-start').value); startDate.setHours(0,0,0,0);
            endDate = new Date(document.getElementById('filter-end').value); endDate.setHours(23,59,59,999);
-        } else {
-           startDate = new Date(0); endDate = new Date(8640000000000000); 
         }
 
-        const valSec = document.getElementById('filter-section-master') ? document.getElementById('filter-section-master').value : 'all';
-        const valPg = document.getElementById('filter-pg-master') ? document.getElementById('filter-pg-master').value : 'all'; // NEW PG VARIABLE
+        const valPg = document.getElementById('filter-pg-master') ? document.getElementById('filter-pg-master').value : 'all';
         const valItem = tsDashItem ? tsDashItem.getValue() : '';
 
+        // 1. FILTER DATA BY PG, ITEM, AND DATE
         let fData = rawDashboardData.filter(row => {
-          if (valSec !== 'all' && row.section !== valSec) return false;
+          if (valPg !== 'all' && row.pg !== valPg) return false;
           if (valItem && valItem !== '' && `[${row.itemCode}] - ${row.item}` !== valItem) return false;
           let rDate = new Date(row.date);
           if (rDate < startDate || rDate > endDate) return false;
           return true;
         });
 
-        let sumQty = 0;
-        let weightedProdSum = 0;
-        let weightedTgtSum = 0;
-        let dateMap = {};
+        let sumQty = 0, weightedProdSum = 0, weightedTgtSum = 0;
+        let dataMap = {}; 
         let dailyLineMp = {}; 
 
+        // 2. AGGREGATE BASED ON VIEW TYPE
         fData.forEach(r => {
           sumQty += r.qty;
           
-          // Use Weighted Average logic (Productivity * Quantity)
-          if(r.productivity > 0) { 
-              weightedProdSum += (r.productivity * r.qty); 
-          }
-          if(r.targetProductivity > 0) { 
-              weightedTgtSum += (r.targetProductivity * r.qty); 
+          if(r.productivity > 0) weightedProdSum += (r.productivity * r.qty); 
+          if(r.targetProductivity > 0) weightedTgtSum += (r.targetProductivity * r.qty); 
+          
+          let rDate = new Date(r.date);
+          let key, label;
+          
+          if (viewType === 'daily') {
+              key = r.date;
+              label = r.date;
+          } else { // Monthly
+              key = rDate.getFullYear() + "-" + String(rDate.getMonth() + 1).padStart(2, '0');
+              label = rDate.toLocaleString('default', { month: 'short', year: 'numeric' });
           }
           
-          if(!dateMap[r.date]) dateMap[r.date] = { act: 0, tgt: 0, count: 0 };
-          if(r.productivity > 0) { dateMap[r.date].act += r.productivity; dateMap[r.date].tgt += r.targetProductivity; dateMap[r.date].count++; }
+          if(!dataMap[key]) dataMap[key] = { label: label, actSum: 0, tgtSum: 0, qty: 0 };
+          
+          dataMap[key].qty += r.qty;
+          if(r.productivity > 0) { 
+              dataMap[key].actSum += (r.productivity * r.qty); 
+              dataMap[key].tgtSum += (r.targetProductivity * r.qty); 
+          }
           
           if(!dailyLineMp[r.date]) dailyLineMp[r.date] = {};
           dailyLineMp[r.date][r.line] = Math.max(dailyLineMp[r.date][r.line] || 0, r.mp);
         });
 
+        // 3. CALCULATE KPIs
         let activeDays = Object.keys(dailyLineMp).length;
         let dailyMpSums = 0;
         Object.values(dailyLineMp).forEach(lines => {
@@ -1134,8 +1183,6 @@
         });
 
         let avgDailyMp = activeDays > 0 ? Math.round(dailyMpSums / activeDays) : 0;
-        
-        // Final division by the total quantity to get the weighted average
         let avgProd = sumQty > 0 ? (weightedProdSum / sumQty).toFixed(1) : "0.0";
         let avgTarget = sumQty > 0 ? (weightedTgtSum / sumQty).toFixed(1) : "0.0";
 
@@ -1143,13 +1190,43 @@
         document.getElementById('master-kpi-target').innerText = avgTarget;
         document.getElementById('master-kpi-output').innerText = sumQty.toLocaleString();
         document.getElementById('master-kpi-mp').innerText = avgDailyMp.toLocaleString();
+        
+        let titleEl = document.getElementById('chart-master-title');
+        if (titleEl) titleEl.innerText = viewType === 'daily' ? 'Daily Productivity Trend' : 'Month-over-Month Productivity';
 
-        let tDates = Object.keys(dateMap).sort((a,b) => new Date(a) - new Date(b));
-        let actVals = tDates.map(d => dateMap[d].count > 0 ? parseFloat((dateMap[d].act/dateMap[d].count).toFixed(1)) : 0);
-        let tgtVals = tDates.map(d => dateMap[d].count > 0 ? parseFloat((dateMap[d].tgt/dateMap[d].count).toFixed(1)) : 0);
+        // 4. PREPARE CHART DATA
+        let tKeys = Object.keys(dataMap).sort((a,b) => {
+            if (viewType === 'daily') return new Date(a) - new Date(b);
+            return a > b ? 1 : -1;
+        });
+        
+        let categories = tKeys.map(k => dataMap[k].label);
+        let actVals = tKeys.map(k => dataMap[k].qty > 0 ? parseFloat((dataMap[k].actSum / dataMap[k].qty).toFixed(1)) : 0);
+        let tgtVals = tKeys.map(k => dataMap[k].qty > 0 ? parseFloat((dataMap[k].tgtSum / dataMap[k].qty).toFixed(1)) : 0);
 
+        // 5. CHART RENDER WITH UI ZOOM TOOLS (Pinch Disabled)
         let options = {
-          chart: { type: 'area', height: 350, toolbar: { show: false }, fontFamily: font },
+          chart: { 
+             type: viewType === 'daily' ? 'area' : 'line', // Line for month, Area for day
+             height: 350, 
+             fontFamily: font,
+             toolbar: { 
+                 show: true, 
+                 tools: { 
+                     download: false, 
+                     selection: false, // Disables drag-to-zoom box
+                     zoom: true,       // Enables UI Zoom In button
+                     zoomin: true,     // Enables UI Zoom In button
+                     zoomout: true,    // Enables UI Zoom Out button
+                     pan: true,        // Enables Hand (Pan left/right) button
+                     reset: true       // Enables Reset Zoom button
+                 },
+                 autoSelected: 'pan' // Defaults to panning instead of zooming
+             },
+             zoom: { 
+                 enabled: false // This strictly disables mouse-wheel/pinch-to-zoom, forcing users to use the UI buttons provided in the toolbar
+             }
+          },
           series: [
             { name: 'Actual Productivity', data: actVals },
             { name: 'Target Productivity', type: 'line', data: tgtVals }
@@ -1158,133 +1235,23 @@
           markers: { size: 5, hover: { size: 7 } },
           colors: ['#0D5C58', '#EF4444'],
           grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } }, 
-          xaxis: { categories: tDates, labels: { style: { colors: '#6B7280' } } },
-          fill: { type: ['gradient', 'solid'], gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } },
-          dataLabels: { enabled: true, offsetY: -5, background: { enabled: true, foreColor: '#fff', borderRadius: 2, borderWidth: 0 }, style: { fontSize: '10px', colors: ['#0D5C58'] } }
+          xaxis: { categories: categories, labels: { style: { colors: '#6B7280' } } },
+          fill: { 
+             type: viewType === 'daily' ? ['gradient', 'solid'] : ['solid', 'solid'], 
+             gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } 
+          },
+          dataLabels: { 
+             enabled: true, 
+             offsetY: -5, 
+             background: { enabled: true, foreColor: '#fff', borderRadius: 2, borderWidth: 0 }, 
+             style: { fontSize: '10px', colors: ['#0D5C58'] } 
+          }
         };
 
-        if (masterTrendChart) masterTrendChart.destroy();
-        masterTrendChart = new ApexCharts(document.querySelector("#chart-master-trend"), options);
-        masterTrendChart.render();
-        // --- NEW: Month-wise Aggregation ---
-        let monthlyData = {};
-        fData.forEach(r => {
-           let rDate = new Date(r.date);
-           let mKey = rDate.getFullYear() + "-" + String(rDate.getMonth() + 1).padStart(2, '0');
-           let mLabel = rDate.toLocaleString('default', { month: 'short', year: 'numeric' });
-           
-           if(!monthlyData[mKey]) monthlyData[mKey] = { label: mLabel, qty: 0, wProd: 0, wTgt: 0 };
-           
-           monthlyData[mKey].qty += r.qty;
-           if(r.productivity > 0) monthlyData[mKey].wProd += (r.productivity * r.qty);
-           if(r.targetProductivity > 0) monthlyData[mKey].wTgt += (r.targetProductivity * r.qty);
-        });
-
-        let mKeys = Object.keys(monthlyData).sort();
-        let monthLabels = mKeys.map(k => monthlyData[k].label);
-        let monthActuals = mKeys.map(k => monthlyData[k].qty > 0 ? parseFloat((monthlyData[k].wProd / monthlyData[k].qty).toFixed(1)) : 0);
-        let monthTargets = mKeys.map(k => monthlyData[k].qty > 0 ? parseFloat((monthlyData[k].wTgt / monthlyData[k].qty).toFixed(1)) : 0);
-
-        let monthlyOptions = {
-          chart: { type: 'bar', height: 300, toolbar: { show: false }, fontFamily: font },
-          series: [
-            { name: 'Actual Productivity', data: monthActuals },
-            { name: 'Target Productivity', data: monthTargets }
-          ],
-          plotOptions: { bar: { horizontal: false, columnWidth: '50%', borderRadius: 3 } },
-          dataLabels: { enabled: false },
-          stroke: { show: true, width: 2, colors: ['transparent'] },
-          colors: ['#0D5C58', '#EF4444'],
-          xaxis: { categories: monthLabels, labels: { style: { colors: '#6B7280' } } },
-          yaxis: { title: { text: 'Weighted Avg Productivity', style: { color: '#6B7280' } } },
-          fill: { opacity: 1 },
-          legend: { position: 'top', horizontalAlign: 'right' }
-        };
-
-        if (window.masterMonthlyChart) window.masterMonthlyChart.destroy();
-        window.masterMonthlyChart = new ApexCharts(document.querySelector("#chart-master-monthly"), monthlyOptions);
-        window.masterMonthlyChart.render();
-        // --- NEW: Manpower Efficiency Scatter Plot ---
-        let scatterSeriesData = {};
-        
-        // 1. Group the filtered data by Line
-        fData.forEach(r => {
-            // Only plot points that have both manpower and productivity recorded
-            if (r.mp > 0 && r.productivity > 0) {
-                if (!scatterSeriesData[r.line]) {
-                    scatterSeriesData[r.line] = [];
-                }
-                // Push data as [X-axis (Manpower), Y-axis (Productivity)]
-                scatterSeriesData[r.line].push([r.mp, r.productivity]);
-            }
-        });
-
-        // 2. Format it into the structure ApexCharts expects
-        let scatterSeries = Object.keys(scatterSeriesData).map(lineName => {
-            return {
-                name: lineName,
-                data: scatterSeriesData[lineName]
-            };
-        });
-
-        // 3. Configure the Scatter Plot
-        let scatterOptions = {
-            chart: { 
-                type: 'scatter', 
-                height: 350, 
-                toolbar: { show: true, tools: { download: false, selection: true, zoom: true, pan: true } }, 
-                fontFamily: font,
-                animations: { enabled: false }
-            },
-            series: scatterSeries,
-            colors: ['#0D5C58', '#EF4444', '#3B82F6', '#F59E0B', '#10B981', '#8B5CF6', '#EC4899', '#6366F1'], // Distinct colors for different lines
-            xaxis: { 
-                title: { text: 'Manpower Allocated (Headcount)', style: { fontWeight: 600, color: '#6B7280' } },
-                tickAmount: 10,
-                labels: { 
-                    formatter: function(val) { return parseFloat(val).toFixed(0); },
-                    style: { colors: '#6B7280' }
-                },
-                axisBorder: { show: true }
-            },
-            yaxis: { 
-                title: { text: 'Actual Productivity', style: { fontWeight: 600, color: '#6B7280' } },
-                labels: { style: { colors: '#6B7280' } }
-            },
-            markers: { 
-                size: 5, 
-                hover: { size: 7 },
-                strokeWidth: 0
-            },
-            grid: { 
-                xaxis: { lines: { show: true } }, 
-                yaxis: { lines: { show: true } },
-                borderColor: '#E5E7EB'
-            },
-            legend: { 
-                position: 'top', 
-                horizontalAlign: 'right',
-                markers: { radius: 12 }
-            },
-            tooltip: {
-                custom: function({series, seriesIndex, dataPointIndex, w}) {
-                    let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-                    let lineName = w.globals.initialSeries[seriesIndex].name;
-                    return `<div style="padding: 10px; font-size: 12px; font-family: ${font}; background: #1F2937; color: white; border-radius: 6px;">
-                        <div style="font-weight: 700; color: #9CA3AF; margin-bottom: 4px; border-bottom: 1px solid #374151; padding-bottom: 4px;">${lineName}</div>
-                        <div>Manpower: <span style="color: #F87171; font-weight: 700;">${data[0]}</span></div>
-                        <div>Productivity: <span style="color: #10B981; font-weight: 700;">${data[1]}</span></div>
-                    </div>`;
-                }
-            }
-        };
-
-        // 4. Render the Scatter Chart
-        if (window.masterScatterChart) window.masterScatterChart.destroy();
-        window.masterScatterChart = new ApexCharts(document.querySelector("#chart-master-scatter"), scatterOptions);
-        window.masterScatterChart.render();
+        if (window.masterTrendChart) window.masterTrendChart.destroy();
+        window.masterTrendChart = new ApexCharts(document.querySelector("#chart-master-trend"), options);
+        window.masterTrendChart.render();
       }
-
       // ==========================================
       // TAB 3: EXEC SUMMARY (Global All Time)
       // ==========================================
