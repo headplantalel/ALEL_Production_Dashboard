@@ -734,28 +734,6 @@
         // Force the dropdown to respect PG if one was already selected
         updateMasterDropdowns(); 
       }
-          <select id="master-date-preset" onchange="toggleMasterDateRange()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-             <option value="today">Today</option><option value="7">Last 7 Days</option><option value="30">Last 30 Days</option><option value="custom">Date Range</option><option value="all">All Time</option>
-          </select>
-          <div id="master-date-range-container" class="hidden flex items-center gap-1 bg-white border border-gray-200 rounded-md px-2 shadow-sm">
-            <input type="date" id="filter-start" value="${startStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
-            <span class="text-gray-400 text-xs">to</span>
-            <input type="date" id="filter-end" value="${endStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
-          </div>
-          <div class="w-full md:w-[300px]"><select id="filter-item" placeholder="Search Item..."></select></div>
-        `;
-      } else if (activeDashTab === 'management') {
-         html = ``;
-      }
-      container.innerHTML = html;
-      
-      if(activeDashTab === 'master') {
-        const iSel = document.getElementById('filter-item');
-        iSel.innerHTML = '<option value="">Search Item...</option>';
-        Array.from(items).sort().forEach(i => iSel.add(new Option(i, i)));
-        if(tsDashItem) tsDashItem.destroy();
-        tsDashItem = new TomSelect("#filter-item", { allowEmptyOption: true, create: false, onChange: function() { renderDashboard(); } });
-      }
     }
 
     function toggleMasterDateRange() {
