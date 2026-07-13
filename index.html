@@ -1237,42 +1237,21 @@
         let maxVal = Math.max(...allValidVals);
         let minVal = Math.min(...allValidVals);
         
-        // Failsafe in case there is no data
         if (maxVal === -Infinity) maxVal = 100;
         if (minVal === Infinity) minVal = 0;
         
-        // Add a 15% buffer below the lowest point and 5% above the highest point
         let chartMin = minVal > 0 ? Math.floor(minVal * 0.85) : 0; 
         let chartMax = maxVal > 0 ? Math.ceil(maxVal * 1.05) : 100;
 
-        // 6. CONFIGURE BULLET/AREA CHART
-        let series = [];
-        if (viewType === 'daily') {
-            series = [
-              { name: masterMetric === 'productivity' ? 'Actual Productivity' : 'Actual Production', data: actVals },
-              { name: masterMetric === 'productivity' ? 'Target Productivity' : 'Target Production', type: 'line', data: tgtVals }
-            ];
-        } else {
-            // Generates the single Bullet Chart Bar per month
-            let bulletData = actVals.map((val, i) => {
-                return {
-                    x: categories[i],
-                    y: val,
-                    goals: tgtVals[i] > 0 ? [{
-                        name: 'Target',
-                        value: tgtVals[i],
-                        strokeWidth: 24, // Horizontal width
-                        strokeHeight: 3, // Vertical thickness
-                        strokeColor: '#EF4444' 
-                    }] : []
-                };
-            });
-            series = [{ name: masterMetric === 'productivity' ? 'Actual Productivity' : 'Actual Production', data: bulletData }];
-        }
+        // 6. CONFIGURE AREA/LINE CHART FOR BOTH VIEWS
+        let series = [
+          { name: masterMetric === 'productivity' ? 'Actual Productivity' : 'Actual Production', data: actVals },
+          { name: masterMetric === 'productivity' ? 'Target Productivity' : 'Target Production', type: 'line', data: tgtVals }
+        ];
 
         let options = {
           chart: { 
-             type: viewType === 'daily' ? 'area' : 'bar',
+             type: 'area', // Forces Area chart universally
              height: 350, 
              fontFamily: font,
              toolbar: { 
@@ -1283,9 +1262,8 @@
              zoom: { enabled: false }
           },
           series: series,
-          plotOptions: { bar: { columnWidth: '50%', borderRadius: 2 } },
-          stroke: { width: viewType === 'daily' ? [3, 3] : 0, curve: 'smooth', dashArray: [0, 4] },
-          markers: { size: viewType === 'daily' ? 5 : 0, hover: { size: 7 } },
+          stroke: { width: [3, 3], curve: 'smooth', dashArray: [0, 4] },
+          markers: { size: 5, hover: { size: 7 } },
           colors: ['#0D5C58', '#EF4444'],
           grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } }, 
           xaxis: { categories: categories, labels: { style: { colors: '#6B7280' } } },
@@ -1295,7 +1273,7 @@
              labels: { style: { colors: '#6B7280' } } 
           },
           fill: { 
-             type: viewType === 'daily' ? ['gradient', 'solid'] : ['solid'], 
+             type: ['gradient', 'solid'], 
              gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } 
           },
           dataLabels: { enabled: false }
