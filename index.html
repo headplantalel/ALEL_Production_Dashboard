@@ -950,6 +950,7 @@
           }
 
           // Added flex-col and sm:flex-row to make it wrap properly on mobile phones
+          // Added flex-col and sm:flex-row to make it wrap properly on mobile phones
           wrapper.innerHTML = `
             <div class="border-b border-gray-100 pb-2 mb-0 shrink-0 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
               <div class="min-w-0 flex-1">
@@ -959,6 +960,9 @@
               ${rightHeaderHTML}
             </div>
             <div id="${chartId}" class="w-full mt-1" style="height: ${chartHeight}px"></div>
+            <div class="text-[11px] font-bold text-gray-500 text-left pl-2 pb-1">
+               ${currentMetric === 'productivity' ? 'Units per Man-Hour' : 'Total Units Produced'}
+            </div>
           `;
           grid.appendChild(wrapper);
 
@@ -1044,7 +1048,6 @@
                }
             },
             xaxis: { 
-               title: { text: currentMetric === 'productivity' ? 'Units per Man-Hour' : 'Total Units Produced' }, 
                min: chartMin, 
                max: chartMax, 
                // Dynamically reduce the number of axis labels on phone screens to prevent overlapping
