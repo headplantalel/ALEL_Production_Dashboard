@@ -1232,7 +1232,20 @@
             else return Math.round(dataMap[k].tgtQtySum);
         });
 
-        // 5. CONFIGURE BULLET/AREA CHART
+        // 5. CALCULATE DYNAMIC Y-AXIS MIN/MAX
+        let allValidVals = [...actVals, ...tgtVals].filter(v => v > 0);
+        let maxVal = Math.max(...allValidVals);
+        let minVal = Math.min(...allValidVals);
+        
+        // Failsafe in case there is no data
+        if (maxVal === -Infinity) maxVal = 100;
+        if (minVal === Infinity) minVal = 0;
+        
+        // Add a 15% buffer below the lowest point and 5% above the highest point
+        let chartMin = minVal > 0 ? Math.floor(minVal * 0.85) : 0; 
+        let chartMax = maxVal > 0 ? Math.ceil(maxVal * 1.05) : 100;
+
+        // 6. CONFIGURE BULLET/AREA CHART
         let series = [];
         if (viewType === 'daily') {
             series = [
@@ -1240,7 +1253,7 @@
               { name: masterMetric === 'productivity' ? 'Target Productivity' : 'Target Production', type: 'line', data: tgtVals }
             ];
         } else {
-// Generates the single Bullet Chart Bar per month
+            // Generates the single Bullet Chart Bar per month
             let bulletData = actVals.map((val, i) => {
                 return {
                     x: categories[i],
@@ -1248,9 +1261,9 @@
                     goals: tgtVals[i] > 0 ? [{
                         name: 'Target',
                         value: tgtVals[i],
-                        strokeWidth: 24, // Makes the line wide horizontally to cover the bar
-                        strokeHeight: 3, // Makes the line thin vertically
-                        strokeColor: '#EF4444' // Red Goal Line
+                        strokeWidth: 24, // Horizontal width
+                        strokeHeight: 3, // Vertical thickness
+                        strokeColor: '#EF4444' 
                     }] : []
                 };
             });
@@ -1276,6 +1289,11 @@
           colors: ['#0D5C58', '#EF4444'],
           grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } }, 
           xaxis: { categories: categories, labels: { style: { colors: '#6B7280' } } },
+          yaxis: { 
+             min: chartMin, 
+             max: chartMax, 
+             labels: { style: { colors: '#6B7280' } } 
+          },
           fill: { 
              type: viewType === 'daily' ? ['gradient', 'solid'] : ['solid'], 
              gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } 
