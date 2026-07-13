@@ -1240,7 +1240,7 @@
               { name: masterMetric === 'productivity' ? 'Target Productivity' : 'Target Production', type: 'line', data: tgtVals }
             ];
         } else {
-            // Generates the single Bullet Chart Bar per month
+// Generates the single Bullet Chart Bar per month
             let bulletData = actVals.map((val, i) => {
                 return {
                     x: categories[i],
@@ -1248,8 +1248,8 @@
                     goals: tgtVals[i] > 0 ? [{
                         name: 'Target',
                         value: tgtVals[i],
-                        strokeWidth: 4,
-                        strokeHeight: 14,
+                        strokeWidth: 24, // Makes the line wide horizontally to cover the bar
+                        strokeHeight: 3, // Makes the line thin vertically
                         strokeColor: '#EF4444' // Red Goal Line
                     }] : []
                 };
