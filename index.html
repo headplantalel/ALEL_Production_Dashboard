@@ -1445,7 +1445,7 @@
       chatWindow.scrollTop = chatWindow.scrollHeight;
 
       // 3. Send the FULL dataset to Apps Script
-      const dataToSend = rawDashboardData; 
+      const dataToSend = rawDashboardData.slice(-10);
 
       callAPI({ action: "askGemini", prompt: message, data: dataToSend }, function(res) {
          document.getElementById(loadingId).remove();
@@ -1453,8 +1453,8 @@
          btn.innerText = 'Send';
          
          // Format the markdown response slightly for HTML
-         let formattedReply = res.reply ? res.reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') : "Sorry, I couldn't generate a response.";
-         
+         let formattedReply = res.reply ? res.reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') : (res.error ? "Backend Error: " + res.error : "Unknown Error. Check browser console.");
+console.log("Backend Response:", res);
          chatWindow.innerHTML += `
           <div class="flex items-start gap-3">
              <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
