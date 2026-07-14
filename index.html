@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ALEL Productivity Tracker</title>
-  
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -90,6 +90,48 @@
         height: 100% !important;
     }
     
+  </style>
+  <style>
+    /* Styling for AI Markdown elements (Tables, Lists, Bold text) */
+    .markdown-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+    .markdown-content th {
+      background-color: #f3f4f6; /* light gray header */
+      font-weight: 600;
+      text-align: left;
+      border: 1px solid #e5e7eb;
+      padding: 6px 10px;
+    }
+    .markdown-content td {
+      border: 1px solid #e5e7eb;
+      padding: 6px 10px;
+    }
+    .markdown-content tr:nth-child(even) {
+      background-color: #f9fafb; /* zebra striping */
+    }
+    .markdown-content ul {
+      list-style-type: disc;
+      padding-left: 20px;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+    .markdown-content ol {
+      list-style-type: decimal;
+      padding-left: 20px;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+    .markdown-content p {
+      margin-bottom: 8px;
+    }
+    .markdown-content strong {
+      font-weight: 600;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
@@ -1448,25 +1490,30 @@
       const dataToSend = rawDashboardData;
 
       callAPI({ action: "askGemini", prompt: message, data: dataToSend }, function(res) {
-         document.getElementById(loadingId).remove();
-         inputEl.disabled = false;
-         btn.innerText = 'Send';
-         
-         // Format the markdown response slightly for HTML
-         let formattedReply = res.reply ? res.reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') : (res.error ? "Backend Error: " + res.error : "Unknown Error. Check browser console.");
-console.log("Backend Response:", res);
-         chatWindow.innerHTML += `
-          <div class="flex items-start gap-3">
-             <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
-                <svg class="w-4 h-4 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-             </div>
-             <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-800 max-w-[85%] leading-relaxed">
-                ${formattedReply}
-             </div>
-          </div>`;
-         chatWindow.scrollTop = chatWindow.scrollHeight;
-         inputEl.focus();
-      });
+   document.getElementById(loadingId).remove();
+   inputEl.disabled = false;
+   btn.innerText = 'Send';
+   
+   // UPGRADED: Use marked.parse to properly process tables, bold text, and lists
+   let formattedReply = res.reply 
+     ? marked.parse(res.reply) 
+     : (res.error ? "Backend Error: " + res.error : "Unknown Error. Check browser console.");
+
+   console.log("Backend Response:", res);
+   
+   chatWindow.innerHTML += `
+    <div class="flex items-start gap-3">
+       <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
+          <svg class="w-4 h-4 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+       </div>
+       <div class="markdown-content bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-800 max-w-[85%] leading-relaxed">
+          ${formattedReply}
+       </div>
+    </div>`;
+    
+   chatWindow.scrollTop = chatWindow.scrollHeight;
+   inputEl.focus();
+});
     }
     // --- GENERIC API EXECUTOR ---
     function openHistory() {
