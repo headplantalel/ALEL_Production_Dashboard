@@ -407,7 +407,7 @@
       </div>
 
       <!-- AI INSIGHTS VIEW -->
-      <div id="view-ai" class="w-full hidden max-w-7xl mx-auto h-[65vh] min-h-[400px]">
+      <div id="view-ai" class="w-full hidden max-w-4xl mx-auto h-[65vh] min-h-[400px]">
          <div class="w-full h-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
            <div class="bg-gray-50 p-4 border-b border-gray-200 shrink-0">
               <h2 class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
@@ -430,15 +430,11 @@
            </div>
 
            <div class="p-3 bg-white border-t border-gray-200 shrink-0 flex gap-2 items-center">
-  <button onclick="clearAIChat()" class="bg-gray-100 hover:bg-red-50 text-gray-500 hover:text-red-500 px-3 py-2.5 rounded-lg text-xs shadow-sm transition-all border border-transparent hover:border-red-200" title="Clear History">
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-  </button>
-  
-  <input type="text" id="ai-chat-input" placeholder="Ask about your data..." class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-xs outline-none focus:border-enovar focus:ring-1 focus:ring-enovar/20 transition-all" onkeypress="if(event.key === 'Enter') sendAIMessage()">
-  <button onclick="sendAIMessage()" id="ai-send-btn" class="bg-enovar hover:bg-enovar-dark text-white px-5 py-2.5 rounded-lg text-xs font-bold shadow-sm transition-all flex items-center gap-1">
-    Send
-  </button>
-</div>
+              <input type="text" id="ai-chat-input" placeholder="Ask about your data..." class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-xs outline-none focus:border-enovar focus:ring-1 focus:ring-enovar/20 transition-all" onkeypress="if(event.key === 'Enter') sendAIMessage()">
+              <button onclick="sendAIMessage()" id="ai-send-btn" class="bg-enovar hover:bg-enovar-dark text-white px-5 py-2.5 rounded-lg text-xs font-bold shadow-sm transition-all flex items-center gap-1">
+                 Send
+              </button>
+           </div>
          </div>
       </div>
 
@@ -1454,50 +1450,70 @@
     }
 
     function sendAIMessage() {
-  const inputEl = document.getElementById('ai-chat-input');
-  const userText = inputEl.value.trim();
-  if (!userText) return;
-  
-  const chatWindow = document.getElementById('ai-chat-window');
-  
-  // Append User Message
-  const userDiv = document.createElement('div');
-  userDiv.className = "flex items-start gap-3 justify-end";
-  userDiv.innerHTML = `<div class="bg-enovar p-3 rounded-2xl rounded-tr-none shadow-sm text-xs text-white max-w-[85%]">${userText}</div>`;
-  chatWindow.appendChild(userDiv);
-  chatWindow.scrollTop = chatWindow.scrollHeight;
-  inputEl.value = "";
-  
-  // Create Loading AI Message
-  const aiMessageDiv = document.createElement('div');
-  aiMessageDiv.className = "flex items-start gap-3";
-  aiMessageDiv.innerHTML = `
-    <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
-      <svg class="w-4 h-4 text-enovar animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-    </div>
-    <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-500 max-w-[85%]">Thinking...</div>
-  `;
-  chatWindow.appendChild(aiMessageDiv);
-  chatWindow.scrollTop = chatWindow.scrollHeight;
+      const inputEl = document.getElementById('ai-chat-input');
+      const chatWindow = document.getElementById('ai-chat-window');
+      const btn = document.getElementById('ai-send-btn');
+      const message = inputEl.value.trim();
+      
+      if (!message || !rawDashboardData || rawDashboardData.length === 0) return;
+      
+      // 1. Add User Message to UI
+      chatWindow.innerHTML += `
+        <div class="flex items-start gap-3 flex-row-reverse">
+           <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 border border-gray-300 overflow-hidden">
+              <img src="${currentUser.picture || ''}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+           </div>
+           <div class="bg-enovar text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-xs max-w-[85%]">
+              ${message}
+           </div>
+        </div>`;
+      
+      inputEl.value = '';
+      inputEl.disabled = true;
+      btn.innerText = '...';
+      chatWindow.scrollTop = chatWindow.scrollHeight;
 
-  // 1. ---> SAVE CHAT AFTER USER SENDS MESSAGE <---
-  saveAIChat();
+      // 2. Add temporary loading bubble
+      const loadingId = 'loading-' + Date.now();
+      chatWindow.innerHTML += `
+        <div id="${loadingId}" class="flex items-start gap-3">
+           <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
+              <svg class="w-4 h-4 text-enovar animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+           </div>
+           <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-500 italic">
+              Analyzing full dataset...
+           </div>
+        </div>`;
+      chatWindow.scrollTop = chatWindow.scrollHeight;
 
-  const payloadData = window.dashboardRawData || [];
-  
-  callAPI({ action: "askGemini", prompt: userText, data: payloadData }, function(response) {
-    if (response.status === "Success") {
-      aiMessageDiv.children[1].innerHTML = marked.parse(response.reply);
-      aiMessageDiv.children[1].className = "bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-800 max-w-[85%] markdown-content";
-    } else {
-      aiMessageDiv.children[1].innerHTML = `<span class="text-red-500 font-medium">Error: ${response.reply || 'Could not connect to AI'}</span>`;
-    }
-    chatWindow.scrollTop = chatWindow.scrollHeight;
+      // 3. Send the FULL dataset to Apps Script
+      const dataToSend = rawDashboardData;
+
+      callAPI({ action: "askGemini", prompt: message, data: dataToSend }, function(res) {
+   document.getElementById(loadingId).remove();
+   inputEl.disabled = false;
+   btn.innerText = 'Send';
+   
+   // UPGRADED: Use marked.parse to properly process tables, bold text, and lists
+   let formattedReply = res.reply 
+     ? marked.parse(res.reply) 
+     : (res.error ? "Backend Error: " + res.error : "Unknown Error. Check browser console.");
+
+   console.log("Backend Response:", res);
+   
+   chatWindow.innerHTML += `
+    <div class="flex items-start gap-3">
+       <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
+          <svg class="w-4 h-4 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+       </div>
+       <div class="markdown-content bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-800 max-w-[85%] leading-relaxed">
+          ${formattedReply}
+       </div>
+    </div>`;
     
-    // 2. ---> SAVE CHAT AFTER AI REPLIES <---
-    saveAIChat();
-  });
-
+   chatWindow.scrollTop = chatWindow.scrollHeight;
+   inputEl.focus();
+});
     }
     // --- GENERIC API EXECUTOR ---
     function openHistory() {
@@ -1576,48 +1592,6 @@
       fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
       .then(res => res.json()).then(data => callback(data)).catch(err => { console.error(err); });
     }
-    // ==========================================
-// AI CHAT HISTORY FUNCTIONS
-// ==========================================
-
-function saveAIChat() {
-    const chatBox = document.getElementById('ai-chat-window');
-    if(chatBox) {
-        localStorage.setItem('alel_ai_history', chatBox.innerHTML);
-    }
-}
-
-function loadAIChat() {
-    const chatBox = document.getElementById('ai-chat-window');
-    const savedChat = localStorage.getItem('alel_ai_history');
-    if(savedChat && chatBox) {
-        chatBox.innerHTML = savedChat;
-    }
-}
-
-function clearAIChat() {
-    if(confirm("Are you sure you want to clear your AI conversation history?")) {
-        localStorage.removeItem('alel_ai_history');
-        const chatBox = document.getElementById('ai-chat-window');
-        if(chatBox) {
-            chatBox.innerHTML = `
-            <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
-                <svg class="w-4 h-4 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-              </div>
-              <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-700 max-w-[85%]">
-                History cleared! I am ready to analyze your production data. Try asking: <br>
-                <em class="text-gray-500 mt-1 inline-block">"Which item had the highest production quantity overall?"</em>
-              </div>
-            </div>`;
-        }
-    }
-}
-
-// Load chat history when the page loads
-window.addEventListener('DOMContentLoaded', (event) => {
-    loadAIChat();
-});
   </script>
 </body>
 </html>
