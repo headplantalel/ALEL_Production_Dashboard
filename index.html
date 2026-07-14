@@ -280,6 +280,9 @@
           <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Daily Status</button>
           <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Exec Summary</button>
           <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Analytics</button>
+          <button id="tab-ai" onclick="switchDashTab('ai')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap flex items-center gap-1">
+            <svg class="w-3 h-3 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> AI Insights
+          </button>
         </div>
 
         <div id="filter-container" class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end"></div>
@@ -359,6 +362,38 @@
             <div id="exec-bottom-lines" class="space-y-3"></div>
           </div>
         </div>
+      </div>
+
+      <!-- AI INSIGHTS VIEW -->
+      <div id="view-ai" class="w-full hidden max-w-4xl mx-auto h-[65vh] min-h-[400px]">
+         <div class="w-full h-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+           <div class="bg-gray-50 p-4 border-b border-gray-200 shrink-0">
+              <h2 class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
+                 <svg class="w-5 h-5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                 Data Assistant
+              </h2>
+              <p class="text-[10px] text-gray-500 mt-1">Ask questions about your production data. The AI analyzes your entire currently loaded dataset.</p>
+           </div>
+           
+           <div id="ai-chat-window" class="flex-1 p-4 overflow-y-auto space-y-4 bg-[#F8FAFC]">
+              <div class="flex items-start gap-3">
+                 <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
+                    <svg class="w-4 h-4 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                 </div>
+                 <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-700 max-w-[85%]">
+                    Hello! I am ready to analyze your production data. Try asking: <br>
+                    <em class="text-gray-500 mt-1 inline-block">"Which item had the highest production quantity overall?"</em>
+                 </div>
+              </div>
+           </div>
+
+           <div class="p-3 bg-white border-t border-gray-200 shrink-0 flex gap-2 items-center">
+              <input type="text" id="ai-chat-input" placeholder="Ask about your data..." class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-xs outline-none focus:border-enovar focus:ring-1 focus:ring-enovar/20 transition-all" onkeypress="if(event.key === 'Enter') sendAIMessage()">
+              <button onclick="sendAIMessage()" id="ai-send-btn" class="bg-enovar hover:bg-enovar-dark text-white px-5 py-2.5 rounded-lg text-xs font-bold shadow-sm transition-all flex items-center gap-1">
+                 Send
+              </button>
+           </div>
+         </div>
       </div>
 
       <!-- Dashboard Footer: Enovar logo placed at the bottom for phone view -->
@@ -597,7 +632,7 @@
 
     function switchDashTab(tab) {
       activeDashTab = tab;
-      ['section', 'master', 'management'].forEach(t => {
+      ['section', 'master', 'management', 'ai'].forEach(t => {
         let btn = document.getElementById('tab-' + t);
         let view = document.getElementById('view-' + t);
         if(t === tab) {
@@ -1372,6 +1407,67 @@
       }
     }
 
+    function sendAIMessage() {
+      const inputEl = document.getElementById('ai-chat-input');
+      const chatWindow = document.getElementById('ai-chat-window');
+      const btn = document.getElementById('ai-send-btn');
+      const message = inputEl.value.trim();
+      
+      if (!message || !rawDashboardData || rawDashboardData.length === 0) return;
+      
+      // 1. Add User Message to UI
+      chatWindow.innerHTML += `
+        <div class="flex items-start gap-3 flex-row-reverse">
+           <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 border border-gray-300 overflow-hidden">
+              <img src="${currentUser.picture || ''}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+           </div>
+           <div class="bg-enovar text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-xs max-w-[85%]">
+              ${message}
+           </div>
+        </div>`;
+      
+      inputEl.value = '';
+      inputEl.disabled = true;
+      btn.innerText = '...';
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+
+      // 2. Add temporary loading bubble
+      const loadingId = 'loading-' + Date.now();
+      chatWindow.innerHTML += `
+        <div id="${loadingId}" class="flex items-start gap-3">
+           <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
+              <svg class="w-4 h-4 text-enovar animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+           </div>
+           <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-500 italic">
+              Analyzing full dataset...
+           </div>
+        </div>`;
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+
+      // 3. Send the FULL dataset to Apps Script
+      const dataToSend = rawDashboardData; 
+
+      callAPI({ action: "askGemini", prompt: message, data: dataToSend }, function(res) {
+         document.getElementById(loadingId).remove();
+         inputEl.disabled = false;
+         btn.innerText = 'Send';
+         
+         // Format the markdown response slightly for HTML
+         let formattedReply = res.reply ? res.reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') : "Sorry, I couldn't generate a response.";
+         
+         chatWindow.innerHTML += `
+          <div class="flex items-start gap-3">
+             <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
+                <svg class="w-4 h-4 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+             </div>
+             <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-800 max-w-[85%] leading-relaxed">
+                ${formattedReply}
+             </div>
+          </div>`;
+         chatWindow.scrollTop = chatWindow.scrollHeight;
+         inputEl.focus();
+      });
+    }
     // --- GENERIC API EXECUTOR ---
     function openHistory() {
       document.getElementById('app').classList.add('hidden');
