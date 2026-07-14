@@ -1445,7 +1445,7 @@
       chatWindow.scrollTop = chatWindow.scrollHeight;
 
       // 3. Send the FULL dataset to Apps Script
-      const dataToSend = rawDashboardData.slice(-10);
+      const dataToSend = rawDashboardData;
 
       callAPI({ action: "askGemini", prompt: message, data: dataToSend }, function(res) {
          document.getElementById(loadingId).remove();
