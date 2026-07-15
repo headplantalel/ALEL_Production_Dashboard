@@ -409,12 +409,17 @@
       <!-- AI INSIGHTS VIEW -->
       <div id="view-ai" class="w-full hidden max-w-7xl mx-auto h-[65vh] min-h-[400px]">
          <div class="w-full h-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-           <div class="bg-gray-50 p-4 border-b border-gray-200 shrink-0">
-              <h2 class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
-                 <svg class="w-5 h-5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                 Data Assistant
-              </h2>
-              <p class="text-[10px] text-gray-500 mt-1">Ask questions about your production data. The AI analyzes your entire currently loaded dataset.</p>
+           <div class="bg-gray-50 p-4 border-b border-gray-200 shrink-0 flex justify-between items-start">
+              <div>
+                <h2 class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
+                   <svg class="w-5 h-5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                   Data Assistant
+                </h2>
+                <p class="text-[10px] text-gray-500 mt-1">Ask questions about your production data. The AI analyzes your entire currently loaded dataset.</p>
+              </div>
+              <button onclick="clearAIChat()" class="text-[10px] font-bold text-red-500 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md transition-colors shadow-sm border border-red-100">
+                Clear Chat
+              </button>
            </div>
            
            <div id="ai-chat-window" class="flex-1 p-4 overflow-y-auto space-y-4 bg-[#F8FAFC]">
@@ -462,6 +467,11 @@
     let sectionChartInstances = {}; 
     let masterTrendChart = null;
     let execMonthlyChart = null;
+    let syncTimer = null; 
+    let sectionChartInstances = {}; 
+    let masterTrendChart = null;
+    let execMonthlyChart = null;
+    let aiChatHistory = []; // NEW: Array to store the conversation
 
     window.onload = function() {
       const savedToken = localStorage.getItem('google_token');
@@ -655,6 +665,10 @@
       document.getElementById('bg-elements').classList.add('hidden');
       document.getElementById('dashboard-app').classList.remove('hidden');
       if (data && data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
+      
+      // NEW: Load saved chat history based on the user's email
+      const savedHistory = localStorage.getItem('alel_ai_chat_' + currentUser.email);
+      if (savedHistory) { aiChatHistory = JSON.parse(savedHistory); renderAIChatHistory(); }
       
       document.getElementById('loader-text').innerText = "Loading Analytics...";
       document.getElementById('loader').classList.remove('hidden');
@@ -1449,6 +1463,55 @@
       }
     }
 
+    function renderAIChatHistory() {
+      const chatWindow = document.getElementById('ai-chat-window');
+      
+      // Base Welcome Message
+      chatWindow.innerHTML = `
+        <div class="flex items-start gap-3">
+           <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
+              <svg class="w-4 h-4 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+           </div>
+           <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-700 max-w-[85%]">
+              Hello! I am ready to analyze your production data. Try asking: <br>
+              <em class="text-gray-500 mt-1 inline-block">"Which item had the highest production quantity overall?"</em>
+           </div>
+        </div>`;
+
+      // Loop through history and render bubbles
+      aiChatHistory.forEach(msg => {
+        if (msg.role === 'user') {
+          chatWindow.innerHTML += `
+            <div class="flex items-start gap-3 flex-row-reverse">
+               <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 border border-gray-300 overflow-hidden">
+                  <img src="${currentUser.picture || ''}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+               </div>
+               <div class="bg-enovar text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-xs max-w-[85%]">
+                  ${msg.text}
+               </div>
+            </div>`;
+        } else {
+          chatWindow.innerHTML += `
+            <div class="flex items-start gap-3">
+               <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
+                  <svg class="w-4 h-4 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+               </div>
+               <div class="markdown-content bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-800 max-w-[85%] leading-relaxed">
+                  ${marked.parse(msg.text)}
+               </div>
+            </div>`;
+        }
+      });
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function clearAIChat() {
+      if (!confirm("Are you sure you want to clear the conversation history?")) return;
+      aiChatHistory = [];
+      localStorage.removeItem('alel_ai_chat_' + currentUser.email);
+      renderAIChatHistory();
+    }
+
     function sendAIMessage() {
       const inputEl = document.getElementById('ai-chat-input');
       const chatWindow = document.getElementById('ai-chat-window');
@@ -1457,23 +1520,16 @@
       
       if (!message || !rawDashboardData || rawDashboardData.length === 0) return;
       
-      // 1. Add User Message to UI
-      chatWindow.innerHTML += `
-        <div class="flex items-start gap-3 flex-row-reverse">
-           <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 border border-gray-300 overflow-hidden">
-              <img src="${currentUser.picture || ''}" class="w-full h-full object-cover" onerror="this.style.display='none'">
-           </div>
-           <div class="bg-enovar text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-xs max-w-[85%]">
-              ${message}
-           </div>
-        </div>`;
+      // Add User Message to History & Local Storage
+      aiChatHistory.push({ role: "user", text: message });
+      localStorage.setItem('alel_ai_chat_' + currentUser.email, JSON.stringify(aiChatHistory));
+      renderAIChatHistory();
       
       inputEl.value = '';
       inputEl.disabled = true;
       btn.innerText = '...';
-      chatWindow.scrollTop = chatWindow.scrollHeight;
 
-      // 2. Add temporary loading bubble
+      // Add temporary loading bubble
       const loadingId = 'loading-' + Date.now();
       chatWindow.innerHTML += `
         <div id="${loadingId}" class="flex items-start gap-3">
@@ -1481,39 +1537,30 @@
               <svg class="w-4 h-4 text-enovar animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
            </div>
            <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-500 italic">
-              Analyzing full dataset...
+              Analyzing data...
            </div>
         </div>`;
       chatWindow.scrollTop = chatWindow.scrollHeight;
 
-      // 3. Send the FULL dataset to Apps Script
-      const dataToSend = rawDashboardData;
+      // Slice the history so we only send the last 10 messages (5 pairs) to save bandwidth
+      const recentHistory = aiChatHistory.slice(-10); 
 
-      callAPI({ action: "askGemini", prompt: message, data: dataToSend }, function(res) {
-   document.getElementById(loadingId).remove();
-   inputEl.disabled = false;
-   btn.innerText = 'Send';
-   
-   // UPGRADED: Use marked.parse to properly process tables, bold text, and lists
-   let formattedReply = res.reply 
-     ? marked.parse(res.reply) 
-     : (res.error ? "Backend Error: " + res.error : "Unknown Error. Check browser console.");
-
-   console.log("Backend Response:", res);
-   
-   chatWindow.innerHTML += `
-    <div class="flex items-start gap-3">
-       <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
-          <svg class="w-4 h-4 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-       </div>
-       <div class="markdown-content bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-800 max-w-[85%] leading-relaxed">
-          ${formattedReply}
-       </div>
-    </div>`;
-    
-   chatWindow.scrollTop = chatWindow.scrollHeight;
-   inputEl.focus();
-});
+      // Send payload to backend including the history array
+      callAPI({ action: "askGemini", prompt: message, data: rawDashboardData, history: recentHistory }, function(res) {
+         document.getElementById(loadingId).remove();
+         inputEl.disabled = false;
+         btn.innerText = 'Send';
+         
+         if (res.reply) {
+            aiChatHistory.push({ role: "model", text: res.reply });
+            localStorage.setItem('alel_ai_chat_' + currentUser.email, JSON.stringify(aiChatHistory));
+         } else {
+            chatWindow.innerHTML += `<div class="text-xs text-red-500 text-center my-2">${res.error || "Unknown Error"}</div>`;
+         }
+         
+         renderAIChatHistory();
+         inputEl.focus();
+      });
     }
     // --- GENERIC API EXECUTOR ---
     function openHistory() {
