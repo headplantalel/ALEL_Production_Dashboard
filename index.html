@@ -8,6 +8,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
   <script>
     tailwind.config = {
@@ -777,10 +779,9 @@
             <option value="all">All Sections</option>
             ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
           </select>
-          <select id="filter-date" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-             <option value="${todayStr}">${todayStr} (Today)</option>
-             ${Array.from(dates).filter(d => d !== todayStr).sort((a,b) => new Date(b)-new Date(a)).map(d => `<option value="${d}">${d}</option>`).join('')}
-          </select>
+          
+          <!-- NEW: Flatpickr Date Input -->
+          <input type="text" id="filter-date" value="${todayStr}" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm cursor-pointer w-28 text-center bg-white" readonly>
 
           <select id="metric-toggle" onchange="currentMetric = this.value; renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
             <option value="productivity" ${currentMetric === 'productivity' ? 'selected' : ''}>View: Productivity</option>
@@ -796,7 +797,8 @@
             </div>
           </div>
         `;
-      } else if (activeDashTab === 'master') {
+      }
+      else if (activeDashTab === 'master') {
         let defaultStartDate = new Date(); defaultStartDate.setDate(defaultStartDate.getDate() - 7);
         let startStr = defaultStartDate.toISOString().split('T')[0];
         let endStr = new Date().toISOString().split('T')[0];
@@ -836,6 +838,19 @@
          html = ``;
       }
       container.innerHTML = html;
+      
+      // NEW: Activate the calendar for the Daily Status tab
+      if (activeDashTab === 'section') {
+         flatpickr("#filter-date", {
+            dateFormat: "M d, Y", // Matches your backend formatting
+            enable: Array.from(dates), // MAGIC: Only allows clicking on dates that exist in the database!
+            onChange: function() {
+               renderDashboard(); // Re-renders the charts when a date is clicked
+            }
+         });
+      }
+
+      if(activeDashTab === 'master') {
       
       if(activeDashTab === 'master') {
         updateMasterViewType(true); // Initialize the date presets immediately
