@@ -1541,8 +1541,8 @@
       // Slice the history so we only send the last 10 messages (5 pairs) to save bandwidth
       const recentHistory = aiChatHistory.slice(-10); 
 
-      // Send payload to backend including the history array
-      callAPI({ action: "askGemini", prompt: message, data: rawDashboardData, history: recentHistory }, function(res) {
+      // Send payload to backend (Notice we REMOVED the 'data' payload to kill the upload delay!)
+      callAPI({ action: "askGemini", prompt: message, history: recentHistory }, function(res) {
          document.getElementById(loadingId).remove();
          inputEl.disabled = false;
          btn.innerText = 'Send';
