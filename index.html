@@ -839,17 +839,17 @@
       }
       container.innerHTML = html;
       
-      // NEW: Activate the calendar for the Daily Status tab
+// NEW: Activate the calendar for the Daily Status tab
       if (activeDashTab === 'section') {
          flatpickr("#filter-date", {
-            dateFormat: "M d, Y", // Matches your backend formatting
-            enable: Array.from(dates), // MAGIC: Only allows clicking on dates that exist in the database!
+            dateFormat: "M d, Y", 
+            // MAGIC: Converts strings to native JS Dates so Flatpickr reads them perfectly
+            enable: Array.from(dates).map(dateStr => new Date(dateStr)), 
             onChange: function() {
-               renderDashboard(); // Re-renders the charts when a date is clicked
+               renderDashboard(); 
             }
          });
       }
-
       
       if(activeDashTab === 'master') {
         updateMasterViewType(true); // Initialize the date presets immediately
