@@ -98,7 +98,7 @@
       border-collapse: collapse;
       margin-top: 8px;
       margin-bottom: 8px;
-      font-size: 11px;
+      font-size: 13px;
     }
     .markdown-content th {
       background-color: #f3f4f6; /* light gray header */
@@ -407,7 +407,7 @@
       </div>
 
       <!-- AI INSIGHTS VIEW -->
-      <div id="view-ai" class="w-full hidden max-w-7xl mx-auto h-[65vh] min-h-[400px]">
+      <div id="view-ai" class="w-full hidden max-w-7xl mx-auto h-[85vh] min-h-[600px]">
          <div class="w-full h-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
            <div class="bg-gray-50 p-4 border-b border-gray-200 shrink-0 flex justify-between items-start">
               <div>
@@ -427,7 +427,7 @@
                  <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
                     <svg class="w-4 h-4 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                  </div>
-                 <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-700 max-w-[85%]">
+                 <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-sm text-gray-700 max-w-[85%]">
                     Hello! I am ready to analyze your production data. Try asking: <br>
                     <em class="text-gray-500 mt-1 inline-block">"Which item had the highest production quantity overall?"</em>
                  </div>
@@ -435,8 +435,8 @@
            </div>
 
            <div class="p-3 bg-white border-t border-gray-200 shrink-0 flex gap-2 items-center">
-              <input type="text" id="ai-chat-input" placeholder="Ask about your data..." class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-xs outline-none focus:border-enovar focus:ring-1 focus:ring-enovar/20 transition-all" onkeypress="if(event.key === 'Enter') sendAIMessage()">
-              <button onclick="sendAIMessage()" id="ai-send-btn" class="bg-enovar hover:bg-enovar-dark text-white px-5 py-2.5 rounded-lg text-xs font-bold shadow-sm transition-all flex items-center gap-1">
+              <input type="text" id="ai-chat-input" placeholder="Ask about your data..." class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-enovar focus:ring-1 focus:ring-enovar/20 transition-all" onkeypress="if(event.key === 'Enter') sendAIMessage()">
+              <button onclick="sendAIMessage()" id="ai-send-btn" class="bg-enovar hover:bg-enovar-dark text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-all flex items-center gap-1">
                  Send
               </button>
            </div>
@@ -1482,7 +1482,7 @@
                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 border border-gray-300 overflow-hidden">
                   <img src="${currentUser.picture || ''}" class="w-full h-full object-cover" onerror="this.style.display='none'">
                </div>
-               <div class="bg-enovar text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-xs max-w-[85%]">
+<div class="bg-enovar text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-sm max-w-[85%]">
                   ${msg.text}
                </div>
             </div>`;
@@ -1492,7 +1492,7 @@
                <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
                   <svg class="w-4 h-4 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                </div>
-               <div class="markdown-content bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-800 max-w-[85%] leading-relaxed">
+               <div class="markdown-content bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-sm text-gray-800 max-w-[85%] leading-relaxed">
                   ${marked.parse(msg.text)}
                </div>
             </div>`;
@@ -1532,7 +1532,7 @@
            <div class="w-8 h-8 rounded-full bg-enovar/10 flex items-center justify-center shrink-0 border border-enovar/20">
               <svg class="w-4 h-4 text-enovar animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
            </div>
-           <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-xs text-gray-500 italic">
+           <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 text-sm text-gray-500 italic">
               Analyzing data...
            </div>
         </div>`;
