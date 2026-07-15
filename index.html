@@ -331,7 +331,7 @@
       </div>
     </div>
 
-    <div class="flex-1 w-full overflow-y-auto bg-transparent p-3 sm:p-6 pb-16 relative">
+    <div id="dash-scroll-container" class="flex-1 w-full overflow-y-auto bg-transparent p-3 sm:p-6 pb-16 relative">
       
       <div id="view-section" class="w-full space-y-4">
         <div id="section-charts-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-2 items-start">
@@ -407,7 +407,7 @@
       </div>
 
       <!-- AI INSIGHTS VIEW -->
-      <div id="view-ai" class="w-full hidden max-w-7xl mx-auto h-[calc(100vh-210px)] sm:h-[calc(100vh-160px)] min-h-[400px]">
+      <div id="view-ai" class="w-full hidden max-w-7xl mx-auto h-[calc(100dvh-130px)] sm:h-[calc(100dvh-160px)] min-h-[250px]">
          <div class="w-full h-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
            <div class="bg-gray-50 p-4 border-b border-gray-200 shrink-0 flex justify-between items-start">
               <div>
@@ -444,7 +444,7 @@
       </div>
 
       <!-- Dashboard Footer: Enovar logo placed at the bottom for phone view -->
-      <div class="w-full flex justify-center py-6 sm:hidden mt-auto">
+      <div id="mobile-footer" class="w-full flex justify-center py-6 sm:hidden mt-auto">
         <img src="enovar.png" alt="Enovar" class="h-4 object-contain opacity-60">
       </div>
       
@@ -697,6 +697,19 @@
           view.classList.add('hidden');
         }
       });
+      
+      // NEW: Removes the white bar (padding) and footer when chatting with AI
+      const scrollContainer = document.getElementById('dash-scroll-container');
+      const mobileFooter = document.getElementById('mobile-footer');
+      if (scrollContainer && mobileFooter) {
+        if (tab === 'ai') {
+          scrollContainer.classList.remove('pb-16');
+          mobileFooter.classList.add('hidden');
+        } else {
+          scrollContainer.classList.add('pb-16');
+          mobileFooter.classList.remove('hidden');
+        }
+      }
       
       // Crucial fix for ApexCharts rendering in hidden divs
       setTimeout(() => {
