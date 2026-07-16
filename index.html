@@ -410,16 +410,10 @@
            </div>
         </div>
 
-        <!-- Bottom Split Screen -->
+        <!-- Bottom Split Screen (Table on Left, Alerts on Right) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-3 flex-1 min-h-0 pb-1">
            
-           <!-- Left: Dual Alert Board (Given min-height for mobile scrolling) -->
-           <div class="bg-white p-2 sm:p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col min-h-[160px] sm:min-h-0 lg:col-span-1">
-              <h3 class="text-[10px] font-bold text-gray-800 uppercase tracking-widest mb-2 shrink-0">Production Alerts</h3>
-              <div id="summary-alerts-list" class="flex-1 overflow-y-auto space-y-2 text-[11px]"></div>
-           </div>
-           
-           <!-- Right: Internal-Scrolling Table (Given min-height for mobile scrolling) -->
+           <!-- Left: Internal-Scrolling Table (Takes 2 of 3 columns) -->
            <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col min-h-[300px] sm:min-h-0 overflow-hidden lg:col-span-2">
               <div class="p-2 sm:p-3 border-b border-gray-100 shrink-0 bg-white z-20">
                  <h3 class="text-[10px] sm:text-xs font-bold text-gray-800 uppercase tracking-widest">Daily Item Matrix</h3>
@@ -427,20 +421,28 @@
               <div class="flex-1 overflow-y-auto p-0 m-0">
                  <table class="w-full text-left border-collapse text-[10px] sm:text-xs">
                    <thead class="sticky top-0 bg-gray-50 z-10 shadow-sm border-b border-gray-200">
-  <tr class="text-gray-500 uppercase tracking-wider">
-    <th class="p-2 pl-2 sm:pl-4 font-bold w-[22%] leading-tight">Line</th>
-    <th class="p-2 font-bold w-[38%] leading-tight">Item</th>
-    <th class="p-2 font-bold text-right w-[16%] leading-tight">Prod.<br>Qty</th>
-    <th class="p-2 font-bold text-right text-enovar w-[12%] leading-tight">Act.</th>
-    <th class="p-2 pr-2 sm:pr-4 font-bold text-right text-gray-600 w-[12%] leading-tight">Tgt.</th>
-  </tr>
-</thead>
+                     <tr class="text-gray-500 uppercase tracking-wider">
+                       <!-- lg:w-[30%] makes the Line column wider only on laptops/desktops -->
+                       <th class="p-2 pl-2 sm:pl-4 font-bold w-[22%] lg:w-[33%] leading-tight">Line</th>
+                       <!-- lg:w-[30%] shrinks the Item column on laptops to compensate for the wider Line column -->
+                       <th class="p-2 font-bold w-[38%] lg:w-[30%] leading-tight">Item</th>
+                       <th class="p-2 font-bold text-right w-[16%] leading-tight">Prod.<br>Qty</th>
+                       <th class="p-2 font-bold text-right text-enovar w-[12%] leading-tight">Act.</th>
+                       <th class="p-2 pr-2 sm:pr-4 font-bold text-right text-gray-600 w-[12%] leading-tight">Tgt.</th>
+                     </tr>
+                   </thead>
                    <tbody id="summary-item-table" class="text-gray-700 divide-y divide-gray-100"></tbody>
                  </table>
               </div>
            </div>
+
+           <!-- Right: Dual Alert Board (Takes 1 of 3 columns) -->
+           <div class="bg-white p-2 sm:p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col min-h-[160px] sm:min-h-0 lg:col-span-1">
+              <h3 class="text-[10px] font-bold text-gray-800 uppercase tracking-widest mb-2 shrink-0">Production Alerts</h3>
+              <div id="summary-alerts-list" class="flex-1 overflow-y-auto space-y-2 text-[11px]"></div>
+           </div>
+
         </div>
-      </div>
       <!-- AI INSIGHTS VIEW -->
       <div id="view-ai" class="w-full hidden max-w-7xl mx-auto h-[calc(100dvh-130px)] sm:h-[calc(100dvh-160px)] min-h-[250px]">
          <div class="w-full h-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
