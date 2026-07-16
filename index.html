@@ -388,12 +388,12 @@
         </div>
       </div>
 
-      <div id="view-management" class="w-full h-full flex-col space-y-3 hidden max-w-7xl mx-auto">
+      <div id="view-management" class="w-full h-full flex flex-col space-y-3 hidden max-w-7xl mx-auto">
         
         <!-- KPI Row (Fixed Height) -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 shrink-0">
            <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Total Output</span>
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Total Production</span>
               <span id="summary-kpi-output" class="text-xl sm:text-2xl font-bold text-gray-800">0</span>
            </div>
            <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
@@ -401,47 +401,44 @@
               <span id="summary-kpi-mp" class="text-xl sm:text-2xl font-bold text-gray-800">0</span>
            </div>
            <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Overall Actual</span>
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Actual Productivity</span>
               <span id="summary-kpi-actual" class="text-xl sm:text-2xl font-bold text-enovar">0.0</span>
            </div>
            <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Overall Target</span>
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Target Productivity</span>
               <span id="summary-kpi-target" class="text-xl sm:text-2xl font-bold text-gray-800">0.0</span>
            </div>
         </div>
 
-        <!-- Bottom Split Screen (Flex-1 forces it to fill remaining screen exactly) -->
+        <!-- Bottom Split Screen -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 flex-1 min-h-0 pb-1">
            
-           <!-- Left: Combo Chart -->
+           <!-- Left: Dual Alert Board -->
            <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col min-h-0">
-              <h3 class="text-[10px] sm:text-xs font-bold text-gray-800 uppercase tracking-widest mb-1 shrink-0">Item Volume vs Efficiency</h3>
-              <div id="chart-summary-combo" class="w-full flex-1 min-h-0"></div>
+              <h3 class="text-[10px] font-bold text-gray-800 uppercase tracking-widest mb-2 shrink-0">Production Alerts</h3>
+              <div id="summary-alerts-list" class="flex-1 overflow-y-auto space-y-2 text-[11px]"></div>
            </div>
            
-           <!-- Right: Compact Internal-Scrolling Table -->
+           <!-- Right: Internal-Scrolling Table -->
            <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col min-h-0 overflow-hidden">
               <div class="p-3 border-b border-gray-100 shrink-0 bg-white z-20">
-                 <h3 class="text-[10px] sm:text-xs font-bold text-gray-800 uppercase tracking-widest">Daily Item Matrix (Sorted by Qty)</h3>
+                 <h3 class="text-[10px] sm:text-xs font-bold text-gray-800 uppercase tracking-widest">Daily Item Matrix</h3>
               </div>
               <div class="flex-1 overflow-y-auto p-0 m-0">
                  <table class="w-full text-left border-collapse whitespace-nowrap text-[10px] sm:text-xs">
                    <thead class="sticky top-0 bg-gray-50 z-10 shadow-sm border-b border-gray-200">
                      <tr class="text-gray-500 uppercase tracking-wider">
-                       <th class="p-2 pl-4 font-bold">Item Name</th>
-                       <th class="p-2 font-bold text-right">Qty</th>
-                       <th class="p-2 font-bold text-right">Avg MP</th>
+                       <th class="p-2 pl-4 font-bold">Line</th>
+                       <th class="p-2 font-bold">Item</th>
+                       <th class="p-2 font-bold text-right">Production Qty</th>
                        <th class="p-2 font-bold text-right text-enovar">Act.</th>
                        <th class="p-2 pr-4 font-bold text-right text-gray-600">Tgt.</th>
                      </tr>
                    </thead>
-                   <tbody id="summary-item-table" class="text-gray-700 divide-y divide-gray-100">
-                      <!-- Rows injected here -->
-                   </tbody>
+                   <tbody id="summary-item-table" class="text-gray-700 divide-y divide-gray-100"></tbody>
                  </table>
               </div>
            </div>
-
         </div>
       </div>
       <!-- AI INSIGHTS VIEW -->
@@ -1473,6 +1470,7 @@
         let weightedProdSum = 0, weightedTgtSum = 0;
         let lineMp = {}; 
         let itemMap = {}; 
+        let alerts = []; // Holds the generated alerts
 
         // 2. AGGREGATE
         fData.forEach(r => {
@@ -1480,17 +1478,24 @@
           if(r.productivity > 0) weightedProdSum += (r.productivity * r.qty);
           if(r.targetProductivity > 0) weightedTgtSum += (r.targetProductivity * r.qty);
 
-          // Get the peak manpower for each line that ran today
+          // Peak Manpower per line
           lineMp[r.line] = Math.max(lineMp[r.line] || 0, r.mp);
 
-          // Itemized Aggregation
-          let iKey = r.itemCode ? `[${r.itemCode}] - ${r.item}` : r.item;
-          if(!itemMap[iKey]) itemMap[iKey] = { qty: 0, prod_x_qty: 0, tgt_x_qty: 0, mpSum: 0, mpCount: 0 };
+          // Itemized Aggregation (Grouping by Line AND Item)
+          let iKey = `${r.line}::${r.itemCode ? '['+r.itemCode+'] - '+r.item : r.item}`;
+          if(!itemMap[iKey]) {
+              itemMap[iKey] = { 
+                  line: r.line, 
+                  itemStr: r.itemCode ? `[${r.itemCode}] - ${r.item}` : r.item, 
+                  qty: 0, 
+                  prod_x_qty: 0, 
+                  tgt_x_qty: 0 
+              };
+          }
           
           itemMap[iKey].qty += r.qty;
           if(r.productivity > 0) itemMap[iKey].prod_x_qty += (r.productivity * r.qty);
           if(r.targetProductivity > 0) itemMap[iKey].tgt_x_qty += (r.targetProductivity * r.qty);
-          if(r.mp > 0) { itemMap[iKey].mpSum += r.mp; itemMap[iKey].mpCount++; }
         });
 
         // 3. CALC KPIs
@@ -1505,34 +1510,34 @@
         document.getElementById('summary-kpi-actual').innerText = globalActual;
         document.getElementById('summary-kpi-target').innerText = globalTarget;
 
-        // 4. PREPARE ITEM DATA (Sorted by highest Qty)
-        let sortedItems = Object.keys(itemMap).sort((a, b) => itemMap[b].qty - itemMap[a].qty);
-
-        let cLabels = [], cQty = [], cAct = [], cTgt = [];
+        // 4. PREPARE ITEM DATA & ALERTS
+        let sortedKeys = Object.keys(itemMap).sort((a, b) => itemMap[b].qty - itemMap[a].qty);
         const tableBody = document.getElementById('summary-item-table');
         tableBody.innerHTML = '';
 
-        if (sortedItems.length === 0) {
+        if (sortedKeys.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">No production recorded for this date.</td></tr>`;
         } else {
-            sortedItems.forEach(item => {
-                let d = itemMap[item];
+            sortedKeys.forEach(key => {
+                let d = itemMap[key];
                 let wAct = d.qty > 0 ? (d.prod_x_qty / d.qty).toFixed(1) : "0.0";
                 let wTgt = d.qty > 0 ? (d.tgt_x_qty / d.qty).toFixed(1) : "0.0";
-                let avgMp = d.mpCount > 0 ? Math.round(d.mpSum / d.mpCount) : 0;
 
-                // Push to chart arrays
-                cLabels.push(item);
-                cQty.push(d.qty);
-                cAct.push(parseFloat(wAct));
-                cTgt.push(parseFloat(wTgt));
+                // --- Generate Alerts ---
+                if (d.qty === 0) {
+                    // Production Halt Alert (Priority 1)
+                    alerts.push({ priority: 1, html: `<div class="p-2 bg-amber-50 text-amber-800 rounded border border-amber-200 shadow-sm"><span class="font-black mr-1">⚠️ HALT:</span> ${d.line} recorded 0 output for ${d.itemStr}.</div>` });
+                } else if (parseFloat(wAct) < (parseFloat(wTgt) * 0.90)) {
+                    // Bottleneck Alert (Priority 2) - Triggers if under 90% of target
+                    alerts.push({ priority: 2, html: `<div class="p-2 bg-red-50 text-red-700 rounded border border-red-100 shadow-sm"><span class="font-black mr-1">📉 BOTTLENECK:</span> ${d.line} is underperforming on ${d.itemStr} (Act: ${wAct} vs Tgt: ${wTgt}).</div>` });
+                }
 
-                // Add Table Row
+                // --- Build Table Row ---
                 tableBody.innerHTML += `
                   <tr class="hover:bg-enovar/5 transition-colors">
-                    <td class="p-2 pl-4 font-semibold text-gray-800 truncate max-w-[150px] sm:max-w-[200px]" title="${item}">${item}</td>
+                    <td class="p-2 pl-4 font-bold text-gray-800 truncate max-w-[80px]" title="${d.line}">${d.line}</td>
+                    <td class="p-2 font-medium text-gray-600 truncate max-w-[150px]" title="${d.itemStr}">${d.itemStr}</td>
                     <td class="p-2 text-right font-medium">${d.qty.toLocaleString()}</td>
-                    <td class="p-2 text-right text-gray-500">${avgMp}</td>
                     <td class="p-2 text-right text-enovar font-bold">${wAct}</td>
                     <td class="p-2 pr-4 text-right text-gray-500 font-bold">${wTgt}</td>
                   </tr>
@@ -1540,48 +1545,18 @@
             });
         }
 
-        // 5. COMBO CHART (Bar + Line + Scatter)
-        let cOptions = {
-          chart: { 
-             height: '100%', 
-             type: 'line', 
-             toolbar: { show: false }, 
-             fontFamily: font,
-             parentHeightOffset: 0
-          },
-          series: [
-            { name: 'Total Qty', type: 'column', data: cQty },
-            { name: 'Actual Prod', type: 'line', data: cAct },
-            { name: 'Target Prod', type: 'scatter', data: cTgt } // Use scatter to render dots for Targets
-          ],
-          stroke: { width: [0, 3, 0], curve: 'smooth' },
-          markers: {
-             size: [0, 4, 6], // Only show markers for Actual Line (4px) and Target Scatter (6px)
-             colors: ['transparent', '#0D5C58', '#EF4444'],
-             strokeColors: '#fff',
-             strokeWidth: 2
-          },
-          colors: ['#E6EDEB', '#0D5C58', '#EF4444'],
-          xaxis: { 
-             categories: cLabels, 
-             labels: { show: false }, // Hide the messy labels, tooltips will handle the names
-             axisBorder: { show: false },
-             axisTicks: { show: false }
-          },
-          yaxis: [
-            { title: { text: 'Volume (Qty)', style: { fontSize: '9px', fontWeight: 700, color: '#9CA3AF' } } },
-            { opposite: true, title: { text: 'Efficiency', style: { fontSize: '9px', fontWeight: 700, color: '#0D5C58' } } },
-            { opposite: true, show: false, min: 0 } // Hide the 3rd axis for scatter, map it dynamically
-          ],
-          dataLabels: { enabled: false },
-          legend: { position: 'top', fontSize: '10px', markers: { radius: 12 } },
-          tooltip: { shared: true, intersect: false },
-          grid: { padding: { top: 0, bottom: 0, left: 10, right: 10 } }
-        };
-
-        if(execMonthlyChart) execMonthlyChart.destroy();
-        execMonthlyChart = new ApexCharts(document.querySelector("#chart-summary-combo"), cOptions);
-        execMonthlyChart.render();
+        // 5. RENDER ALERTS TO THE LEFT PANEL
+        const alertsList = document.getElementById('summary-alerts-list');
+        alertsList.innerHTML = '';
+        
+        if (alerts.length === 0 && sortedKeys.length > 0) {
+            alertsList.innerHTML = `<div class="p-4 text-center text-green-600 font-bold bg-green-50 rounded-lg border border-green-100">✅ All lines operating at or above 90% capacity today.</div>`;
+        } else {
+            // Sort alerts so Halts (Priority 1) appear before Bottlenecks (Priority 2)
+            alerts.sort((a, b) => a.priority - b.priority).forEach(alert => {
+                alertsList.innerHTML += alert.html;
+            });
+        }
       }
     }
 
