@@ -1660,6 +1660,11 @@
       // Slice the history so we only send the last 10 messages (5 pairs) to save bandwidth
       const recentHistory = aiChatHistory.slice(-10); 
 
+      // --- SMART TIME LOGIC ---
+      const today = new Date();
+      const dateString = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const systemInstruction = `System Note: The current date is ${dateString}. When the user refers to relative terms like 'today', 'yesterday', or 'last week', calculate the target date based on this current date.`;
+
       // Send payload to backend (Notice we REMOVED the 'data' payload to kill the upload delay!)
       callAPI({ action: "askGemini", prompt: message, history: recentHistory }, function(res) {
          document.getElementById(loadingId).remove();
