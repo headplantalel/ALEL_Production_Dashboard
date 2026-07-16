@@ -322,7 +322,7 @@
         
         <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 w-full md:w-auto overflow-x-auto no-scrollbar shrink-0">
           <button id="tab-section" onclick="switchDashTab('section')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Daily Status</button>
-          <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Exec Summary</button>
+          <button id="tab-management" onclick="switchDashTab('management')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Summary</button>
           <button id="tab-master" onclick="switchDashTab('master')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Analytics</button>
           <button id="tab-ai" onclick="switchDashTab('ai')" class="px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-md text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap flex items-center gap-1">
             <svg class="w-3 h-3 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> AI Insights
@@ -369,42 +369,52 @@
         </div>
       </div>
 
-      <div id="view-management" class="w-full space-y-5 hidden max-w-6xl mx-auto">
-        <h2 class="text-xl font-extrabold text-gray-800 mb-2 border-b border-gray-200 pb-2">Global Operations Summary (All Time)</h2>
+      <div id="view-management" class="w-full space-y-5 hidden max-w-7xl mx-auto">
         
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Avg Actual Prod</span>
-              <span id="exec-kpi-prod" class="text-3xl font-bold text-enovar">0.0</span>
-           </div>
-           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Avg Target Prod</span>
-              <span id="exec-kpi-target" class="text-3xl font-bold text-red-500">0.0</span>
-           </div>
+        <!-- KPI Row -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Total Output</span>
-              <span id="exec-kpi-output" class="text-3xl font-bold text-gray-800">0</span>
+              <span id="summary-kpi-output" class="text-3xl font-bold text-gray-800">0</span>
            </div>
            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Avg Daily MP</span>
-              <span id="exec-kpi-mp" class="text-3xl font-bold text-gray-800">0</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Avg Achievement</span>
+              <span id="summary-kpi-achiev" class="text-3xl font-bold text-enovar">0.0%</span>
+           </div>
+           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Avg Daily Manpower</span>
+              <span id="summary-kpi-mp" class="text-3xl font-bold text-gray-800">0</span>
+           </div>
+           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Productivity Gap (Units)</span>
+              <span id="summary-kpi-gap" class="text-3xl font-bold text-red-500">0.0</span>
            </div>
         </div>
 
+        <!-- Trend Chart -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Monthly Output & Achievement</h3>
-           <div id="chart-exec-monthly" class="w-full h-[300px]"></div>
+           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Daily Output vs Achievement Trend</h3>
+           <div id="chart-summary-trend" class="w-full h-[300px]"></div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Top 3 Lines (Achievement %)</h3>
-            <div id="exec-top-lines" class="space-y-3"></div>
-          </div>
-          <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="text-xs font-bold text-red-500 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Bottom 3 Lines (Achievement %)</h3>
-            <div id="exec-bottom-lines" class="space-y-3"></div>
-          </div>
+        <!-- Dynamic Item Matrix Table -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Item Performance Matrix (Weighted)</h3>
+           <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
+             <thead>
+               <tr class="bg-gray-50 text-[10px] text-gray-500 uppercase tracking-wider">
+                 <th class="p-3 border-b border-gray-200 rounded-tl-lg font-bold">Item Name</th>
+                 <th class="p-3 border-b border-gray-200 font-bold text-right">Total Produced</th>
+                 <th class="p-3 border-b border-gray-200 font-bold text-right">Weighted Actual Prod.</th>
+                 <th class="p-3 border-b border-gray-200 font-bold text-right">Weighted Target Prod.</th>
+                 <th class="p-3 border-b border-gray-200 font-bold text-right">Variance</th>
+                 <th class="p-3 border-b border-gray-200 rounded-tr-lg font-bold text-right">Avg Achievement</th>
+               </tr>
+             </thead>
+             <tbody id="summary-item-table" class="text-xs text-gray-700 divide-y divide-gray-100">
+                <!-- Rows injected via JS -->
+             </tbody>
+           </table>
         </div>
       </div>
 
@@ -835,9 +845,27 @@
           <div class="w-full md:w-[300px]"><select id="filter-item" placeholder="Search Item..."></select></div>
         `;
       } else if (activeDashTab === 'management') {
-         html = ``;
+         html = `
+          <select id="filter-section-summary" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
+            <option value="all">All Sections</option>
+            ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
+          </select>
+          <input type="text" id="filter-date-summary" placeholder="Select Date Range..." class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm cursor-pointer w-48 text-center bg-white" readonly>
+         `;
       }
       container.innerHTML = html;
+      
+      // Initialize Flatpickr for the Summary tab
+      if (activeDashTab === 'management') {
+         flatpickr("#filter-date-summary", {
+            mode: "range",
+            dateFormat: "M d, Y",
+            onChange: function(selectedDates) {
+               // Only re-render if a full range (start and end) is selected
+               if (selectedDates.length === 2) { renderDashboard(); }
+            }
+         });
+      }
       
 // NEW: Activate the calendar for the Daily Status tab
       if (activeDashTab === 'section') {
@@ -1398,37 +1426,63 @@
         window.masterTrendChart.render();
       }
       // ==========================================
-      // TAB 3: EXEC SUMMARY (Global All Time)
+      // TAB 3: SUMMARY
       // ==========================================
       if (activeDashTab === 'management') {
+        const secVal = document.getElementById('filter-section-summary') ? document.getElementById('filter-section-summary').value : 'all';
+        const dateRangeStr = document.getElementById('filter-date-summary') ? document.getElementById('filter-date-summary').value : '';
         
-        let sumQty = 0, prodSum = 0, prodCount = 0, tgtSum = 0, tgtCount = 0;
-        let lineAchievMap = {};
-        let dailyLineMp = {};
-        let monthMap = {}; // Format: YYYY-MM
+        let startD = new Date(0), endD = new Date(8640000000000000); // Defaults to All Time
+        if (dateRangeStr.includes(" to ")) {
+            let parts = dateRangeStr.split(" to ");
+            startD = new Date(parts[0]); startD.setHours(0,0,0,0);
+            endD = new Date(parts[1]); endD.setHours(23,59,59,999);
+        }
 
-        rawDashboardData.forEach(r => {
-          sumQty += r.qty;
-          if(r.productivity > 0) { prodSum += r.productivity; prodCount++; }
-          if(r.targetProductivity > 0) { tgtSum += r.targetProductivity; tgtCount++; }
+        // 1. FILTER DATA
+        let fData = rawDashboardData.filter(row => {
+          if (secVal !== 'all' && row.section !== secVal) return false;
+          if (dateRangeStr !== '') {
+             let rDate = new Date(row.date);
+             if (rDate < startD || rDate > endD) return false;
+          }
+          return true;
+        });
+
+        let totalQty = 0, sumAchiev = 0, countAchiev = 0;
+        let weightedProdSum = 0, weightedTgtSum = 0;
+        let dailyLineMp = {};
+        let dayMap = {}; // For the trend chart
+        let itemMap = {}; // For the matrix table
+
+        // 2. AGGREGATE DATA
+        fData.forEach(r => {
+          totalQty += r.qty;
           
+          if(r.achievement > 0) { sumAchiev += r.achievement; countAchiev++; }
+          if(r.productivity > 0) weightedProdSum += (r.productivity * r.qty);
+          if(r.targetProductivity > 0) weightedTgtSum += (r.targetProductivity * r.qty);
+
+          // Daily Manpower Check
           if(!dailyLineMp[r.date]) dailyLineMp[r.date] = {};
           dailyLineMp[r.date][r.line] = Math.max(dailyLineMp[r.date][r.line] || 0, r.mp);
 
-          if(r.achievement > 0) { 
-             if(!lineAchievMap[r.line]) lineAchievMap[r.line] = { achiev: 0, count: 0 };
-             lineAchievMap[r.line].achiev += r.achievement; 
-             lineAchievMap[r.line].count++;
-          }
+          // Daily Trend Aggregation
+          let dKey = r.date;
+          if(!dayMap[dKey]) dayMap[dKey] = { qty: 0, achievSum: 0, achievCount: 0 };
+          dayMap[dKey].qty += r.qty;
+          if(r.achievement > 0) { dayMap[dKey].achievSum += r.achievement; dayMap[dKey].achievCount++; }
 
-          let rDate = new Date(r.date);
-          let mKey = rDate.getFullYear() + "-" + String(rDate.getMonth()+1).padStart(2,'0');
-          let mLabel = rDate.toLocaleString('default', { month: 'short', year: 'numeric' });
-          if(!monthMap[mKey]) monthMap[mKey] = { label: mLabel, qty: 0, achievSum: 0, achievCount: 0 };
-          monthMap[mKey].qty += r.qty;
-          if(r.achievement > 0) { monthMap[mKey].achievSum += r.achievement; monthMap[mKey].achievCount++; }
+          // Item Matrix Aggregation
+          let iKey = r.itemCode ? `[${r.itemCode}] - ${r.item}` : r.item;
+          if(!itemMap[iKey]) itemMap[iKey] = { qty: 0, prod_x_qty: 0, tgt_x_qty: 0, achievSum: 0, achievCount: 0 };
+          itemMap[iKey].qty += r.qty;
+          if(r.productivity > 0) itemMap[iKey].prod_x_qty += (r.productivity * r.qty);
+          if(r.targetProductivity > 0) itemMap[iKey].tgt_x_qty += (r.targetProductivity * r.qty);
+          if(r.achievement > 0) { itemMap[iKey].achievSum += r.achievement; itemMap[iKey].achievCount++; }
         });
 
+        // 3. CALCULATE GLOBAL KPIs
         let activeDays = Object.keys(dailyLineMp).length;
         let dailyMpSums = 0;
         Object.values(dailyLineMp).forEach(lines => {
@@ -1438,41 +1492,34 @@
         });
 
         let avgDailyMp = activeDays > 0 ? Math.round(dailyMpSums / activeDays) : 0;
-        let avgProd = prodCount > 0 ? (prodSum / prodCount).toFixed(1) : "0.0";
-        let avgTarget = tgtCount > 0 ? (tgtSum / tgtCount).toFixed(1) : "0.0";
+        let avgAchiev = countAchiev > 0 ? (sumAchiev / countAchiev).toFixed(1) : "0.0";
+        let globalActual = totalQty > 0 ? (weightedProdSum / totalQty) : 0;
+        let globalTarget = totalQty > 0 ? (weightedTgtSum / totalQty) : 0;
+        let gap = (globalActual - globalTarget).toFixed(1);
 
-        document.getElementById('exec-kpi-prod').innerText = avgProd;
-        document.getElementById('exec-kpi-target').innerText = avgTarget;
-        document.getElementById('exec-kpi-output').innerText = sumQty.toLocaleString();
-        document.getElementById('exec-kpi-mp').innerText = avgDailyMp.toLocaleString();
+        document.getElementById('summary-kpi-output').innerText = totalQty.toLocaleString();
+        document.getElementById('summary-kpi-achiev').innerText = avgAchiev + '%';
+        document.getElementById('summary-kpi-mp').innerText = avgDailyMp.toLocaleString();
+        
+        let gapEl = document.getElementById('summary-kpi-gap');
+        gapEl.innerText = (gap > 0 ? '+' : '') + gap;
+        gapEl.className = gap >= 0 ? "text-3xl font-bold text-green-500" : "text-3xl font-bold text-red-500";
 
-        let sortedLines = Object.keys(lineAchievMap).map(l => { return { line: l, score: (lineAchievMap[l].achiev / lineAchievMap[l].count * 100) }; }).sort((a,b) => b.score - a.score);
-        const topContainer = document.getElementById('exec-top-lines'), botContainer = document.getElementById('exec-bottom-lines');
-        topContainer.innerHTML = ''; botContainer.innerHTML = '';
-
-        if(sortedLines.length === 0) {
-           topContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>'; botContainer.innerHTML = '<p class="text-xs text-gray-400">No data</p>';
-        } else {
-           let top3 = sortedLines.slice(0, 3); let bot3 = sortedLines.slice(-3).reverse(); 
-           top3.forEach((l, idx) => { topContainer.innerHTML += `<div class="flex justify-between items-center bg-green-50/50 p-2 rounded border border-green-100"><span class="text-xs font-bold text-gray-800">${idx+1}. ${l.line}</span><span class="text-xs font-black text-green-600">${l.score.toFixed(1)}%</span></div>`; });
-           bot3.forEach((l, idx) => { botContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50/50 p-2 rounded border border-red-100"><span class="text-xs font-bold text-gray-800">${sortedLines.length - idx}. ${l.line}</span><span class="text-xs font-black text-red-600">${l.score.toFixed(1)}%</span></div>`; });
-        }
-
-        // Render Monthly Chart
-        let mKeys = Object.keys(monthMap).sort();
-        let mLabels = mKeys.map(k => monthMap[k].label);
-        let mQty = mKeys.map(k => monthMap[k].qty);
-        let mAchiev = mKeys.map(k => monthMap[k].achievCount > 0 ? parseFloat((monthMap[k].achievSum / monthMap[k].achievCount * 100).toFixed(1)) : 0);
+        // 4. RENDER TREND CHART
+        let dKeys = Object.keys(dayMap).sort((a,b) => new Date(a) - new Date(b));
+        let cLabels = dKeys;
+        let cQty = dKeys.map(k => dayMap[k].qty);
+        let cAchiev = dKeys.map(k => dayMap[k].achievCount > 0 ? parseFloat((dayMap[k].achievSum / dayMap[k].achievCount).toFixed(1)) : 0);
 
         let mOptions = {
           chart: { type: 'line', height: 300, toolbar: { show: false }, fontFamily: font },
           series: [
-            { name: 'Total Output', type: 'column', data: mQty },
-            { name: 'Avg Achievement %', type: 'line', data: mAchiev }
+            { name: 'Total Output', type: 'column', data: cQty },
+            { name: 'Avg Achievement %', type: 'line', data: cAchiev }
           ],
           stroke: { width: [0, 3], curve: 'smooth' },
           colors: ['#E6EDEB', '#0D5C58'],
-          xaxis: { categories: mLabels },
+          xaxis: { categories: cLabels },
           yaxis: [
             { title: { text: 'Output', style: { color: '#9CA3AF' } } },
             { opposite: true, title: { text: 'Achievement %', style: { color: '#0D5C58' } }, min: 0 }
@@ -1481,10 +1528,41 @@
           legend: { position: 'top', horizontalAlign: 'right' }
         };
         if(execMonthlyChart) execMonthlyChart.destroy();
-        execMonthlyChart = new ApexCharts(document.querySelector("#chart-exec-monthly"), mOptions);
+        execMonthlyChart = new ApexCharts(document.querySelector("#chart-summary-trend"), mOptions);
         execMonthlyChart.render();
+
+        // 5. RENDER ITEM MATRIX TABLE
+        const tableBody = document.getElementById('summary-item-table');
+        tableBody.innerHTML = '';
+        
+        if (Object.keys(itemMap).length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">No data found for this selection.</td></tr>`;
+        } else {
+            // Sort by Total Output descending
+            let sortedItems = Object.keys(itemMap).sort((a, b) => itemMap[b].qty - itemMap[a].qty);
+            
+            sortedItems.forEach(item => {
+                let d = itemMap[item];
+                let wAct = d.qty > 0 ? (d.prod_x_qty / d.qty).toFixed(1) : "0.0";
+                let wTgt = d.qty > 0 ? (d.tgt_x_qty / d.qty).toFixed(1) : "0.0";
+                let variance = (wAct - wTgt).toFixed(1);
+                let achiev = d.achievCount > 0 ? (d.achievSum / d.achievCount).toFixed(1) : "0.0";
+                
+                let varColor = variance >= 0 ? "text-green-600 font-bold bg-green-50" : "text-red-500 font-bold bg-red-50";
+
+                tableBody.innerHTML += `
+                  <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="p-3 font-semibold text-gray-800 truncate max-w-[250px]" title="${item}">${item}</td>
+                    <td class="p-3 text-right font-medium">${d.qty.toLocaleString()}</td>
+                    <td class="p-3 text-right text-enovar font-bold">${wAct}</td>
+                    <td class="p-3 text-right text-gray-500">${wTgt}</td>
+                    <td class="p-3 text-right ${varColor} rounded px-2">${variance > 0 ? '+' : ''}${variance}</td>
+                    <td class="p-3 text-right font-bold text-gray-800">${achiev}%</td>
+                  </tr>
+                `;
+            });
+        }
       }
-    }
 
     function renderAIChatHistory() {
       const chatWindow = document.getElementById('ai-chat-window');
