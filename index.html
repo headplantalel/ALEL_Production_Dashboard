@@ -1666,7 +1666,12 @@
       const systemInstruction = `System Note: The current date is ${dateString}. When the user refers to relative terms like 'today', 'yesterday', or 'last week', calculate the target date based on this current date.`;
 
       // Send payload to backend (Notice we REMOVED the 'data' payload to kill the upload delay!)
-      callAPI({ action: "askGemini", prompt: message, history: recentHistory }, function(res) {
+      callAPI({ 
+          action: "askGemini", 
+          prompt: message, 
+          history: recentHistory,
+          systemContext: systemInstruction // <--- New parameter
+      }, function(res) {
          document.getElementById(loadingId).remove();
          inputEl.disabled = false;
          btn.innerText = 'Send';
