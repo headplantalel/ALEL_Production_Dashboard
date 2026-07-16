@@ -369,55 +369,62 @@
         </div>
       </div>
 
-      <div id="view-management" class="w-full space-y-5 hidden max-w-7xl mx-auto">
+      <div id="view-management" class="w-full h-full flex-col space-y-3 hidden max-w-7xl mx-auto">
         
-        <!-- KPI Row -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Total Output</span>
-              <span id="summary-kpi-output" class="text-3xl font-bold text-gray-800">0</span>
+        <!-- KPI Row (Fixed Height) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 shrink-0">
+           <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Total Output</span>
+              <span id="summary-kpi-output" class="text-xl sm:text-2xl font-bold text-gray-800">0</span>
            </div>
-           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Avg Achievement</span>
-              <span id="summary-kpi-achiev" class="text-3xl font-bold text-enovar">0.0%</span>
+           <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Peak Manpower</span>
+              <span id="summary-kpi-mp" class="text-xl sm:text-2xl font-bold text-gray-800">0</span>
            </div>
-           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Avg Daily Manpower</span>
-              <span id="summary-kpi-mp" class="text-3xl font-bold text-gray-800">0</span>
+           <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Overall Actual</span>
+              <span id="summary-kpi-actual" class="text-xl sm:text-2xl font-bold text-enovar">0.0</span>
            </div>
-           <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Productivity Gap (Units)</span>
-              <span id="summary-kpi-gap" class="text-3xl font-bold text-red-500">0.0</span>
+           <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 text-center">Overall Target</span>
+              <span id="summary-kpi-target" class="text-xl sm:text-2xl font-bold text-gray-800">0.0</span>
            </div>
         </div>
 
-        <!-- Trend Chart -->
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-2 text-left">Daily Output vs Achievement Trend</h3>
-           <div id="chart-summary-trend" class="w-full h-[300px]"></div>
-        </div>
+        <!-- Bottom Split Screen (Flex-1 forces it to fill remaining screen exactly) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 flex-1 min-h-0 pb-1">
+           
+           <!-- Left: Combo Chart -->
+           <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col min-h-0">
+              <h3 class="text-[10px] sm:text-xs font-bold text-gray-800 uppercase tracking-widest mb-1 shrink-0">Item Volume vs Efficiency</h3>
+              <div id="chart-summary-combo" class="w-full flex-1 min-h-0"></div>
+           </div>
+           
+           <!-- Right: Compact Internal-Scrolling Table -->
+           <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col min-h-0 overflow-hidden">
+              <div class="p-3 border-b border-gray-100 shrink-0 bg-white z-20">
+                 <h3 class="text-[10px] sm:text-xs font-bold text-gray-800 uppercase tracking-widest">Daily Item Matrix (Sorted by Qty)</h3>
+              </div>
+              <div class="flex-1 overflow-y-auto p-0 m-0">
+                 <table class="w-full text-left border-collapse whitespace-nowrap text-[10px] sm:text-xs">
+                   <thead class="sticky top-0 bg-gray-50 z-10 shadow-sm border-b border-gray-200">
+                     <tr class="text-gray-500 uppercase tracking-wider">
+                       <th class="p-2 pl-4 font-bold">Item Name</th>
+                       <th class="p-2 font-bold text-right">Qty</th>
+                       <th class="p-2 font-bold text-right">Avg MP</th>
+                       <th class="p-2 font-bold text-right text-enovar">Act.</th>
+                       <th class="p-2 pr-4 font-bold text-right text-gray-600">Tgt.</th>
+                     </tr>
+                   </thead>
+                   <tbody id="summary-item-table" class="text-gray-700 divide-y divide-gray-100">
+                      <!-- Rows injected here -->
+                   </tbody>
+                 </table>
+              </div>
+           </div>
 
-        <!-- Dynamic Item Matrix Table -->
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
-           <h3 class="text-xs font-bold text-gray-800 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Item Performance Matrix (Weighted)</h3>
-           <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
-             <thead>
-               <tr class="bg-gray-50 text-[10px] text-gray-500 uppercase tracking-wider">
-                 <th class="p-3 border-b border-gray-200 rounded-tl-lg font-bold">Item Name</th>
-                 <th class="p-3 border-b border-gray-200 font-bold text-right">Total Produced</th>
-                 <th class="p-3 border-b border-gray-200 font-bold text-right">Weighted Actual Prod.</th>
-                 <th class="p-3 border-b border-gray-200 font-bold text-right">Weighted Target Prod.</th>
-                 <th class="p-3 border-b border-gray-200 font-bold text-right">Variance</th>
-                 <th class="p-3 border-b border-gray-200 rounded-tr-lg font-bold text-right">Avg Achievement</th>
-               </tr>
-             </thead>
-             <tbody id="summary-item-table" class="text-xs text-gray-700 divide-y divide-gray-100">
-                <!-- Rows injected via JS -->
-             </tbody>
-           </table>
         </div>
       </div>
-
       <!-- AI INSIGHTS VIEW -->
       <div id="view-ai" class="w-full hidden max-w-7xl mx-auto h-[calc(100dvh-130px)] sm:h-[calc(100dvh-160px)] min-h-[250px]">
          <div class="w-full h-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -710,16 +717,23 @@
         }
       });
       
-      // NEW: Removes the white bar (padding) and footer when chatting with AI
+      // Manage Scrollbars and Mobile Padding based on Tab
       const scrollContainer = document.getElementById('dash-scroll-container');
       const mobileFooter = document.getElementById('mobile-footer');
       if (scrollContainer && mobileFooter) {
+        // Reset defaults for normal tabs
+        scrollContainer.classList.add('overflow-y-auto', 'pb-16');
+        scrollContainer.classList.remove('overflow-hidden', 'flex', 'flex-col');
+        mobileFooter.classList.remove('hidden');
+
         if (tab === 'ai') {
           scrollContainer.classList.remove('pb-16');
           mobileFooter.classList.add('hidden');
-        } else {
-          scrollContainer.classList.add('pb-16');
-          mobileFooter.classList.remove('hidden');
+        } else if (tab === 'management') {
+          // Locks the Summary Tab so the page never scrolls
+          scrollContainer.classList.remove('overflow-y-auto', 'pb-16');
+          scrollContainer.classList.add('overflow-hidden', 'flex', 'flex-col');
+          mobileFooter.classList.add('hidden');
         }
       }
       
@@ -850,20 +864,17 @@
             <option value="all">All Sections</option>
             ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
           </select>
-          <input type="text" id="filter-date-summary" placeholder="Select Date Range..." class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm cursor-pointer w-48 text-center bg-white" readonly>
+          <input type="text" id="filter-date-summary" value="${todayStr}" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm cursor-pointer w-28 text-center bg-white" readonly>
          `;
       }
       container.innerHTML = html;
       
-      // Initialize Flatpickr for the Summary tab
+      // Initialize Flatpickr for the Summary tab (Single Date)
       if (activeDashTab === 'management') {
          flatpickr("#filter-date-summary", {
-            mode: "range",
             dateFormat: "M d, Y",
-            onChange: function(selectedDates) {
-               // Only re-render if a full range (start and end) is selected
-               if (selectedDates.length === 2) { renderDashboard(); }
-            }
+            enable: Array.from(dates).map(dateStr => new Date(dateStr)), 
+            onChange: function() { renderDashboard(); }
          });
       }
       
@@ -1426,143 +1437,132 @@
         window.masterTrendChart.render();
       }
       // ==========================================
-      // TAB 3: SUMMARY
+      // TAB 3: SUMMARY (Single Day Snapshot)
       // ==========================================
       if (activeDashTab === 'management') {
         const secVal = document.getElementById('filter-section-summary') ? document.getElementById('filter-section-summary').value : 'all';
-        const dateRangeStr = document.getElementById('filter-date-summary') ? document.getElementById('filter-date-summary').value : '';
+        const dateVal = document.getElementById('filter-date-summary') ? document.getElementById('filter-date-summary').value : '';
         
-        let startD = new Date(0), endD = new Date(8640000000000000); // Defaults to All Time
-        if (dateRangeStr.includes(" to ")) {
-            let parts = dateRangeStr.split(" to ");
-            startD = new Date(parts[0]); startD.setHours(0,0,0,0);
-            endD = new Date(parts[1]); endD.setHours(23,59,59,999);
-        }
-
-        // 1. FILTER DATA
+        // 1. FILTER DATA BY EXACT DATE
         let fData = rawDashboardData.filter(row => {
           if (secVal !== 'all' && row.section !== secVal) return false;
-          if (dateRangeStr !== '') {
-             let rDate = new Date(row.date);
-             if (rDate < startD || rDate > endD) return false;
-          }
+          if (row.date !== dateVal) return false;
           return true;
         });
 
-        let totalQty = 0, sumAchiev = 0, countAchiev = 0;
+        let totalQty = 0;
         let weightedProdSum = 0, weightedTgtSum = 0;
-        let dailyLineMp = {};
-        let dayMap = {}; // For the trend chart
-        let itemMap = {}; // For the matrix table
+        let lineMp = {}; 
+        let itemMap = {}; 
 
-        // 2. AGGREGATE DATA
+        // 2. AGGREGATE
         fData.forEach(r => {
           totalQty += r.qty;
-          
-          if(r.achievement > 0) { sumAchiev += r.achievement; countAchiev++; }
           if(r.productivity > 0) weightedProdSum += (r.productivity * r.qty);
           if(r.targetProductivity > 0) weightedTgtSum += (r.targetProductivity * r.qty);
 
-          // Daily Manpower Check
-          if(!dailyLineMp[r.date]) dailyLineMp[r.date] = {};
-          dailyLineMp[r.date][r.line] = Math.max(dailyLineMp[r.date][r.line] || 0, r.mp);
+          // Get the peak manpower for each line that ran today
+          lineMp[r.line] = Math.max(lineMp[r.line] || 0, r.mp);
 
-          // Daily Trend Aggregation
-          let dKey = r.date;
-          if(!dayMap[dKey]) dayMap[dKey] = { qty: 0, achievSum: 0, achievCount: 0 };
-          dayMap[dKey].qty += r.qty;
-          if(r.achievement > 0) { dayMap[dKey].achievSum += r.achievement; dayMap[dKey].achievCount++; }
-
-          // Item Matrix Aggregation
+          // Itemized Aggregation
           let iKey = r.itemCode ? `[${r.itemCode}] - ${r.item}` : r.item;
-          if(!itemMap[iKey]) itemMap[iKey] = { qty: 0, prod_x_qty: 0, tgt_x_qty: 0, achievSum: 0, achievCount: 0 };
+          if(!itemMap[iKey]) itemMap[iKey] = { qty: 0, prod_x_qty: 0, tgt_x_qty: 0, mpSum: 0, mpCount: 0 };
+          
           itemMap[iKey].qty += r.qty;
           if(r.productivity > 0) itemMap[iKey].prod_x_qty += (r.productivity * r.qty);
           if(r.targetProductivity > 0) itemMap[iKey].tgt_x_qty += (r.targetProductivity * r.qty);
-          if(r.achievement > 0) { itemMap[iKey].achievSum += r.achievement; itemMap[iKey].achievCount++; }
+          if(r.mp > 0) { itemMap[iKey].mpSum += r.mp; itemMap[iKey].mpCount++; }
         });
 
-        // 3. CALCULATE GLOBAL KPIs
-        let activeDays = Object.keys(dailyLineMp).length;
-        let dailyMpSums = 0;
-        Object.values(dailyLineMp).forEach(lines => {
-            let dayTotal = 0;
-            Object.values(lines).forEach(mp => dayTotal += mp);
-            dailyMpSums += dayTotal;
-        });
+        // 3. CALC KPIs
+        let peakMp = 0;
+        Object.values(lineMp).forEach(mp => peakMp += mp);
 
-        let avgDailyMp = activeDays > 0 ? Math.round(dailyMpSums / activeDays) : 0;
-        let avgAchiev = countAchiev > 0 ? (sumAchiev / countAchiev).toFixed(1) : "0.0";
-        let globalActual = totalQty > 0 ? (weightedProdSum / totalQty) : 0;
-        let globalTarget = totalQty > 0 ? (weightedTgtSum / totalQty) : 0;
-        let gap = (globalActual - globalTarget).toFixed(1);
+        let globalActual = totalQty > 0 ? (weightedProdSum / totalQty).toFixed(1) : "0.0";
+        let globalTarget = totalQty > 0 ? (weightedTgtSum / totalQty).toFixed(1) : "0.0";
 
         document.getElementById('summary-kpi-output').innerText = totalQty.toLocaleString();
-        document.getElementById('summary-kpi-achiev').innerText = avgAchiev + '%';
-        document.getElementById('summary-kpi-mp').innerText = avgDailyMp.toLocaleString();
-        
-        let gapEl = document.getElementById('summary-kpi-gap');
-        gapEl.innerText = (gap > 0 ? '+' : '') + gap;
-        gapEl.className = gap >= 0 ? "text-3xl font-bold text-green-500" : "text-3xl font-bold text-red-500";
+        document.getElementById('summary-kpi-mp').innerText = peakMp.toLocaleString();
+        document.getElementById('summary-kpi-actual').innerText = globalActual;
+        document.getElementById('summary-kpi-target').innerText = globalTarget;
 
-        // 4. RENDER TREND CHART
-        let dKeys = Object.keys(dayMap).sort((a,b) => new Date(a) - new Date(b));
-        let cLabels = dKeys;
-        let cQty = dKeys.map(k => dayMap[k].qty);
-        let cAchiev = dKeys.map(k => dayMap[k].achievCount > 0 ? parseFloat((dayMap[k].achievSum / dayMap[k].achievCount).toFixed(1)) : 0);
+        // 4. PREPARE ITEM DATA (Sorted by highest Qty)
+        let sortedItems = Object.keys(itemMap).sort((a, b) => itemMap[b].qty - itemMap[a].qty);
 
-        let mOptions = {
-          chart: { type: 'line', height: 300, toolbar: { show: false }, fontFamily: font },
-          series: [
-            { name: 'Total Output', type: 'column', data: cQty },
-            { name: 'Avg Achievement %', type: 'line', data: cAchiev }
-          ],
-          stroke: { width: [0, 3], curve: 'smooth' },
-          colors: ['#E6EDEB', '#0D5C58'],
-          xaxis: { categories: cLabels },
-          yaxis: [
-            { title: { text: 'Output', style: { color: '#9CA3AF' } } },
-            { opposite: true, title: { text: 'Achievement %', style: { color: '#0D5C58' } }, min: 0 }
-          ],
-          dataLabels: { enabled: false },
-          legend: { position: 'top', horizontalAlign: 'right' }
-        };
-        if(execMonthlyChart) execMonthlyChart.destroy();
-        execMonthlyChart = new ApexCharts(document.querySelector("#chart-summary-trend"), mOptions);
-        execMonthlyChart.render();
-
-        // 5. RENDER ITEM MATRIX TABLE
+        let cLabels = [], cQty = [], cAct = [], cTgt = [];
         const tableBody = document.getElementById('summary-item-table');
         tableBody.innerHTML = '';
-        
-        if (Object.keys(itemMap).length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">No data found for this selection.</td></tr>`;
+
+        if (sortedItems.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">No production recorded for this date.</td></tr>`;
         } else {
-            // Sort by Total Output descending
-            let sortedItems = Object.keys(itemMap).sort((a, b) => itemMap[b].qty - itemMap[a].qty);
-            
             sortedItems.forEach(item => {
                 let d = itemMap[item];
                 let wAct = d.qty > 0 ? (d.prod_x_qty / d.qty).toFixed(1) : "0.0";
                 let wTgt = d.qty > 0 ? (d.tgt_x_qty / d.qty).toFixed(1) : "0.0";
-                let variance = (wAct - wTgt).toFixed(1);
-                let achiev = d.achievCount > 0 ? (d.achievSum / d.achievCount).toFixed(1) : "0.0";
-                
-                let varColor = variance >= 0 ? "text-green-600 font-bold bg-green-50" : "text-red-500 font-bold bg-red-50";
+                let avgMp = d.mpCount > 0 ? Math.round(d.mpSum / d.mpCount) : 0;
 
+                // Push to chart arrays
+                cLabels.push(item);
+                cQty.push(d.qty);
+                cAct.push(parseFloat(wAct));
+                cTgt.push(parseFloat(wTgt));
+
+                // Add Table Row
                 tableBody.innerHTML += `
-                  <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="p-3 font-semibold text-gray-800 truncate max-w-[250px]" title="${item}">${item}</td>
-                    <td class="p-3 text-right font-medium">${d.qty.toLocaleString()}</td>
-                    <td class="p-3 text-right text-enovar font-bold">${wAct}</td>
-                    <td class="p-3 text-right text-gray-500">${wTgt}</td>
-                    <td class="p-3 text-right ${varColor} rounded px-2">${variance > 0 ? '+' : ''}${variance}</td>
-                    <td class="p-3 text-right font-bold text-gray-800">${achiev}%</td>
+                  <tr class="hover:bg-enovar/5 transition-colors">
+                    <td class="p-2 pl-4 font-semibold text-gray-800 truncate max-w-[150px] sm:max-w-[200px]" title="${item}">${item}</td>
+                    <td class="p-2 text-right font-medium">${d.qty.toLocaleString()}</td>
+                    <td class="p-2 text-right text-gray-500">${avgMp}</td>
+                    <td class="p-2 text-right text-enovar font-bold">${wAct}</td>
+                    <td class="p-2 pr-4 text-right text-gray-500 font-bold">${wTgt}</td>
                   </tr>
                 `;
             });
         }
-      }
+
+        // 5. COMBO CHART (Bar + Line + Scatter)
+        let cOptions = {
+          chart: { 
+             height: '100%', 
+             type: 'line', 
+             toolbar: { show: false }, 
+             fontFamily: font,
+             parentHeightOffset: 0
+          },
+          series: [
+            { name: 'Total Qty', type: 'column', data: cQty },
+            { name: 'Actual Prod', type: 'line', data: cAct },
+            { name: 'Target Prod', type: 'scatter', data: cTgt } // Use scatter to render dots for Targets
+          ],
+          stroke: { width: [0, 3, 0], curve: 'smooth' },
+          markers: {
+             size: [0, 4, 6], // Only show markers for Actual Line (4px) and Target Scatter (6px)
+             colors: ['transparent', '#0D5C58', '#EF4444'],
+             strokeColors: '#fff',
+             strokeWidth: 2
+          },
+          colors: ['#E6EDEB', '#0D5C58', '#EF4444'],
+          xaxis: { 
+             categories: cLabels, 
+             labels: { show: false }, // Hide the messy labels, tooltips will handle the names
+             axisBorder: { show: false },
+             axisTicks: { show: false }
+          },
+          yaxis: [
+            { title: { text: 'Volume (Qty)', style: { fontSize: '9px', fontWeight: 700, color: '#9CA3AF' } } },
+            { opposite: true, title: { text: 'Efficiency', style: { fontSize: '9px', fontWeight: 700, color: '#0D5C58' } } },
+            { opposite: true, show: false, min: 0 } // Hide the 3rd axis for scatter, map it dynamically
+          ],
+          dataLabels: { enabled: false },
+          legend: { position: 'top', fontSize: '10px', markers: { radius: 12 } },
+          tooltip: { shared: true, intersect: false },
+          grid: { padding: { top: 0, bottom: 0, left: 10, right: 10 } }
+        };
+
+        if(execMonthlyChart) execMonthlyChart.destroy();
+        execMonthlyChart = new ApexCharts(document.querySelector("#chart-summary-combo"), cOptions);
+        execMonthlyChart.render();
       }
       
 
