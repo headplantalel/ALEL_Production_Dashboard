@@ -164,16 +164,18 @@
   <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-between z-10 relative pt-5 pb-6 md:pt-8 md:pb-10">
     
     <!-- Central Brand Identity -->
-    <div class="w-full flex flex-col items-center justify-center animate-fade-up opacity-0 mb-10">
-      <img src="pulse.png" alt="ALEL Pulse" class="h-[60px] md:h-[80px] object-contain drop-shadow-sm mb-3">
-      <p class="text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-[0.35em] text-center">The Pulse of Production</p>
+    <div class="w-full flex flex-col items-center justify-center animate-fade-up opacity-0 mt-4 mb-10">
+      <!-- Significantly Increased Logo Size -->
+      <img src="pulse.png" alt="ALEL Pulse" class="h-[90px] md:h-[130px] object-contain drop-shadow-sm mb-4">
+      <!-- Improved Tagline: Larger font, tighter tracking, darker color -->
+      <p class="text-[11px] md:text-sm font-bold text-gray-500 uppercase tracking-[0.2em] text-center">The Pulse of Production</p>
     </div>
 
     <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto pb-8">
       
       <!-- Capsule Instruction -->
-      <div class="inline-block bg-white/70 border border-gray-200 backdrop-blur-md rounded-full px-5 py-2 shadow-sm mb-8 animate-fade-up opacity-0 delay-100">
-         <p class="text-xs text-gray-600 font-semibold tracking-wide">Select your authorized workspace to continue</p>
+      <div class="inline-block bg-white/70 border border-gray-200 backdrop-blur-md rounded-full px-6 py-2.5 shadow-sm mb-8 animate-fade-up opacity-0 delay-100">
+         <p class="text-[11px] md:text-xs text-gray-600 font-bold tracking-wide uppercase">Select your authorized workspace</p>
       </div>
 
       <!-- Modernized Selection Cards -->
@@ -186,20 +188,35 @@
           <p class="text-xs text-gray-500 font-medium mb-2">Log real-time shift metrics and production yields.</p>
         </button>
 
+        <!-- Renamed Card -->
         <button onclick="openLogin('dashboard')" class="group relative bg-white/80 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/40 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1">
           <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors">
             <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">Operations Analytics</h3>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Dashboard</h3>
           <p class="text-xs text-gray-500 font-medium mb-2">Live operational analytics and master data insights.</p>
         </button>
       </div>
     </div>
     
-    <!-- Structured Dual-Logo Footer -->
-    <div class="w-full flex justify-between items-end px-6 sm:px-10 animate-fade-up opacity-0 delay-200 mt-auto">
-      <img src="alel.png" alt="ALEL" class="h-[25px] md:h-[30px] object-contain drop-shadow-sm opacity-80">
-      <img src="res.png" alt="RES" class="h-[25px] md:h-[30px] object-contain drop-shadow-sm opacity-80">
+    <!-- Restored Tri-Logo Footer (Grid system ensures perfect width alignment) -->
+    <div class="w-full grid grid-cols-3 items-end px-6 sm:px-10 animate-fade-up opacity-0 delay-200 mt-auto">
+      
+      <!-- Left: ALEL (Strict bounding width) -->
+      <div class="flex justify-start">
+        <img src="alel.png" alt="ALEL" class="w-[80px] md:w-[110px] h-auto object-contain drop-shadow-sm opacity-80">
+      </div>
+      
+      <!-- Center: Enovar (Restored) -->
+      <div class="flex justify-center mb-1">
+        <img src="enovar.png" alt="Enovar" class="h-[18px] md:h-[22px] object-contain drop-shadow-sm opacity-60">
+      </div>
+      
+      <!-- Right: RES (Strict bounding width perfectly matching ALEL) -->
+      <div class="flex justify-end">
+        <img src="res.png" alt="RES" class="w-[80px] md:w-[110px] h-auto object-contain drop-shadow-sm opacity-80">
+      </div>
+      
     </div>
   </div>
 
