@@ -448,10 +448,10 @@
                </div>
            </div>
 
-           <!-- Right Column: Visual Insights -->
+<!-- Right Column: Visual Insights -->
            <div class="flex flex-col gap-2 sm:gap-3 lg:col-span-1 min-h-0 overflow-y-auto">
                
-               <!-- Top Performer Card -->
+               <!-- 1. Top Performer Card -->
                <div class="bg-gradient-to-br from-green-50 to-white p-3 rounded-xl shadow-sm border border-green-200 flex flex-col shrink-0">
                    <h3 class="text-[10px] font-bold text-green-700 uppercase tracking-widest mb-1.5 flex items-center gap-1">
                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
@@ -460,16 +460,16 @@
                    <div id="summary-top-performer" class="text-xs text-gray-700 font-medium">Calculating...</div>
                </div>
 
-               <!-- Target Gauge Chart (DECREASED HEIGHT) -->
-               <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-200 flex flex-col shrink-0 min-h-[60px]">
-                   <h3 class="text-[10px] font-bold text-gray-800 uppercase tracking-widest w-full text-left pl-2 pt-1 z-10">Daily Target Health</h3>
-                   <div id="chart-summary-gauge" class="w-full flex justify-center -mt-4"></div>
-               </div>
-
-               <!-- Line Output Donut (INCREASED HEIGHT) -->
+               <!-- 2. Line Output Donut -->
                <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-200 flex flex-col flex-1 min-h-[250px]">
                    <h3 class="text-[10px] font-bold text-gray-800 uppercase tracking-widest w-full text-left pl-2 pt-1 mb-1">Volume by Line</h3>
                    <div id="chart-summary-donut" class="w-full flex-1 flex justify-center items-center"></div>
+               </div>
+
+               <!-- 3. Target Gauge Chart (FORCED SHORT HEIGHT) -->
+               <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-200 flex flex-col shrink-0 h-[105px] overflow-hidden">
+                   <h3 class="text-[10px] font-bold text-gray-800 uppercase tracking-widest w-full text-left pl-2 pt-1 z-10 relative">Daily Target Health</h3>
+                   <div id="chart-summary-gauge" class="w-full flex justify-center -mt-5"></div>
                </div>
            </div>
         </div>
@@ -754,6 +754,8 @@
     }
 
     function switchDashTab(tab) {
+      if (document.activeElement) document.activeElement.blur(); // FIX: Drops focus to prevent auto-opening date pickers
+      
       activeDashTab = tab;
       ['section', 'master', 'management', 'ai'].forEach(t => {
         let btn = document.getElementById('tab-' + t);
@@ -1648,18 +1650,19 @@
         // FIXED COLOR LOGIC: >= 90% Green, >= 75% Yellow, else Red
         let gaugeColor = pctVal >= 90 ? '#10B981' : pctVal >= 75 ? '#F59E0B' : '#EF4444';
 
-        let gaugeOptions = {
+let gaugeOptions = {
             series: [pctVal],
-            labels: ['Target Achieved'], // <--- This removes "series-1"
-            chart: { type: 'radialBar', height: 160, sparkline: { enabled: true } },
+            labels: ['Target Achieved'],
+            chart: { type: 'radialBar', height: 130, sparkline: { enabled: true } }, // Reduced height heavily
             plotOptions: {
                 radialBar: {
                     startAngle: -90, endAngle: 90,
                     hollow: { size: '60%' },
                     track: { background: '#f3f4f6', strokeWidth: '100%', margin: 0 },
                     dataLabels: {
-                        name: { show: true, fontSize: '9px', fontWeight: 700, color: '#9CA3AF', offsetY: 20 },
-                        value: { offsetY: -5, fontSize: '24px', fontWeight: 800, color: '#374151', formatter: function(val) { return val + "%"; } }
+                        // Pushed name DOWN (offsetY: 25) and value UP (offsetY: -10) to create a clear gap
+                        name: { show: true, fontSize: '9px', fontWeight: 700, color: '#9CA3AF', offsetY: 25 },
+                        value: { offsetY: -10, fontSize: '24px', fontWeight: 800, color: '#374151', formatter: function(val) { return val + "%"; } }
                     }
                 }
             },
