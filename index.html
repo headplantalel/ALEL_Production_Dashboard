@@ -158,9 +158,8 @@
 <body class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
   
   <!-- Ambient High-Contrast Glass Background -->
-  <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-slate-50">
-    <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.75px, transparent 0.75px); background-size: 24px 24px; opacity: 0.03;"></div>
-    
+  <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-slate-200">
+    <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 1px, transparent 1px); background-size: 24px 24px; opacity: 0.06;"></div>
     <!-- Slow pulsing ambient orbs -->
     <div class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-enovar/10 blur-[100px] animate-pulse" style="animation-duration: 8s;"></div>
     <div class="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-blue-100/50 blur-[120px] animate-pulse" style="animation-duration: 12s;"></div>
@@ -1620,14 +1619,29 @@
                     alerts.push({ priority: 2, html: `<div class="p-2 bg-red-50 text-red-700 rounded border border-red-100 shadow-sm"><span class="font-black mr-1">📉 BOTTLENECK:</span> ${d.line} is underperforming on ${d.itemStr}.</div>` });
                 }
 
+                // Calculate achievement percentage and dynamic colors
+                let pct = ratio * 100;
+                let displayPct = pct > 100 ? 100 : pct; // Cap the visual bar at 100%
+                let isGood = pct >= 90;
+                let isWarn = pct >= 75 && pct < 90;
+                let actColor = isGood ? 'text-emerald-600' : isWarn ? 'text-amber-500' : 'text-red-500';
+                let barColor = isGood ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : isWarn ? 'bg-gradient-to-r from-amber-400 to-amber-500' : 'bg-gradient-to-r from-red-400 to-red-500';
+
                 tableBody.innerHTML += `
-                  <tr class="hover:bg-enovar/5 transition-colors border-b border-gray-50">
-                    <td class="p-2 pl-2 sm:pl-4 font-bold text-gray-800 break-words align-top leading-tight text-[10px] sm:text-xs">${d.line}</td>
-                    <td class="p-2 font-medium text-gray-600 break-words align-top leading-tight text-[10px] sm:text-xs">${d.itemStr}</td>
-                    <td class="p-2 text-center font-bold text-gray-700 align-top leading-tight text-[10px] sm:text-xs">${d.mp}</td>
-                    <td class="p-2 text-right font-medium align-top leading-tight text-[10px] sm:text-xs whitespace-nowrap">${d.qty.toLocaleString()}</td>
-                    <td class="p-2 text-right text-enovar font-bold align-top leading-tight text-[10px] sm:text-xs">${wAct}</td>
-                    <td class="p-2 pr-2 sm:pr-4 text-right text-gray-500 font-bold align-top leading-tight text-[10px] sm:text-xs">${wTgt}</td>
+                  <tr class="hover:bg-white/60 transition-colors border-b border-white/50 group">
+                    <td class="p-3 pl-3 sm:pl-5 font-bold text-slate-800 break-words align-middle text-[10px] sm:text-xs">${d.line}</td>
+                    <td class="p-3 font-medium text-slate-600 break-words align-middle text-[10px] sm:text-xs">${d.itemStr}</td>
+                    <td class="p-3 text-center font-bold text-slate-700 align-middle text-[10px] sm:text-xs">${d.mp}</td>
+                    <td class="p-3 text-right font-semibold text-slate-700 align-middle text-[10px] sm:text-xs whitespace-nowrap">${d.qty.toLocaleString()}</td>
+                    <td class="p-3 text-right align-middle">
+                       <div class="flex flex-col items-end gap-1.5">
+                         <span class="font-extrabold ${actColor} text-[10px] sm:text-xs drop-shadow-sm">${wAct}</span>
+                         <div class="w-12 sm:w-16 h-1.5 bg-slate-200/80 rounded-full overflow-hidden shadow-inner" title="${pct.toFixed(1)}% Achieved">
+                           <div class="h-full ${barColor} transition-all duration-1000 ease-out rounded-full" style="width: ${displayPct}%"></div>
+                         </div>
+                       </div>
+                    </td>
+                    <td class="p-3 pr-3 sm:pr-5 text-right text-slate-400 font-bold align-middle text-[10px] sm:text-xs">${wTgt}</td>
                   </tr>
                 `;
             });
