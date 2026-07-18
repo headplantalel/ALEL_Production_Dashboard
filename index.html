@@ -334,8 +334,8 @@
       <!-- Left Side: Logos and Dashboard Title -->
       <div class="flex items-center gap-3 sm:gap-4 shrink-0">
         <img src="pulse.png" alt="ALEL Pulse" class="h-5 sm:h-7 object-contain shrink-0">
-        <span class="hidden sm:block text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] border-l border-white/80 pl-3">The Pulse of Production</span>
-        <div class="w-px h-5 bg-white/80 hidden sm:block shrink-0"></div>
+        <span class="hidden sm:block text-[10px] font-black text-slate-800 uppercase tracking-widest border-l border-slate-300 pl-3 drop-shadow-sm">The Pulse of Production</span>
+        <div class="w-px h-5 bg-slate-300 hidden sm:block shrink-0"></div>
         <span class="text-xs sm:text-sm font-extrabold text-slate-800 tracking-wide flex items-center gap-1.5">
           Dashboard
           <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 live-pulse shrink-0 ml-1 mr-2" title="Live Auto-Sync"></span>
@@ -1621,27 +1621,28 @@
 
                 // Calculate achievement percentage and dynamic colors
                 let pct = ratio * 100;
-                let displayPct = pct > 100 ? 100 : pct; // Cap the visual bar at 100%
+                let displayPct = pct > 100 ? 100 : pct; 
                 let isGood = pct >= 90;
                 let isWarn = pct >= 75 && pct < 90;
-                let actColor = isGood ? 'text-emerald-600' : isWarn ? 'text-amber-500' : 'text-red-500';
-                let barColor = isGood ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : isWarn ? 'bg-gradient-to-r from-amber-400 to-amber-500' : 'bg-gradient-to-r from-red-400 to-red-500';
+                
+                // Deepened the text colors so they remain highly readable over the background fill
+                let actColor = isGood ? 'text-emerald-800' : isWarn ? 'text-amber-800' : 'text-red-800';
+                // Made the background fill soft and translucent
+                let barColor = isGood ? 'bg-emerald-300' : isWarn ? 'bg-amber-300' : 'bg-red-300';
 
                 tableBody.innerHTML += `
                   <tr class="hover:bg-white/60 transition-colors border-b border-white/50 group">
-                    <td class="p-3 pl-3 sm:pl-5 font-bold text-slate-800 break-words align-middle text-[10px] sm:text-xs">${d.line}</td>
-                    <td class="p-3 font-medium text-slate-600 break-words align-middle text-[10px] sm:text-xs">${d.itemStr}</td>
-                    <td class="p-3 text-center font-bold text-slate-700 align-middle text-[10px] sm:text-xs">${d.mp}</td>
-                    <td class="p-3 text-right font-semibold text-slate-700 align-middle text-[10px] sm:text-xs whitespace-nowrap">${d.qty.toLocaleString()}</td>
-                    <td class="p-3 text-right align-middle">
-                       <div class="flex flex-col items-end gap-1.5">
-                         <span class="font-extrabold ${actColor} text-[10px] sm:text-xs drop-shadow-sm">${wAct}</span>
-                         <div class="w-12 sm:w-16 h-1.5 bg-slate-200/80 rounded-full overflow-hidden shadow-inner" title="${pct.toFixed(1)}% Achieved">
-                           <div class="h-full ${barColor} transition-all duration-1000 ease-out rounded-full" style="width: ${displayPct}%"></div>
-                         </div>
+                    <td class="py-2.5 pl-3 sm:pl-5 font-bold text-slate-800 break-words align-middle text-[10px] sm:text-xs">${d.line}</td>
+                    <td class="py-2.5 font-medium text-slate-600 break-words align-middle text-[10px] sm:text-xs">${d.itemStr}</td>
+                    <td class="py-2.5 text-center font-bold text-slate-700 align-middle text-[10px] sm:text-xs">${d.mp}</td>
+                    <td class="py-2.5 text-right font-semibold text-slate-700 align-middle text-[10px] sm:text-xs whitespace-nowrap">${d.qty.toLocaleString()}</td>
+                    <td class="py-2.5 pr-2 text-right align-middle">
+                       <div class="relative inline-flex items-center justify-end min-w-[3.5rem] h-6 px-1.5 rounded overflow-hidden border border-white/50 shadow-sm bg-white/40" title="${pct.toFixed(1)}% Achieved">
+                         <div class="absolute left-0 top-0 h-full ${barColor} opacity-50 transition-all duration-1000 ease-out" style="width: ${displayPct}%"></div>
+                         <span class="relative z-10 font-extrabold ${actColor} text-[10px] sm:text-xs">${wAct}</span>
                        </div>
                     </td>
-                    <td class="p-3 pr-3 sm:pr-5 text-right text-slate-400 font-bold align-middle text-[10px] sm:text-xs">${wTgt}</td>
+                    <td class="py-2.5 pr-3 sm:pr-5 text-right text-slate-400 font-bold align-middle text-[10px] sm:text-xs">${wTgt}</td>
                   </tr>
                 `;
             });
