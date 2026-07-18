@@ -1639,7 +1639,7 @@
         // --- 6. RENDER GAUGE AND DONUT CHARTS ---
         let achievementPct = parseFloat(globalTarget) > 0 ? ((parseFloat(globalActual) / parseFloat(globalTarget)) * 100).toFixed(1) : 0;
         let gaugeOptions = {
-            series: [achievementPct],
+            series: [parseFloat(achievementPct)], // <--- Added parseFloat() here
             chart: { type: 'radialBar', height: 180, sparkline: { enabled: true } },
             plotOptions: {
                 radialBar: {
@@ -1657,10 +1657,17 @@
         let donutOptions = {
             series: Object.values(lineOutput),
             labels: Object.keys(lineOutput),
-            chart: { type: 'donut', height: 160 },
+            chart: { type: 'donut', height: 180 }, // Increased slightly to fit the legend
             plotOptions: { donut: { size: '65%' } },
             dataLabels: { enabled: false },
-            legend: { show: false },
+            legend: { 
+                show: true, 
+                position: 'right', // Puts the legend to the right of the chart
+                fontSize: '10px',
+                fontFamily: 'Inter, sans-serif',
+                markers: { width: 8, height: 8 }, // Makes the color dots a bit smaller
+                itemMargin: { vertical: 2 } // Adds a tiny bit of breathing room between items
+            },
             tooltip: { y: { formatter: function(val) { return val.toLocaleString() + " units"; } } },
             colors: ['#0D5C58', '#13827d', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444', '#10b981']
         };
