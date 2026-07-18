@@ -157,66 +157,70 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 relative overflow-x-hidden selection:bg-enovar selection:text-white text-gray-800">
   
-  <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-    <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.5px, transparent 0.5px); background-size: 20px 20px; opacity: 0.04;"></div>
+  <!-- Ambient High-Contrast Glass Background -->
+  <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-slate-50">
+    <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 0.75px, transparent 0.75px); background-size: 24px 24px; opacity: 0.03;"></div>
+    
+    <!-- Slow pulsing ambient orbs -->
+    <div class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-enovar/10 blur-[100px] animate-pulse" style="animation-duration: 8s;"></div>
+    <div class="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-blue-100/50 blur-[120px] animate-pulse" style="animation-duration: 12s;"></div>
   </div>
 
-  <div id="landing-view" class="w-full flex-1 flex flex-col items-center justify-between z-10 relative pt-5 pb-6 md:pt-8 md:pb-10">
+  <div id="landing-view" class="w-full h-[100dvh] flex flex-col items-center justify-center z-10 relative overflow-hidden">
     
-    <!-- Central Brand Identity -->
-    <div class="w-full flex flex-col items-center justify-center animate-fade-up opacity-0 mt-4 mb-10">
-      <!-- Significantly Increased Logo Size -->
-      <img src="pulse.png" alt="ALEL Pulse" class="h-[90px] md:h-[130px] object-contain drop-shadow-sm mb-4">
-      <!-- Improved Tagline: Larger font, tighter tracking, darker color -->
-      <p class="text-[11px] md:text-sm font-bold text-gray-500 uppercase tracking-[0.2em] text-center">The Pulse of Production</p>
-    </div>
-
-    <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto pb-8">
+    <!-- Central Content Wrapper -->
+    <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center -mt-10 sm:-mt-16">
       
-      <!-- Capsule Instruction -->
-      <div class="inline-block bg-white/70 border border-gray-200 backdrop-blur-md rounded-full px-6 py-2.5 shadow-sm mb-8 animate-fade-up opacity-0 delay-100">
-         <p class="text-[11px] md:text-xs text-gray-600 font-bold tracking-wide uppercase">Select your authorized workspace</p>
+      <!-- Central Brand Identity -->
+      <div class="flex flex-col items-center justify-center animate-fade-up opacity-0 drop-shadow-sm mb-10">
+        <img src="pulse.png" alt="ALEL Pulse" class="h-[90px] md:h-[120px] object-contain mb-6 transition-transform duration-700 hover:scale-105">
+        <p class="text-[10px] md:text-[11px] font-black text-slate-800 uppercase tracking-[0.35em] text-center opacity-90" style="text-shadow: 0 1px 2px rgba(0,0,0,0.03);">The Pulse of Production</p>
       </div>
 
-      <!-- Modernized Selection Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full px-4 animate-fade-up opacity-0 delay-200">
-        <button onclick="openLogin('entry')" class="group relative bg-white/80 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/40 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1">
-          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors">
-            <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+      <!-- Capsule Badge -->
+      <div class="inline-flex items-center justify-center bg-white/50 border border-white/80 backdrop-blur-xl rounded-full px-6 py-2.5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] mb-12 animate-fade-up opacity-0 delay-100">
+         <span class="w-1.5 h-1.5 rounded-full bg-enovar mr-3 animate-pulse"></span>
+         <p class="text-[10px] sm:text-xs text-slate-600 font-bold tracking-widest uppercase">Select Workspace</p>
+      </div>
+
+      <!-- Glassmorphism Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl px-2">
+        
+        <!-- Data Entry Card -->
+        <button onclick="openLogin('entry')" class="group text-left relative bg-white/40 backdrop-blur-2xl rounded-[2rem] p-8 sm:p-10 border border-white hover:border-enovar/30 hover:bg-white/60 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(13,92,88,0.08)] hover:-translate-y-2 animate-fade-up opacity-0 delay-200">
+          <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-enovar/10 group-hover:border-enovar/20 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
+            <svg class="w-6 h-6 text-slate-400 group-hover:text-enovar transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">Data Entry</h3>
-          <p class="text-xs text-gray-500 font-medium mb-2">Log real-time shift metrics and production yields.</p>
+          <h3 class="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight">Data Entry</h3>
+          <p class="text-sm text-slate-500 font-medium leading-relaxed">Log real-time shift metrics, manpower deployments, and production yields with precision.</p>
         </button>
 
-        <!-- Renamed Card -->
-        <button onclick="openLogin('dashboard')" class="group relative bg-white/80 backdrop-blur-lg rounded-2xl p-6 sm:p-8 text-center border border-white/60 hover:border-enovar/40 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1">
-          <div class="w-12 h-12 mx-auto bg-gray-50 group-hover:bg-enovar/10 rounded-full flex items-center justify-center mb-4 transition-colors">
-            <svg class="w-5 h-5 text-gray-500 group-hover:text-enovar transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        <!-- Dashboard Card -->
+        <button onclick="openLogin('dashboard')" class="group text-left relative bg-white/40 backdrop-blur-2xl rounded-[2rem] p-8 sm:p-10 border border-white hover:border-enovar/30 hover:bg-white/60 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(13,92,88,0.08)] hover:-translate-y-2 animate-fade-up opacity-0 delay-300">
+          <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-enovar/10 group-hover:border-enovar/20 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
+            <svg class="w-6 h-6 text-slate-400 group-hover:text-enovar transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">Dashboard</h3>
-          <p class="text-xs text-gray-500 font-medium mb-2">Live operational analytics and master data insights.</p>
+          <h3 class="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight">Dashboard</h3>
+          <p class="text-sm text-slate-500 font-medium leading-relaxed">Access live operational analytics, AI-driven insights, and master data overviews.</p>
         </button>
+
       </div>
     </div>
     
-    <!-- Restored Tri-Logo Footer (Grid system ensures perfect width alignment) -->
-    <div class="w-full grid grid-cols-3 items-end px-6 sm:px-10 animate-fade-up opacity-0 delay-200 mt-auto">
-      
-      <!-- Left: ALEL (Strict bounding width) -->
+    <!-- Absolute Anchored Footer Watermark -->
+    <div class="absolute bottom-0 left-0 w-full grid grid-cols-3 items-end px-6 sm:px-12 pb-6 sm:pb-8 animate-fade-up opacity-0 delay-500 pointer-events-none">
+      <!-- Left: ALEL -->
       <div class="flex justify-start">
-        <img src="alel.png" alt="ALEL" class="w-[80px] md:w-[110px] h-auto object-contain drop-shadow-sm opacity-80">
+        <img src="alel.png" alt="ALEL" class="w-[70px] md:w-[90px] h-auto object-contain opacity-30 mix-blend-multiply grayscale">
       </div>
-      
-      <!-- Center: Enovar (Restored) -->
+      <!-- Center: Enovar -->
       <div class="flex justify-center mb-1">
-        <img src="enovar.png" alt="Enovar" class="h-[18px] md:h-[22px] object-contain drop-shadow-sm opacity-60">
+        <img src="enovar.png" alt="Enovar" class="h-[14px] md:h-[18px] object-contain opacity-30 mix-blend-multiply grayscale">
       </div>
-      
-      <!-- Right: RES (Strict bounding width perfectly matching ALEL) -->
+      <!-- Right: RES -->
       <div class="flex justify-end">
-        <img src="res.png" alt="RES" class="w-[80px] md:w-[110px] h-auto object-contain drop-shadow-sm opacity-80">
+        <img src="res.png" alt="RES" class="w-[70px] md:w-[90px] h-auto object-contain opacity-30 mix-blend-multiply grayscale">
       </div>
-      
     </div>
   </div>
 
