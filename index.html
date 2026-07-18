@@ -460,14 +460,14 @@
                    <div id="summary-top-performer" class="text-xs text-gray-700 font-medium">Calculating...</div>
                </div>
 
-               <!-- Target Gauge Chart -->
-               <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-200 flex flex-col shrink-0 min-h-[140px]">
+               <!-- Target Gauge Chart (DECREASED HEIGHT) -->
+               <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-200 flex flex-col shrink-0 min-h-[120px]">
                    <h3 class="text-[10px] font-bold text-gray-800 uppercase tracking-widest w-full text-left pl-2 pt-1 z-10">Daily Target Health</h3>
-                   <div id="chart-summary-gauge" class="w-full flex justify-center -mt-6"></div>
+                   <div id="chart-summary-gauge" class="w-full flex justify-center -mt-3"></div>
                </div>
 
-               <!-- Line Output Donut -->
-               <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-200 flex flex-col flex-1 min-h-[180px]">
+               <!-- Line Output Donut (INCREASED HEIGHT) -->
+               <div class="bg-white p-2 rounded-xl shadow-sm border border-gray-200 flex flex-col flex-1 min-h-[220px]">
                    <h3 class="text-[10px] font-bold text-gray-800 uppercase tracking-widest w-full text-left pl-2 pt-1 mb-1">Volume by Line</h3>
                    <div id="chart-summary-donut" class="w-full flex-1 flex justify-center items-center"></div>
                </div>
@@ -1638,18 +1638,36 @@
 
         // --- 6. RENDER GAUGE AND DONUT CHARTS ---
         let achievementPct = parseFloat(globalTarget) > 0 ? ((parseFloat(globalActual) / parseFloat(globalTarget)) * 100).toFixed(1) : 0;
+        let baseColor = achievementPct >= 95 ? '#10B981' : achievementPct >= 85 ? '#F59E0B' : '#EF4444';
+        let lightColor = achievementPct >= 95 ? '#34D399' : achievementPct >= 85 ? '#FCD34D' : '#F87171';
+
         let gaugeOptions = {
-            series: [parseFloat(achievementPct)], // <--- Added parseFloat() here
-            chart: { type: 'radialBar', height: 180, sparkline: { enabled: true } },
+            series: [parseFloat(achievementPct)],
+            chart: { type: 'radialBar', height: 160, sparkline: { enabled: true } },
             plotOptions: {
                 radialBar: {
                     startAngle: -90, endAngle: 90,
-                    track: { background: '#e5e7eb', strokeWidth: '97%', margin: 5, dropShadow: { enabled: true, top: 2, left: 0, opacity: 0.1 } },
-                    dataLabels: { name: { show: false }, value: { offsetY: -2, fontSize: '20px', fontWeight: 800, formatter: function(val) { return val + "%"; } } }
+                    hollow: { size: '60%' },
+                    track: { 
+                        background: '#f3f4f6', 
+                        strokeWidth: '100%', 
+                        margin: 0, 
+                        dropShadow: { enabled: true, top: 0, left: 0, blur: 3, opacity: 0.1 } 
+                    },
+                    dataLabels: { 
+                        name: { show: true, fontSize: '9px', fontWeight: 700, color: '#9CA3AF', offsetY: 18, text: 'ACHIEVED' }, 
+                        value: { offsetY: -5, fontSize: '24px', fontWeight: 800, color: '#374151', formatter: function(val) { return val + "%"; } } 
+                    }
                 }
             },
-            fill: { type: 'solid', colors: [achievementPct >= 95 ? '#10B981' : achievementPct >= 85 ? '#F59E0B' : '#EF4444'] }
+            fill: { 
+                type: 'gradient',
+                gradient: { shade: 'light', type: 'horizontal', shadeIntensity: 0.5, gradientToColors: [baseColor], inverseColors: true, opacityFrom: 1, opacityTo: 1, stops: [0, 100] }
+            },
+            stroke: { lineCap: 'round' },
+            colors: [lightColor]
         };
+        
         if(window.summaryGaugeChart) window.summaryGaugeChart.destroy();
         window.summaryGaugeChart = new ApexCharts(document.querySelector("#chart-summary-gauge"), gaugeOptions);
         window.summaryGaugeChart.render();
@@ -1657,20 +1675,21 @@
         let donutOptions = {
             series: Object.values(lineOutput),
             labels: Object.keys(lineOutput),
-            chart: { type: 'donut', height: 180 }, // Increased slightly to fit the legend
+            chart: { type: 'donut', height: 230 }, // Increased from 180 to fill the new space
             plotOptions: { donut: { size: '65%' } },
             dataLabels: { enabled: false },
             legend: { 
                 show: true, 
-                position: 'right', // Puts the legend to the right of the chart
+                position: 'bottom', // Moved to bottom since we gave it more vertical room
                 fontSize: '10px',
                 fontFamily: 'Inter, sans-serif',
-                markers: { width: 8, height: 8 }, // Makes the color dots a bit smaller
-                itemMargin: { vertical: 2 } // Adds a tiny bit of breathing room between items
+                markers: { width: 8, height: 8 },
+                itemMargin: { vertical: 2, horizontal: 5 }
             },
             tooltip: { y: { formatter: function(val) { return val.toLocaleString() + " units"; } } },
             colors: ['#0D5C58', '#13827d', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444', '#10b981']
         };
+        
         if(window.summaryDonutChart) window.summaryDonutChart.destroy();
         window.summaryDonutChart = new ApexCharts(document.querySelector("#chart-summary-donut"), donutOptions);
         window.summaryDonutChart.render();
