@@ -934,12 +934,15 @@
          if(dashFilters['sec_zone']) document.getElementById('filter-section').value = dashFilters['sec_zone'];
          if(dashFilters['sec_date']) document.getElementById('filter-date').value = dashFilters['sec_date'];
          
-         if(fpSection) fpSection.destroy(); // Kill ghost instance
+         if(fpSection) fpSection.destroy(); 
          fpSection = flatpickr("#filter-date", {
             dateFormat: "M d, Y", 
-            disableMobile: true, // Prevents mobile focus bugs
+            disableMobile: true, 
             enable: Array.from(dates).map(dateStr => new Date(dateStr)), 
-            onChange: function() { renderDashboard(); }
+            onChange: function(selectedDates, dateStr, instance) { 
+               renderDashboard(); 
+               instance.element.blur(); // Forces the browser to drop focus after selection
+            }
          });
       }
       
@@ -947,17 +950,19 @@
          if(dashFilters['mgt_zone']) document.getElementById('filter-section-summary').value = dashFilters['mgt_zone'];
          if(dashFilters['mgt_date']) document.getElementById('filter-date-summary').value = dashFilters['mgt_date'];
          
-         if(fpSummary) fpSummary.destroy(); // Kill ghost instance
+if(fpSummary) fpSummary.destroy(); 
          fpSummary = flatpickr("#filter-date-summary", {
             dateFormat: "M d, Y",
             disableMobile: true,
             enable: Array.from(dates).map(dateStr => new Date(dateStr)), 
             onReady: function(selectedDates, dateStr, instance) {
-               // FIX: Instantly blur the element to stop it from auto-opening on tab switch
                instance.element.blur();
                setTimeout(() => instance.close(), 10);
             },
-            onChange: function() { renderDashboard(); }
+            onChange: function(selectedDates, dateStr, instance) { 
+               renderDashboard(); 
+               instance.element.blur(); // Forces the browser to drop focus after selection
+            }
          });
       }
       
