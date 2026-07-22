@@ -536,8 +536,13 @@
     let masterAuthData = null; 
     let rawDashboardData = []; 
     let activeDashTab = localStorage.getItem('activeDashTab') || 'section';
-    let dashFilters = JSON.parse(localStorage.getItem('dashFilters')) || {};
-    let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
+let dashFilters = JSON.parse(localStorage.getItem('dashFilters')) || {};
+
+// NEW: Clear dates on a hard refresh so they always default back to today
+delete dashFilters.sec_date;
+delete dashFilters.mgt_date;
+
+let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     let fpSection = null; // Flatpickr Instance 1
     let fpSummary = null; // Flatpickr Instance 2
     let syncTimer = null; 
