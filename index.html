@@ -518,7 +518,7 @@
            </div>
 
            <div class="p-4 bg-white/40 backdrop-blur-md border-t border-white shrink-0 flex gap-2 items-center">
-              <input type="text" id="ai-chat-input" placeholder="Ask about your data..." class="flex-1 bg-white/60 backdrop-blur-sm border border-white rounded-xl px-4 py-3 text-sm outline-none focus:border-enovar focus:ring-2 focus:ring-enovar/20 transition-all shadow-inner" onkeypress="if(event.key === 'Enter') sendAIMessage()">
+              <input type="text" id="ai-chat-input" placeholder="Ask about your data..." class="flex-1 bg-white/60 backdrop-blur-sm border border-white rounded-xl px-4 py-3 text-sm outline-none focus:border-enovar focus:ring-2 focus:ring-enovar/20 transition-all shadow-inner" onkeydown="if(event.key === 'Enter') sendAIMessage()">
               <button onclick="sendAIMessage()" id="ai-send-btn" class="bg-enovar hover:bg-enovar-dark text-white px-6 py-3 rounded-xl text-sm font-bold shadow-md transition-all flex items-center gap-1">
                  Send
               </button>
@@ -1786,7 +1786,7 @@ let gaugeOptions = {
       const btn = document.getElementById('ai-send-btn');
       const message = inputEl.value.trim();
       
-      if (!message || !rawDashboardData || rawDashboardData.length === 0) return;
+      if (!message) return;
       
       // Add User Message to History & Local Storage
       aiChatHistory.push({ role: "user", text: message });
