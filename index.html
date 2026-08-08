@@ -755,7 +755,19 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     }
 
     function fetchDashboardData(isInitialLoad) {
-      callAPI({ action: "getDashboardRawData" }, function(data) {
+      var payload = { action: "getDashboardRawData" };
+      
+      // Send active tab's date filter to reduce server payload on sync
+      // Only for Section/Management tabs — Analytics/AI need full data
+      if (activeDashTab === 'section') {
+        var d = document.getElementById('filter-date');
+        if (d && d.value) { payload.startDate = d.value; payload.endDate = d.value; }
+      } else if (activeDashTab === 'management') {
+        var d = document.getElementById('filter-date-summary');
+        if (d && d.value) { payload.startDate = d.value; payload.endDate = d.value; }
+      }
+      
+      callAPI(payload, function(data) {
         if(isInitialLoad) document.getElementById('loader').classList.add('hidden');
         if (data.error) return; 
         rawDashboardData = data.raw; 
