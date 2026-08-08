@@ -288,6 +288,10 @@
           <input type="number" id="production" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
         </div>
       </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Remarks <span class="text-gray-400 font-normal lowercase">(optional)</span></label>
+        <input type="text" id="remarks" placeholder="e.g. Machine breakdown, material shortage..." class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
+      </div>
       <div class="pt-3">
         <button type="submit" id="submitBtn" class="w-full bg-enovar hover:bg-enovar-dark text-white font-semibold text-sm py-3 rounded-xl transition-all shadow-md hover:shadow-lg">Submit Entry</button>
         <button type="button" onclick="openHistory()" class="w-full bg-white/80 hover:bg-gray-50 text-enovar border border-gray-200 font-semibold text-sm py-2.5 rounded-xl mt-2.5 transition-all shadow-sm">View My Past Entries</button>
@@ -526,7 +530,7 @@
          </div>
       </div>
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1JVBildGg7_O1TRmzEFPOCmjYDbndFHNgI0D686FV-EOOl8C0TAj9cp29ZXFu-X_ugQ/exec"; 
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySvJJNmD5qxydPuYbOQRCAGgodjnkaxqZy8Xh5TUD0OuI0CpB08Cmjr7RtU7w1s4_jZQ/exec"; 
     
     let tsItem, tsLine, tsTime;
     let tsDashItem, tsDashVisibleCharts; 
@@ -725,12 +729,13 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       if (!confirm("Submit this production data?")) return;
       
       const btn = document.getElementById('submitBtn'); btn.innerText = 'Submitting...';
-      const formData = { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal };
+      const remarksVal = document.getElementById('remarks').value;
+      const formData = { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal, remarks: remarksVal };
       
       callAPI({ action: "submit", email: currentUser.email, formData: formData }, function(data) {
         btn.innerText = 'Submit Entry';
         if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
-          document.getElementById('manpower').value = ''; document.getElementById('production').value = '';
+          document.getElementById('manpower').value = ''; document.getElementById('production').value = ''; document.getElementById('remarks').value = '';
           tsItem.clear(); tsLine.clear(); tsTime.clear();
           document.getElementById('successMsg').classList.remove('hidden');
           setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3000);
@@ -1076,9 +1081,10 @@ if(fpSummary) fpSummary.destroy();
           
           lineItemData[key].times[t].qty += row.qty;
           lineItemData[key].times[t].mp += row.mp;
-          lineItemData[key].times[t].act += row.productivity;
+           lineItemData[key].times[t].act += row.productivity;
           lineItemData[key].times[t].tgt += row.targetProductivity;
           lineItemData[key].times[t].count++;
+          if (row.remarks) lineItemData[key].times[t].remarks = row.remarks;
         });
 
         let visListHtml = '';
@@ -1100,7 +1106,8 @@ if(fpSummary) fpSummary.destroy();
           let actData = [], targetArr = [], qtyArr = [], mpArr = [];
           let hasData = false, latestTarget = 0;
           
-          let lastValidTime = "N/A", lastQty = 0, lastMp = 0, lastAct = 0, lastTgt = 0;
+           let lastValidTime = "N/A", lastQty = 0, lastMp = 0, lastAct = 0, lastTgt = 0;
+          let revRemarks = [];
 
           sortedTimes.forEach(t => {
             let cell = lineItemData[key].times[t];
@@ -1123,20 +1130,21 @@ if(fpSummary) fpSummary.destroy();
                    targetArr.push(expectedQty);
                }
                
-               if(tgt > 0) latestTarget = tgt; 
-               qtyArr.push(cell.qty); mpArr.push(cell.mp);
+                if(tgt > 0) latestTarget = tgt; 
+               qtyArr.push(cell.qty); mpArr.push(cell.mp); revRemarks.push(cell.remarks || '');
                hasData = true;
             } else {
-               actData.push(null); targetArr.push(0); qtyArr.push(0); mpArr.push(0);
+               actData.push(null); targetArr.push(0); qtyArr.push(0); mpArr.push(0); revRemarks.push('');
             }
           });
           if (!hasData) return;
 
-          let revTimes = [...sortedTimes].reverse(); 
-          let revActData = [...actData].reverse();
-          let revTargetArr = [...targetArr].reverse();
-          let revQtyArr = [...qtyArr].reverse();
-          let revMpArr = [...mpArr].reverse();
+           let revTimes = [...sortedTimes].reverse(); 
+           let revActData = [...actData].reverse();
+           let revTargetArr = [...targetArr].reverse();
+           let revQtyArr = [...qtyArr].reverse();
+           let revMpArr = [...mpArr].reverse();
+           revRemarks = revRemarks.reverse();
 
           let barColors = [];
           let seriesData = revTimes.map((t, i) => {
@@ -1148,13 +1156,14 @@ if(fpSummary) fpSummary.destroy();
              
              barColors.push(isUnderperforming ? '#EF4444' : '#0D5C58');
 
-             return {
-                 x: getOrdinal(sortedTimes.indexOf(t) + 1), 
-                 y: actVal,
-                 realTime: t,
-                 qty: revQtyArr[i],
-                 mp: revMpArr[i],
-                 target: tgtForThisHour,
+              return {
+                  x: getOrdinal(sortedTimes.indexOf(t) + 1), 
+                  y: actVal,
+                  realTime: t,
+                  qty: revQtyArr[i],
+                  mp: revMpArr[i],
+                  remarks: revRemarks[i] || '',
+                  target: tgtForThisHour,
                  // ONLY add individual bar markers if we are in Quantity mode
                  goals: (currentMetric === 'quantity' && tgtForThisHour > 0) ? [{
                      name: 'Target',
@@ -1261,6 +1270,29 @@ if(fpSummary) fpSummary.destroy();
               }
           }
 
+          // Blue dot indicators for bars that have remarks
+          let remarksAnnotations = [];
+          seriesData.forEach((d, i) => {
+            if (d.remarks && d.remarks.trim()) {
+              remarksAnnotations.push({
+                x: d.y + (currentMetric === 'quantity' ? maxAct * 0.03 : 1),
+                y: d.x,
+                marker: {
+                  size: 7,
+                  fillColor: '#3B82F6',
+                  strokeColor: '#fff',
+                  strokeWidth: 1.5,
+                  radius: 3
+                },
+                label: {
+                  text: '',
+                  borderColor: 'transparent',
+                  style: { background: 'transparent' }
+                }
+              });
+            }
+          });
+
           let options = {
             chart: { 
                type: 'bar', height: chartHeight, toolbar: { show: false }, zoom: {enabled: false}, 
@@ -1321,8 +1353,8 @@ if(fpSummary) fpSummary.destroy();
                      style: {color: '#fff', background: '#475569'} 
                   } 
                }] : [],
-               // INJECT the grouped quantity labels here
-               points: qtyAnnotations
+                // INJECT the grouped quantity labels here + blue dot remarks
+                points: qtyAnnotations.concat(remarksAnnotations)
             },
             tooltip: {
               enabled: true,
@@ -1341,11 +1373,17 @@ if(fpSummary) fpSummary.destroy();
                       dynamicMetricHTML = `<div style="margin-bottom: 2px;">Prod Qty: <span style="color: #60A5FA;">${data.qty}</span></div>`;
                   }
                   
-                  return `<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; background: #1F2937; color: white; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                      <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #374151; color: #9CA3AF; font-size: 10px; text-transform: uppercase;">Time Slot: ${data.realTime}</div>
-                      ${dynamicMetricHTML}
-                      <div>Manpower: <span style="color: #F87171;">${data.mp}</span></div>
-                  </div>`;
+                   let remarksHTML = '';
+                   if (data.remarks && data.remarks.trim()) {
+                     remarksHTML = `<div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid #374151; color: #93C5FD; font-size: 10px; font-style: italic;">💬 ${data.remarks}</div>`;
+                   }
+                   
+                   return `<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; background: #1F2937; color: white; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                       <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #374151; color: #9CA3AF; font-size: 10px; text-transform: uppercase;">Time Slot: ${data.realTime}</div>
+                       ${dynamicMetricHTML}
+                       <div>Manpower: <span style="color: #F87171;">${data.mp}</span></div>
+                       ${remarksHTML}
+                   </div>`;
               }
             }
               };
@@ -1891,8 +1929,9 @@ let gaugeOptions = {
             </div>
             <div class="mt-1 text-[11px] font-bold text-enovar bg-enovar/5 px-3 py-1.5 rounded-lg inline-block border border-enovar/10">
               Qty: <span id="qty-val-${entry.rowIndex}" class="text-gray-900">${entry.qty}</span> <span class="mx-1 text-enovar/20">|</span> 
-              MP: <span id="mp-val-${entry.rowIndex}" class="text-gray-900">${entry.manpower}</span>
+               MP: <span id="mp-val-${entry.rowIndex}" class="text-gray-900">${entry.manpower}</span>
             </div>
+            ${entry.remarks ? `<div class="mt-2 text-[10px] text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100 italic">💬 ${entry.remarks}</div>` : ''}
           </div>
           <div class="flex flex-row sm:flex-col gap-2 w-full sm:w-auto mt-2 sm:mt-0">
             <button onclick="handleEdit(${entry.rowIndex}, ${index}, '${selectedDate}')" class="flex-1 sm:flex-none bg-white border border-gray-200 text-gray-600 text-[10px] font-bold py-2 px-4 rounded-lg shadow-sm">Edit</button>
