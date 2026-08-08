@@ -20,7 +20,15 @@
 <meta name="twitter:url" content="https://alelpulse.vercel.app/">
 <meta name="twitter:title" content="Alel Pulse">
 <meta name="twitter:description" content="Real-Time Production Telemetry & Analytics.">
-<meta name="twitter:image" content="https://alelpulse.vercel.app/prev.png">
+  <meta name="twitter:image" content="https://alelpulse.vercel.app/prev.png">
+  
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0D5C58">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ALEL Pulse">
+  <link rel="apple-touch-icon" href="pulse.png">
   
   <title>ALEL Pulse</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -371,6 +379,9 @@
           <button id="tab-ai" onclick="switchDashTab('ai')" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap flex items-center gap-1">
             <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> AI Insights
           </button>
+          <button id="tab-floor" onclick="switchDashTab('floor')" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path></svg> Live Floor
+          </button>
         </div>
 
         <div id="filter-container" class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end"></div>
@@ -444,9 +455,13 @@
            <!-- Left Column -->
            <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-2 min-h-[400px] lg:min-h-0">
                <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-[250px] overflow-hidden">
-                  <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md z-20">
+                   <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md z-20 flex justify-between items-center">
                      <h3 class="text-[10px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Daily Item Matrix</h3>
-                  </div>
+                     <button onclick="exportCSV()" class="text-[9px] font-bold text-white bg-enovar hover:bg-enovar-dark px-3 py-1 rounded-lg transition-colors shadow-sm flex items-center gap-1">
+                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                       CSV
+                     </button>
+                   </div>
                   <div class="flex-1 overflow-y-auto p-0 m-0 bg-white/20">
                      <table class="w-full text-left border-collapse text-[10px] sm:text-xs">
                        <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm border-b border-white">
@@ -477,10 +492,18 @@
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
                       Star Performer
                    </h3>
-                   <div id="summary-top-performer" class="text-xs text-slate-700 font-medium">Calculating...</div>
-               </div>
+                    <div id="summary-top-performer" class="text-xs text-slate-700 font-medium">Calculating...</div>
+                </div>
 
-               <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-[250px] transition-transform hover:-translate-y-1">
+                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 transition-transform hover:-translate-y-1 max-h-[280px]">
+                    <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-2 flex items-center gap-1.5">
+                       <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                       Line Ranking
+                    </h3>
+                    <div id="summary-line-ranking" class="flex-1 overflow-y-auto space-y-1.5 pr-2 text-[10px]"></div>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-[250px] transition-transform hover:-translate-y-1">
                    <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-1">Volume by Line</h3>
                    <div id="chart-summary-donut" class="w-full flex-1 flex justify-center items-center"></div>
                </div>
@@ -528,7 +551,15 @@
               </button>
            </div>
          </div>
+       </div>
+
+      <!-- LIVE FLOOR VIEW -->
+      <div id="view-floor" class="w-full hidden max-w-7xl mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" id="floor-gauges-grid">
+        </div>
+        <div id="floor-empty-msg" class="hidden text-center text-gray-500 py-10 font-medium">No data for today.</div>
       </div>
+
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySvJJNmD5qxydPuYbOQRCAGgodjnkaxqZy8Xh5TUD0OuI0CpB08Cmjr7RtU7w1s4_jZQ/exec"; 
     
@@ -784,8 +815,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     function switchDashTab(tab) {
       if (document.activeElement) document.activeElement.blur(); // FIX: Drops focus to prevent auto-opening date pickers
       
-      activeDashTab = tab;
-      ['section', 'master', 'management', 'ai'].forEach(t => {
+       activeDashTab = tab;
+      ['section', 'master', 'management', 'ai', 'floor'].forEach(t => {
         let btn = document.getElementById('tab-' + t);
         let view = document.getElementById('view-' + t);
         if(t === tab) {
@@ -811,7 +842,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         if (tab === 'ai') {
           scrollContainer.classList.remove('pb-16');
           mobileFooter.classList.add('hidden');
-        } else if (tab === 'management') {
+        } else if (tab === 'management' || tab === 'floor') {
           // HYBRID: Scroll on Mobile (overflow-y-auto), Lock on Desktop (sm:overflow-hidden)
           scrollContainer.classList.remove('pb-16');
           scrollContainer.classList.add('overflow-y-auto', 'sm:overflow-hidden', 'flex', 'flex-col');
@@ -940,7 +971,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           </div>
           <div class="w-full md:w-[300px]"><select id="filter-item" placeholder="Search Item..."></select></div>
         `;
-      } else if (activeDashTab === 'management') {
+       } else if (activeDashTab === 'management') {
          html = `
           <select id="filter-section-summary" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
             <option value="all">All Sections</option>
@@ -948,6 +979,10 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           </select>
           <input type="text" id="filter-date-summary" value="${todayStr}" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm cursor-pointer w-28 text-center bg-white" readonly>
          `;
+      } else if (activeDashTab === 'floor') {
+        html = `<span class="text-[10px] font-bold text-enovar bg-enovar/10 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Live — Today, Current Hour
+        </span>`;
       }
       container.innerHTML = html;
       
@@ -1725,6 +1760,33 @@ if(fpSummary) fpSummary.destroy();
             alerts.sort((a, b) => a.priority - b.priority).forEach(alert => { alertsList.innerHTML += alert.html; });
         }
 
+        // LINE RANKING BOARD
+        var lineRankings = {};
+        sortedKeys.forEach(function(key) {
+            var d = itemMap[key];
+            if (!lineRankings[d.line]) lineRankings[d.line] = { qty: 0, mp: 0, prod_x_qty: 0, tgt_x_qty: 0 };
+            lineRankings[d.line].qty += d.qty;
+            lineRankings[d.line].mp = Math.max(lineRankings[d.line].mp, d.mp);
+            lineRankings[d.line].prod_x_qty += d.prod_x_qty;
+            lineRankings[d.line].tgt_x_qty += d.tgt_x_qty;
+        });
+        var rankedLines = Object.entries(lineRankings).map(function(e) {
+            var l = e[1];
+            var act = l.qty > 0 ? (l.prod_x_qty / l.qty) : 0;
+            var tgt = l.qty > 0 ? (l.tgt_x_qty / l.qty) : 0;
+            var ach = tgt > 0 ? (act / tgt * 100) : 0;
+            return { line: e[0], qty: l.qty, act: act, tgt: tgt, ach: ach };
+        }).sort(function(a, b) { return b.ach - a.ach; });
+        
+        var rankHTML = '';
+        var medals = ['🥇','🥈','🥉'];
+        rankedLines.forEach(function(line, i) {
+            var barW = Math.min(line.ach, 100);
+            var barColor = barW >= 90 ? 'bg-emerald-400' : barW >= 75 ? 'bg-amber-400' : 'bg-red-400';
+            rankHTML += '<div class="flex items-center gap-2"><span class="font-black text-gray-400 w-5 text-right text-[9px]">' + (i < 3 ? medals[i] : (i+1)) + '</span><div class="flex-1 min-w-0"><div class="flex justify-between items-center mb-0.5"><span class="font-bold text-slate-700 truncate text-[10px]">' + line.line + '</span><span class="font-black ' + (barW >= 90 ? 'text-emerald-600' : barW >= 75 ? 'text-amber-600' : 'text-red-500') + ' text-[10px] ml-1 shrink-0">' + line.ach.toFixed(0) + '%</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="h-2 rounded-full ' + barColor + '" style="width:' + barW + '%"></div></div></div></div>';
+        });
+        document.getElementById('summary-line-ranking').innerHTML = rankHTML || '<div class="text-gray-400 text-center py-2">No data</div>';
+
 // --- 6. RENDER GAUGE AND DONUT CHARTS ---
         let achievementPct = parseFloat(globalTarget) > 0 ? ((parseFloat(globalActual) / parseFloat(globalTarget)) * 100).toFixed(1) : 0;
         let pctVal = parseFloat(achievementPct);
@@ -1778,6 +1840,84 @@ let gaugeOptions = {
         if(window.summaryDonutChart) window.summaryDonutChart.destroy();
         window.summaryDonutChart = new ApexCharts(document.querySelector("#chart-summary-donut"), donutOptions);
         window.summaryDonutChart.render();
+      }
+
+      // LIVE FLOOR TAB — Per-line gauges showing current hour achievement
+      if (activeDashTab === 'floor') {
+        const floorGrid = document.getElementById('floor-gauges-grid');
+        const emptyMsg = document.getElementById('floor-empty-msg');
+        
+        var now = new Date();
+        var currentHour = now.getHours();
+        var timeSlots = masterAuthData && masterAuthData.times ? masterAuthData.times : [];
+        var currentSlot = '';
+        timeSlots.forEach(function(ts) {
+          var parts = ts.match(/(\d+)\s*AM|PM/);
+          if (parts && parseInt(parts[1]) === (currentHour > 12 ? currentHour - 12 : currentHour)) {
+            if (!currentSlot) currentSlot = ts;
+          }
+        });
+        if (!currentSlot && timeSlots.length > 0) currentSlot = timeSlots[timeSlots.length - 1];
+
+        var todayStr = Utilities_formatDateClient(now);
+        var todayData = rawDashboardData.filter(function(r) { return r.date === todayStr && r.time.trim() === currentSlot; });
+        
+        if (todayData.length === 0) {
+          emptyMsg.classList.remove('hidden');
+          floorGrid.innerHTML = '';
+        } else {
+          emptyMsg.classList.add('hidden');
+          
+          var lineGauge = {};
+          todayData.forEach(function(r) {
+            if (!lineGauge[r.line]) lineGauge[r.line] = { qty: 0, mp: 0, prod: 0, tgt: 0, count: 0, remarks: [] };
+            lineGauge[r.line].qty += r.qty;
+            lineGauge[r.line].mp += r.mp;
+            lineGauge[r.line].prod += r.productivity;
+            lineGauge[r.line].tgt += r.targetProductivity;
+            lineGauge[r.line].count++;
+            if (r.remarks) lineGauge[r.line].remarks.push(r.remarks);
+          });
+          
+          var gaugeHtml = '';
+          Object.entries(lineGauge).sort(function(a,b) { return a[0].localeCompare(b[0]); }).forEach(function(e) {
+            var l = e[1];
+            var avgProd = l.count > 0 ? (l.prod / l.count) : 0;
+            var avgTgt = l.count > 0 ? (l.tgt / l.count) : 0;
+            var ach = avgTgt > 0 ? Math.min((avgProd / avgTgt) * 100, 100) : 0;
+            var color = ach >= 90 ? '#10B981' : ach >= 75 ? '#F59E0B' : '#EF4444';
+            var hasRemarks = l.remarks.length > 0;
+            gaugeHtml += '<div class="bg-white/60 backdrop-blur-xl p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center transition-transform hover:-translate-y-1 relative">' +
+              (hasRemarks ? '<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-500" title="' + l.remarks.join('; ') + '"></span>' : '') +
+              '<span class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-2 text-center truncate w-full">' + e[0] + '</span>' +
+              '<div id="floor-gauge-' + e[0].replace(/[^a-zA-Z0-9]/g, '_') + '" class="w-full" style="height:100px"></div>' +
+              '<div class="flex gap-3 text-[9px] font-bold mt-1"><span class="text-enovar">Q: ' + l.qty + '</span><span class="text-red-500">M: ' + l.mp + '</span><span class="text-slate-600">P: ' + avgProd.toFixed(1) + '</span></div>' +
+              '</div>';
+          });
+          floorGrid.innerHTML = gaugeHtml;
+          
+          setTimeout(function() {
+            Object.entries(lineGauge).forEach(function(e) {
+              var l = e[1];
+              var avgProd = l.count > 0 ? (l.prod / l.count) : 0;
+              var avgTgt = l.count > 0 ? (l.tgt / l.count) : 0;
+              var ach = avgTgt > 0 ? Math.min((avgProd / avgTgt) * 100, 100) : 0;
+              var color = ach >= 90 ? '#10B981' : ach >= 75 ? '#F59E0B' : '#EF4444';
+              var gaugeId = 'floor-gauge-' + e[0].replace(/[^a-zA-Z0-9]/g, '_');
+              var el = document.getElementById(gaugeId);
+              if (!el) return;
+              var opt = {
+                series: [Math.round(ach)],
+                chart: { type: 'radialBar', height: 100, sparkline: { enabled: true } },
+                plotOptions: { radialBar: { startAngle: -90, endAngle: 90, hollow: { size: '55%' }, track: { background: '#f3f4f6' },
+                  dataLabels: { name: { show: false }, value: { fontSize: '14px', fontWeight: 800, color: '#374151', formatter: function(v) { return v + '%'; } } } } },
+                fill: { colors: [color] }, stroke: { lineCap: 'round' }
+              };
+              var chart = new ApexCharts(el, opt);
+              chart.render();
+            });
+          }, 100);
+        }
       }
     }
 
@@ -1964,9 +2104,49 @@ let gaugeOptions = {
       });
     }
 
+    function exportCSV() {
+      var rows = [['Line', 'Item', 'MP', 'Qty', 'Actual', 'Target', 'Achievement %']];
+      var table = document.getElementById('summary-item-table');
+      if (!table) return;
+      var trs = table.querySelectorAll('tr');
+      trs.forEach(function(tr) {
+        var tds = tr.querySelectorAll('td');
+        if (tds.length < 6) return;
+        var achievementText = tds[4].querySelector('span') ? tds[4].querySelector('span').getAttribute('title') || '' : '';
+        rows.push([
+          tds[0].innerText.trim(),
+          tds[1].innerText.trim(),
+          tds[2].innerText.trim(),
+          tds[3].innerText.trim(),
+          tds[4].innerText.trim(),
+          tds[5].innerText.trim(),
+          achievementText
+        ]);
+      });
+      var csv = rows.map(function(r) { return r.map(function(c) { return '"' + (c || '').replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+      var blob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      var dateVal = document.getElementById('filter-date-summary') ? document.getElementById('filter-date-summary').value.replace(/[^a-zA-Z0-9]/g, '_') : 'report';
+      a.download = 'ALEL_Pulse_Daily_' + dateVal + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
     function callAPI(payload, callback) {
       fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
       .then(res => res.json()).then(data => callback(data)).catch(err => { console.error(err); });
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(reg) {
+          console.log('SW registered:', reg.scope);
+        }).catch(function(err) {
+          console.log('SW failed:', err);
+        });
+      });
     }
   </script>
 </body>
