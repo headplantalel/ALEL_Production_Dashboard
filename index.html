@@ -1842,25 +1842,27 @@ let gaugeOptions = {
         window.summaryDonutChart.render();
       }
 
-      // LIVE FLOOR TAB — Per-line gauges showing current hour achievement
+       // LIVE FLOOR TAB — Per-line gauges showing current hour achievement
       if (activeDashTab === 'floor') {
         const floorGrid = document.getElementById('floor-gauges-grid');
         const emptyMsg = document.getElementById('floor-empty-msg');
         
         var now = new Date();
-        var currentHour = now.getHours();
+        var h24 = now.getHours();
+        var h12 = h24 % 12; if (h12 === 0) h12 = 12;
+        var ampm = h24 < 12 ? 'AM' : 'PM';
+        var targetStr = (h12 < 10 ? '0' : '') + h12 + ' ' + ampm;
+
         var timeSlots = masterAuthData && masterAuthData.times ? masterAuthData.times : [];
         var currentSlot = '';
-        timeSlots.forEach(function(ts) {
-          var parts = ts.match(/(\d+)\s*AM|PM/);
-          if (parts && parseInt(parts[1]) === (currentHour > 12 ? currentHour - 12 : currentHour)) {
-            if (!currentSlot) currentSlot = ts;
-          }
-        });
-        if (!currentSlot && timeSlots.length > 0) currentSlot = timeSlots[timeSlots.length - 1];
+        if (timeSlots.length > 0) {
+          timeSlots.forEach(function(ts) { if (ts.indexOf(targetStr) !== -1) currentSlot = ts; });
+          if (!currentSlot) currentSlot = timeSlots[0]; // fallback to first slot
+        }
 
         var todayStr = Utilities_formatDateClient(now);
         var todayData = rawDashboardData.filter(function(r) { return r.date === todayStr && r.time.trim() === currentSlot; });
+        if (todayData.length === 0) todayData = rawDashboardData.filter(function(r) { return r.date === todayStr; });
         
         if (todayData.length === 0) {
           emptyMsg.classList.remove('hidden');
