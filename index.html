@@ -795,12 +795,12 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     function verifyAndRoute() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('loader-text').innerText = "Authenticating...";
-      if (masterAuthData) {
+      // For quality portal, always fetch fresh data (localStorage cache may lack authorizedFPY)
+      if (masterAuthData && targetPortal !== 'quality') {
         routeUser(masterAuthData);
         callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
           localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
           masterAuthData = data;
-          // Update Quality UI from fresh data (bypasses stale localStorage cache)
           if (data.authorizedFPY) {
             var qt = document.getElementById('tab-quality');
             if (qt) qt.classList.remove('hidden');
