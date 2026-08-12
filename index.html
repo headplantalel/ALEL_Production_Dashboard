@@ -1082,10 +1082,9 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           <!-- NEW: Flatpickr Date Input -->
           <input type="text" id="filter-date" value="${todayStr}" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm cursor-pointer w-28 text-center bg-white" readonly>
 
-          <select id="metric-toggle" onchange="currentMetric = this.value; renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
+           <select id="metric-toggle" onchange="currentMetric = this.value; renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
             <option value="productivity" ${currentMetric === 'productivity' ? 'selected' : ''}>View: Productivity</option>
             <option value="quantity" ${currentMetric === 'quantity' ? 'selected' : ''}>View: Production Qty</option>
-            <option value="quality" ${currentMetric === 'quality' ? 'selected' : ''}>View: Quality / FPY</option>
           </select>
           
           <div class="relative inline-block text-left">
