@@ -457,6 +457,9 @@
           <button id="tab-ai" onclick="switchDashTab('ai')" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap flex items-center gap-1">
             <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> AI Insights
           </button>
+          <button id="tab-quality" onclick="switchDashTab('quality')" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap flex items-center gap-1">
+            <svg class="w-3.5 h-3.5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Quality
+          </button>
         </div>
 
         <div id="filter-container" class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end"></div>
@@ -648,6 +651,47 @@
               </button>
            </div>
          </div>
+       </div>
+
+       <!-- QUALITY DASHBOARD VIEW -->
+       <div id="view-quality" class="w-full hidden max-w-7xl mx-auto space-y-4">
+          <!-- KPI Row -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+             <div class="bg-white/60 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
+                <span class="text-[9px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Average FPY</span>
+                <span id="quality-kpi-avg" class="text-2xl sm:text-3xl font-black text-slate-800 leading-none">—</span>
+             </div>
+             <div class="bg-white/60 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
+                <span class="text-[9px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Worst FPY</span>
+                <span id="quality-kpi-worst" class="text-2xl sm:text-3xl font-black text-red-500 leading-none">—</span>
+             </div>
+             <div class="bg-white/60 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
+                <span class="text-[9px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Total Defectives</span>
+                <span id="quality-kpi-def" class="text-2xl sm:text-3xl font-black text-slate-800 leading-none">0</span>
+             </div>
+             <div class="bg-white/60 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
+                <span class="text-[9px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Items Tracked</span>
+                <span id="quality-kpi-items" class="text-2xl sm:text-3xl font-black text-slate-800 leading-none">0</span>
+             </div>
+          </div>
+
+          <!-- Gauges + Scorecard -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+             <div class="lg:col-span-2 bg-white/60 backdrop-blur-xl p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white">
+                <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-3">Line FPY Gauges</h3>
+                <div id="quality-gauge-row" class="flex gap-3 overflow-x-auto no-scrollbar pb-2"></div>
+             </div>
+             <div class="bg-white/60 backdrop-blur-xl p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col min-h-0">
+                <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-2">Quality Scorecard</h3>
+                <div id="quality-scorecard" class="flex-1 overflow-y-auto text-[10px] space-y-1.5"></div>
+             </div>
+          </div>
+
+          <!-- FPY Trend Chart -->
+          <div class="bg-white/60 backdrop-blur-xl p-4 sm:p-5 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white">
+             <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-3">FPY Trend</h3>
+             <div id="quality-trend-chart" class="w-full h-[300px]"></div>
+          </div>
        </div>
 
   <script>
@@ -970,7 +1014,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       if (document.activeElement) document.activeElement.blur(); // FIX: Drops focus to prevent auto-opening date pickers
       
        activeDashTab = tab;
-      ['section', 'master', 'management', 'ai'].forEach(t => {
+      ['section', 'master', 'management', 'ai', 'quality'].forEach(t => {
         let btn = document.getElementById('tab-' + t);
         let view = document.getElementById('view-' + t);
         if(t === tab) {
@@ -1014,6 +1058,9 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
              renderFPYKPI(fpyRows);
              document.getElementById('quality-watch').classList.remove('hidden');
            });
+         }
+         if (tab === 'quality') {
+           renderQualityDashboard();
          }
          renderDashboard(); 
          window.dispatchEvent(new Event('resize'));
@@ -2594,6 +2641,108 @@ let gaugeOptions = {
 
       window.masterTrendChart = new ApexCharts(chartEl, options);
       window.masterTrendChart.render();
+    }
+
+    function renderQualityDashboard() {
+      callAPI({ action: "getFPYData" }, function(data) {
+        var fpyRows = (data && data.rows) ? data.rows : [];
+        
+        if (fpyRows.length === 0) {
+          document.getElementById('quality-kpi-avg').innerText = '—';
+          document.getElementById('quality-kpi-worst').innerText = '—';
+          document.getElementById('quality-kpi-def').innerText = '0';
+          document.getElementById('quality-kpi-items').innerText = '0';
+          document.getElementById('quality-gauge-row').innerHTML = '<div class="text-gray-400 text-xs py-6 text-center w-full">No quality data yet. Go to Quality Entry to record daily defectives.</div>';
+          document.getElementById('quality-scorecard').innerHTML = '<div class="text-gray-400 text-xs text-center py-4">No data recorded.</div>';
+          return;
+        }
+
+        // Compute KPIs
+        var totalProd = 0, totalDef = 0, itemsSet = {};
+        var lineData = {};
+        fpyRows.forEach(function(r) {
+          totalProd += r.produced;
+          totalDef += r.defective;
+          itemsSet[r.itemCode + '|' + r.line] = true;
+          if (!lineData[r.line]) lineData[r.line] = { produced: 0, defective: 0 };
+          lineData[r.line].produced += r.produced;
+          lineData[r.line].defective += r.defective;
+        });
+
+        var avgFPY = totalProd > 0 ? ((totalProd - totalDef) / totalProd * 100) : 0;
+        var worstLine = '', worstFPY = 100;
+        Object.keys(lineData).forEach(function(l) {
+          var f = lineData[l].produced > 0 ? ((lineData[l].produced - lineData[l].defective) / lineData[l].produced * 100) : 100;
+          if (f < worstFPY) { worstFPY = f; worstLine = l; }
+        });
+
+        document.getElementById('quality-kpi-avg').innerText = avgFPY.toFixed(1) + '%';
+        document.getElementById('quality-kpi-avg').className = 'text-2xl sm:text-3xl font-black leading-none ' + (avgFPY >= 95 ? 'text-emerald-600' : avgFPY >= 90 ? 'text-amber-600' : 'text-red-500');
+        document.getElementById('quality-kpi-worst').innerText = worstLine ? worstFPY.toFixed(1) + '%' : '—';
+        document.getElementById('quality-kpi-worst').className = 'text-2xl sm:text-3xl font-black leading-none ' + (worstFPY >= 95 ? 'text-emerald-600' : worstFPY >= 90 ? 'text-amber-600' : 'text-red-500');
+        document.getElementById('quality-kpi-def').innerText = totalDef.toLocaleString();
+        document.getElementById('quality-kpi-items').innerText = Object.keys(itemsSet).length;
+
+        // Render gauges in the quality tab
+        var gaugeRow = document.getElementById('quality-gauge-row');
+        gaugeRow.innerHTML = '';
+        Object.keys(lineData).forEach(function(l) {
+          var d = lineData[l];
+          var fpy = d.produced > 0 ? ((d.produced - d.defective) / d.produced * 100) : 0;
+          var color = fpy >= 95 ? '#10B981' : fpy >= 90 ? '#F59E0B' : '#EF4444';
+          var circ = 2 * Math.PI * 15.5;
+          var off = circ - (Math.min(fpy, 100) / 100) * circ;
+          gaugeRow.innerHTML += '<div class="flex-shrink-0 bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-white/60 flex flex-col items-center gap-1 min-w-[110px]">' +
+            '<svg viewBox="0 0 36 36" class="w-16 h-16"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circ + '" stroke-dashoffset="' + off + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[11px]" font-weight="800" fill="#374151">' + fpy.toFixed(1) + '%</text></svg>' +
+            '<div class="font-extrabold text-[10px] text-slate-700 text-center leading-tight">' + l + '</div>' +
+            '<div class="text-[9px] font-medium ' + (fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500') + '">' + d.defective + ' defective</div>' +
+            '</div>';
+        });
+
+        // Render scorecard
+        var sc = document.getElementById('quality-scorecard');
+        sc.innerHTML = '';
+        var sorted = fpyRows.slice().sort(function(a, b) { return a.fpy - b.fpy; });
+        sorted.forEach(function(r) {
+          var bc = r.fpy >= 95 ? 'border-l-emerald-500' : r.fpy >= 90 ? 'border-l-amber-500' : 'border-l-red-500';
+          var tc = r.fpy >= 95 ? 'text-emerald-600' : r.fpy >= 90 ? 'text-amber-600' : 'text-red-500';
+          sc.innerHTML += '<div class="border-l-4 ' + bc + ' bg-white/40 pl-2.5 py-1.5 rounded-r-lg"><div class="flex justify-between items-center"><span class="font-bold text-slate-700 truncate">' + r.item + '</span><span class="font-extrabold ' + tc + ' ml-1 shrink-0">' + r.fpy.toFixed(1) + '%</span></div><div class="flex gap-2 text-[9px] text-slate-500"><span>' + r.line + '</span><span>Def: ' + r.defective + '</span></div></div>';
+        });
+
+        // Render trend chart
+        var chartEl = document.getElementById('quality-trend-chart');
+        var dateMap = {};
+        fpyRows.forEach(function(r) {
+          var d = r.date || '';
+          if (!dateMap[d]) dateMap[d] = { produced: 0, defective: 0 };
+          dateMap[d].produced += r.produced;
+          dateMap[d].defective += r.defective;
+        });
+        var dates = Object.keys(dateMap).sort();
+        var fpyVals = dates.map(function(d) {
+          var dm = dateMap[d];
+          return dm.produced > 0 ? ((dm.produced - dm.defective) / dm.produced * 100) : null;
+        });
+
+        if (window.qualityTrendChart) window.qualityTrendChart.destroy();
+        window.qualityTrendChart = new ApexCharts(chartEl, {
+          series: [{ name: 'FPY %', data: fpyVals }],
+          chart: { type: 'line', height: 280, toolbar: { show: true } },
+          stroke: { width: 3, curve: 'smooth' },
+          markers: { size: 4 },
+          colors: ['#8B5CF6'],
+          xaxis: { categories: dates, labels: { style: { fontSize: '10px' } } },
+          yaxis: { min: 0, max: 100, tickAmount: 5, labels: { formatter: function(v) { return v + '%'; } } },
+          annotations: {
+            yaxis: [
+              { y: 90, borderColor: '#F59E0B', strokeDashArray: 4, label: { text: '90%', style: { fontSize: '9px', color: '#F59E0B' } } },
+              { y: 95, borderColor: '#10B981', strokeDashArray: 4, label: { text: '95%', style: { fontSize: '9px', color: '#10B981' } } }
+            ]
+          },
+          tooltip: { y: { formatter: function(v) { return v ? v.toFixed(1) + '%' : 'N/A'; } } }
+        });
+        window.qualityTrendChart.render();
+      });
     }
 
     // ===================== END FPY FUNCTIONS =====================
