@@ -191,7 +191,7 @@
       </div>
 
       <!-- Glassmorphism Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl px-2">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl px-2">
         
         <!-- Data Entry Card -->
         <button onclick="openLogin('entry')" class="group text-left relative bg-white/40 backdrop-blur-2xl rounded-[2rem] p-8 sm:p-10 border border-white hover:border-enovar/30 hover:bg-white/60 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(13,92,88,0.08)] hover:-translate-y-2 animate-fade-up opacity-0 delay-200">
@@ -209,6 +209,15 @@
           </div>
           <h3 class="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight">Dashboard</h3>
           <p class="text-sm text-slate-500 font-medium leading-relaxed">Access live operational analytics, AI-driven insights, and master data overviews.</p>
+        </button>
+
+        <!-- Quality Entry Card -->
+        <button onclick="openLogin('quality')" class="group text-left relative bg-white/40 backdrop-blur-2xl rounded-[2rem] p-8 sm:p-10 border border-white hover:border-purple-500/30 hover:bg-purple-50/60 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(139,92,246,0.08)] hover:-translate-y-2 animate-fade-up opacity-0 delay-400">
+          <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-purple-100/50 group-hover:border-purple-300/30 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
+            <svg class="w-6 h-6 text-slate-400 group-hover:text-purple-600 transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <h3 class="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight">Quality Entry</h3>
+          <p class="text-sm text-slate-500 font-medium leading-relaxed">Record daily defect quantities per item and line. First pass yield tracking for QA.</p>
         </button>
 
       </div>
@@ -694,8 +703,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     }
 
     function updatePortalUI() {
-      const title = targetPortal === 'dashboard' ? 'Dashboard' : 'Data Entry Portal';
-      const switchText = targetPortal === 'dashboard' ? 'Switch to Data Entry' : 'Switch to Analytics';
+      const title = targetPortal === 'dashboard' ? 'Dashboard' : targetPortal === 'quality' ? 'Quality Entry' : 'Data Entry Portal';
+      const switchText = targetPortal === 'dashboard' ? 'Switch to Data Entry' : targetPortal === 'quality' ? 'Switch Portal' : 'Switch to Analytics';
       document.getElementById('login-title').innerText = title;
       if(document.getElementById('login-switch-btn')) document.getElementById('login-switch-btn').innerText = switchText;
       if(document.getElementById('denied-switch-btn')) document.getElementById('denied-switch-btn').innerText = switchText;
@@ -819,6 +828,14 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         if (data.authorizedEntry) setupEntryAppUI(data); else showDenied();
       } else if (targetPortal === 'dashboard') {
         if (data.authorizedDashboard) setupDashboardUI(data); else showDenied();
+      } else if (targetPortal === 'quality') {
+        if (data.authorizedFPY && data.authorizedDashboard) {
+          activeDashTab = 'quality';
+          localStorage.setItem('activeDashTab', 'quality');
+          setupDashboardUI(data);
+        } else {
+          showDenied();
+        }
       }
     }
 
