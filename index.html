@@ -2343,8 +2343,8 @@ let gaugeOptions = {
 
     function loadQualityEntry(dateStr) {
       document.getElementById('fpy-entry-loader').classList.remove('hidden');
-      document.getElementById('fpy-entry-table-wrap').classList.add('hidden');
-      document.getElementById('fpy-entry-cards').classList.add('hidden');
+      document.getElementById('fpy-entry-table-wrap').style.display = 'none';
+      document.getElementById('fpy-entry-cards').style.display = 'none';
       document.getElementById('fpy-entry-empty').classList.add('hidden');
 
       callAPI({ action: "getDailyProductionForFPY", date: dateStr }, function(prodData) {
@@ -2355,7 +2355,6 @@ let gaugeOptions = {
           return;
         }
 
-        // Also load existing FPY data for this date to pre-fill
         callAPI({ action: "getFPYData", startDate: dateStr, endDate: dateStr }, function(fpyData) {
           document.getElementById('fpy-entry-loader').classList.add('hidden');
           var existingMap = {};
@@ -2377,8 +2376,8 @@ let gaugeOptions = {
               saved: !!existing
             };
           });
-          document.getElementById('fpy-entry-table-wrap').classList.remove('hidden');
-          document.getElementById('fpy-entry-cards').classList.remove('hidden');
+          document.getElementById('fpy-entry-table-wrap').style.display = '';
+          document.getElementById('fpy-entry-cards').style.display = '';
           renderFpyEntryGrid();
         });
       });
