@@ -437,6 +437,9 @@
         <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden hide-in-fullscreen text-enovar hover:text-enovar-dark bg-white/50 hover:bg-white/80 p-1.5 sm:p-2 rounded-xl transition-colors shadow-sm border border-white" title="Go to Data Entry">
           <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
         </button>
+        <button id="btn-goto-fpy-dash" onclick="openQualityEntry()" class="hidden hide-in-fullscreen text-purple-500 hover:text-purple-700 bg-white/50 hover:bg-purple-100/80 p-1.5 sm:p-2 rounded-xl transition-colors shadow-sm border border-white" title="Go to Quality Entry">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
         <button onclick="logout()" class="hide-in-fullscreen text-red-500 hover:text-red-700 bg-white/50 hover:bg-red-50 p-1.5 sm:p-2 rounded-xl transition-colors shadow-sm border border-white" title="Log Out">
           <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
         </button>
@@ -648,7 +651,7 @@
        </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxx_mflj7TPRx2CjFYaZmUdSN3Iyy-VOMfEJeDvsWU4DCX2Vs16tCvZctp1Nya5-Og-1Q/exec"; 
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKGJPikYUUHTIF4_UEbOE6FI5oYr0fnQujux_v_qrnyiu8ynAEmaHfk6xcJmyHnqyNPg/exec"; 
     
     let tsItem, tsLine, tsTime;
     let tsDashItem, tsDashVisibleCharts; 
@@ -709,7 +712,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     }
 
     function togglePortalTarget() {
-      targetPortal = targetPortal === 'entry' ? 'dashboard' : 'entry';
+      targetPortal = targetPortal === 'entry' ? 'dashboard' : targetPortal === 'dashboard' ? 'quality' : 'entry';
       localStorage.setItem('active_portal', targetPortal);
       updatePortalUI();
       if(currentUser.email && !document.getElementById('denied').classList.contains('hidden')) {
@@ -929,6 +932,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       // document.getElementById('bg-elements').classList.add('hidden'); // REMOVED so ambient orbs stay visible
       document.getElementById('dashboard-app').classList.remove('hidden');
       if (data && data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
+      if (data && data.authorizedFPY) document.getElementById('btn-goto-fpy-dash').classList.remove('hidden');
       
       // NEW: Load saved chat history based on the user's email
       const savedHistory = localStorage.getItem('alel_ai_chat_' + currentUser.email);
