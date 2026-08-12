@@ -337,24 +337,24 @@
   </div>
 
   <!-- Quality Entry Standalone Panel (like Data Entry) -->
-  <div id="quality-app" class="hidden bg-white/40 backdrop-blur-2xl p-6 sm:p-8 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] max-w-4xl w-full border border-white z-20 overflow-hidden box-border">
-    <div class="flex justify-between items-center gap-4 mb-6 pb-4 border-b border-gray-200/50">
-      <div class="flex items-center gap-3 shrink-0">
-        <img src="pulse.png" alt="ALEL Pulse" class="h-6 sm:h-8 object-contain shrink-0">
-        <span class="hidden md:block text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] border-l border-gray-300 pl-3">Daily Quality Entry</span>
+  <div id="quality-app" class="hidden bg-white/40 backdrop-blur-2xl p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] max-w-4xl w-full border border-white z-20 overflow-hidden box-border">
+    <div class="flex flex-wrap justify-between items-center gap-2 mb-4 pb-4 border-b border-gray-200/50">
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <img src="pulse.png" alt="ALEL Pulse" class="h-5 sm:h-8 object-contain shrink-0">
+        <span class="hidden sm:block text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] border-l border-gray-300 pl-3">Daily Quality Entry</span>
       </div>
-      <div class="flex items-center gap-2">
-        <button id="fpy-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[9px] sm:text-[10px] font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Dashboard</button>
-        <button id="fpy-goto-entry" onclick="switchPortal('entry')" class="hidden text-[9px] sm:text-[10px] font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Data Entry</button>
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <button id="fpy-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[8px] sm:text-[10px] font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Dash</button>
+        <button id="fpy-goto-entry" onclick="switchPortal('entry')" class="hidden text-[8px] sm:text-[10px] font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Entry</button>
       </div>
     </div>
 
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3">
       <div>
-        <h2 class="text-lg font-extrabold text-slate-800">Quality Entry</h2>
-        <p class="text-[10px] text-slate-500 mt-1 font-medium">Enter daily defective quantities. Produced figures are auto-loaded from production entries.</p>
+        <h2 class="text-base sm:text-lg font-extrabold text-slate-800">Quality Entry</h2>
+        <p class="text-[9px] sm:text-[10px] text-slate-500 mt-0.5 font-medium">Enter daily defective quantities.</p>
       </div>
-      <input type="text" id="fpy-date-picker" placeholder="Select date" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm w-36 cursor-pointer shrink-0" readonly>
+      <input type="text" id="fpy-date-picker" placeholder="Select date" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm w-32 sm:w-36 cursor-pointer shrink-0" readonly>
     </div>
 
     <div id="fpy-entry-loader" class="text-center py-10 text-gray-400 text-xs font-medium hidden">Loading production data...</div>
@@ -384,7 +384,7 @@
     </div>
 
     <!-- User profile footer -->
-    <div class="mt-6 pt-5 border-t border-gray-200/50 flex flex-col gap-4 -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 p-5 sm:p-6 bg-white/30 rounded-b-2xl box-border">
+    <div class="mt-4 sm:mt-6 pt-4 sm:pt-5 border-t border-gray-200/50 flex flex-col gap-3 sm:gap-4 -mx-4 sm:-mx-8 -mb-4 sm:-mb-8 p-3 sm:p-6 bg-white/30 rounded-b-2xl box-border">
       <div class="flex flex-row items-center justify-between w-full">
         <div class="flex items-center gap-3 overflow-hidden">
           <img id="fpy-display-pic" class="w-9 h-9 rounded-full shadow-sm border border-gray-200 flex-shrink-0" src="" alt="Profile">
@@ -650,64 +650,67 @@
           </div>
 
           <!-- KPI Row -->
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 shrink-0">
-             <div class="bg-white/60 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
-                <span class="text-[9px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Average FPY</span>
-                <span id="quality-kpi-avg" class="text-2xl sm:text-3xl font-black text-slate-800 leading-none">—</span>
-                <div id="quality-trend-avg" class="mt-1.5 flex items-center gap-1 text-[9px] font-bold"></div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 shrink-0">
+             <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
+                <span class="text-[8px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Average FPY</span>
+                <span id="quality-kpi-avg" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">—</span>
              </div>
-             <div class="bg-white/60 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
-                <span class="text-[9px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Worst FPY</span>
-                <span id="quality-kpi-worst" class="text-2xl sm:text-3xl font-black text-red-500 leading-none">—</span>
-                <div class="mt-1.5 flex items-center gap-1 text-[9px] font-bold"><span id="quality-worst-line" class="text-gray-400 truncate max-w-[80px]"></span></div>
+             <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
+                <span class="text-[8px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Worst FPY</span>
+                <span id="quality-kpi-worst" class="text-lg sm:text-3xl font-black text-red-500 leading-none">—</span>
              </div>
-             <div class="bg-white/60 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
-                <span class="text-[9px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Total Defectives</span>
-                <span id="quality-kpi-def" class="text-2xl sm:text-3xl font-black text-slate-800 leading-none">0</span>
-                <div id="quality-trend-def" class="mt-1.5 flex items-center gap-1 text-[9px] font-bold"></div>
+             <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
+                <span class="text-[8px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Total Defectives</span>
+                <span id="quality-kpi-def" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">0</span>
              </div>
-             <div class="bg-white/60 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
-                <span class="text-[9px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Items Tracked</span>
-                <span id="quality-kpi-items" class="text-2xl sm:text-3xl font-black text-slate-800 leading-none">0</span>
-                <div class="mt-1.5 flex items-center gap-1 text-[9px] font-bold"></div>
+             <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
+                <span class="text-[8px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Items Tracked</span>
+                <span id="quality-kpi-items" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">0</span>
              </div>
           </div>
 
+          <!-- Main Grid -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 flex-1 min-h-0 pb-1">
-             <!-- Left: Scorecard Table -->
-             <div class="lg:col-span-2 flex flex-col min-h-[400px] lg:min-h-0">
-                <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-[250px] overflow-hidden">
-                   <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md z-20 flex justify-between items-center">
+             <!-- Scorecard -->
+             <div class="lg:col-span-2 flex flex-col min-h-[300px] lg:min-h-0">
+                <!-- Desktop Table -->
+                <div class="hidden sm:flex bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex-col flex-1 min-h-[250px] overflow-hidden">
+                   <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md">
                       <h3 class="text-[10px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Quality Scorecard</h3>
                    </div>
-                   <div class="flex-1 overflow-y-auto p-0 m-0 bg-white/20">
-                      <table class="w-full text-left border-collapse text-[10px] sm:text-xs">
+                   <div class="flex-1 overflow-y-auto overflow-x-auto bg-white/20">
+                      <table class="w-full text-left border-collapse text-[10px] sm:text-xs min-w-[500px]">
                          <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm border-b border-white">
                             <tr class="text-slate-500 uppercase tracking-wider">
-                               <th class="p-3 pl-3 sm:pl-5 font-extrabold w-[22%]">Item</th>
-                               <th class="p-3 font-extrabold w-[18%]">Line</th>
-                               <th class="p-3 font-extrabold text-center w-[12%]">Prod</th>
-                               <th class="p-3 font-extrabold text-center w-[12%]">Def</th>
-                               <th class="p-3 font-extrabold text-right w-[12%]">FPY%</th>
-                               <th class="p-3 pr-3 sm:pr-5 font-extrabold text-right w-[12%]">Trend</th>
+                               <th class="p-2 sm:p-3 pl-3 sm:pl-5 font-extrabold">Item</th>
+                               <th class="p-2 sm:p-3 font-extrabold">Line</th>
+                               <th class="p-2 sm:p-3 font-extrabold text-center">Prod</th>
+                               <th class="p-2 sm:p-3 font-extrabold text-center">Def</th>
+                               <th class="p-2 sm:p-3 font-extrabold text-right">FPY%</th>
+                               <th class="p-2 sm:p-3 pr-3 sm:pr-5 font-extrabold text-right">Status</th>
                             </tr>
                          </thead>
                          <tbody id="quality-table" class="text-slate-700 divide-y divide-white/50"></tbody>
                       </table>
                    </div>
                 </div>
+                <!-- Mobile Cards -->
+                <div id="quality-cards-mobile" class="sm:hidden space-y-2 overflow-y-auto"></div>
              </div>
 
-             <!-- Right: Gauges -->
+             <!-- Right: Gauges + Trend -->
              <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-1 min-h-0">
-                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-0">
-                   <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-2">Line FPY Gauges</h3>
+                <!-- Desktop gauges (vertical) -->
+                <div class="hidden sm:flex bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex-col flex-1 min-h-0">
+                   <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-2">Line Gauges</h3>
                    <div id="quality-gauge-row" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
                 </div>
+                <!-- Mobile gauges (horizontal scroll) -->
+                <div id="quality-gauge-row-mobile" class="sm:hidden flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
 
-                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 min-h-[250px]">
+                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 min-h-[200px] sm:min-h-[250px]">
                    <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-1">FPY Trend</h3>
-                   <div id="quality-trend-chart" class="w-full flex-1"></div>
+                   <div id="quality-trend-chart" class="w-full flex-1 min-h-[180px]"></div>
                 </div>
              </div>
           </div>
@@ -2671,8 +2674,9 @@ let gaugeOptions = {
           document.getElementById('quality-kpi-def').innerText = '0';
           document.getElementById('quality-kpi-items').innerText = '0';
           document.getElementById('quality-table').innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">No quality data for this period.</td></tr>';
+          document.getElementById('quality-cards-mobile').innerHTML = '<div class="text-gray-400 text-xs text-center py-6">No quality data for this period.</div>';
           document.getElementById('quality-gauge-row').innerHTML = '<div class="text-gray-400 text-xs py-6 text-center">No data recorded.</div>';
-          document.getElementById('quality-worst-line').innerText = '';
+          document.getElementById('quality-gauge-row-mobile').innerHTML = '<div class="text-gray-400 text-xs py-4 text-center w-full">No data recorded.</div>';
           return;
         }
 
@@ -2695,35 +2699,49 @@ let gaugeOptions = {
         });
 
         document.getElementById('quality-kpi-avg').innerText = avgFPY.toFixed(1) + '%';
-        document.getElementById('quality-kpi-avg').className = 'text-2xl sm:text-3xl font-black leading-none ' + (avgFPY >= 95 ? 'text-emerald-600' : avgFPY >= 90 ? 'text-amber-600' : 'text-red-500');
+        document.getElementById('quality-kpi-avg').className = 'text-lg sm:text-3xl font-black leading-none ' + (avgFPY >= 95 ? 'text-emerald-600' : avgFPY >= 90 ? 'text-amber-600' : 'text-red-500');
         document.getElementById('quality-kpi-worst').innerText = worstLine ? worstFPY.toFixed(1) + '%' : '—';
-        document.getElementById('quality-kpi-worst').className = 'text-2xl sm:text-3xl font-black leading-none ' + (worstFPY >= 95 ? 'text-emerald-600' : worstFPY >= 90 ? 'text-amber-600' : 'text-red-500');
-        document.getElementById('quality-worst-line').innerText = worstLine;
+        document.getElementById('quality-kpi-worst').className = 'text-lg sm:text-3xl font-black leading-none ' + (worstFPY >= 95 ? 'text-emerald-600' : worstFPY >= 90 ? 'text-amber-600' : 'text-red-500');
         document.getElementById('quality-kpi-def').innerText = totalDef.toLocaleString();
         document.getElementById('quality-kpi-items').innerText = Object.keys(itemsSet).length;
 
-        // Per-line gauges
+        // Per-line gauges (desktop: vertical)
         var gaugeRow = document.getElementById('quality-gauge-row');
         gaugeRow.innerHTML = '';
+        var gaugeRowMobile = document.getElementById('quality-gauge-row-mobile');
+        gaugeRowMobile.innerHTML = '';
         Object.keys(lineData).forEach(function(l) {
           var d = lineData[l];
           var fpy = d.produced > 0 ? ((d.produced - d.defective) / d.produced * 100) : 0;
           var color = fpy >= 95 ? '#10B981' : fpy >= 90 ? '#F59E0B' : '#EF4444';
           var circ = 2 * Math.PI * 15.5;
           var off = circ - (Math.min(fpy, 100) / 100) * circ;
+          // Desktop
           gaugeRow.innerHTML += '<div class="flex items-center gap-3 bg-white/30 rounded-lg p-2.5">' +
             '<svg viewBox="0 0 36 36" class="w-12 h-12 shrink-0"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circ + '" stroke-dashoffset="' + off + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[10px]" font-weight="800" fill="#374151">' + fpy.toFixed(0) + '%</text></svg>' +
             '<div><div class="font-extrabold text-[10px] text-slate-700">' + l + '</div><div class="text-[9px] font-medium ' + (fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500') + '">' + d.defective + ' defective</div></div></div>';
+          // Mobile (horizontal cards)
+          gaugeRowMobile.innerHTML += '<div class="flex-shrink-0 bg-white/40 rounded-xl p-2.5 border border-white/60 flex flex-col items-center gap-1 min-w-[95px]">' +
+            '<svg viewBox="0 0 36 36" class="w-10 h-10"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circ + '" stroke-dashoffset="' + off + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[9px]" font-weight="800" fill="#374151">' + fpy.toFixed(0) + '%</text></svg>' +
+            '<div class="font-extrabold text-[9px] text-slate-700 text-center leading-tight">' + l + '</div></div>';
         });
 
-        // Scorecard table
+        // Scorecard table (desktop)
         var tb = document.getElementById('quality-table');
         tb.innerHTML = '';
+        // Mobile cards
+        var mc = document.getElementById('quality-cards-mobile');
+        mc.innerHTML = '';
         var sorted = fpyRows.slice().sort(function(a, b) { return a.fpy - b.fpy; });
         sorted.forEach(function(r) {
           var tc = r.fpy >= 95 ? 'text-emerald-600' : r.fpy >= 90 ? 'text-amber-600' : 'text-red-500';
           var bg = r.fpy >= 90 ? 'bg-white/40' : 'bg-red-50/40';
-          tb.innerHTML += '<tr class="hover:bg-white/60 transition-colors border-b border-white/50 ' + bg + '"><td class="py-1.5 pl-3 sm:pl-5 font-medium text-slate-700 text-[10px]">' + r.item + '</td><td class="py-1.5 text-slate-500 text-[10px]">' + r.line + '</td><td class="py-1.5 text-center font-bold text-slate-700 text-[10px]">' + r.produced.toLocaleString() + '</td><td class="py-1.5 text-center font-bold ' + (r.defective > 0 ? 'text-red-600' : 'text-slate-400') + ' text-[10px]">' + r.defective + '</td><td class="py-1.5 text-right font-extrabold ' + tc + ' text-[10px]">' + r.fpy.toFixed(1) + '%</td><td class="py-1.5 pr-3 sm:pr-5 text-right text-[9px] text-slate-400">' + (r.fpy >= 95 ? '↑ Good' : r.fpy >= 90 ? '→ OK' : '↓ Poor') + '</td></tr>';
+          tb.innerHTML += '<tr class="hover:bg-white/60 transition-colors border-b border-white/50 ' + bg + '"><td class="py-1.5 pl-3 sm:pl-5 font-medium text-slate-700 text-[10px]">' + r.item + '</td><td class="py-1.5 text-slate-500 text-[10px]">' + r.line + '</td><td class="py-1.5 text-center font-bold text-slate-700 text-[10px]">' + r.produced.toLocaleString() + '</td><td class="py-1.5 text-center font-bold ' + (r.defective > 0 ? 'text-red-600' : 'text-slate-400') + ' text-[10px]">' + r.defective + '</td><td class="py-1.5 text-right font-extrabold ' + tc + ' text-[10px]">' + r.fpy.toFixed(1) + '%</td><td class="py-1.5 pr-3 sm:pr-5 text-right text-[9px] text-slate-400">' + (r.fpy >= 95 ? 'Good' : r.fpy >= 90 ? 'OK' : 'Poor') + '</td></tr>';
+          // Mobile card
+          var bc = r.fpy >= 95 ? 'border-l-emerald-500' : r.fpy >= 90 ? 'border-l-amber-500' : 'border-l-red-500';
+          mc.innerHTML += '<div class="border-l-4 ' + bc + ' bg-white/40 backdrop-blur-sm rounded-lg p-2.5">' +
+            '<div class="flex justify-between items-start"><span class="font-bold text-slate-700 text-[11px]">' + r.item + '</span><span class="font-extrabold ' + tc + ' text-xs ml-1">' + r.fpy.toFixed(1) + '%</span></div>' +
+            '<div class="flex gap-3 text-[9px] text-slate-500 mt-1"><span>' + r.line + '</span><span>Prod: ' + r.produced + '</span><span>Def: ' + r.defective + '</span></div></div>';
         });
 
         // Trend chart
