@@ -791,10 +791,16 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
           localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
           masterAuthData = data;
-          // Update Quality tab visibility from fresh data
+          // Update Quality UI from fresh data (bypasses stale localStorage cache)
           if (data.authorizedFPY) {
             var qt = document.getElementById('tab-quality');
             if (qt) qt.classList.remove('hidden');
+            var fpyBtn = document.getElementById('btn-goto-fpy');
+            if (fpyBtn) fpyBtn.classList.remove('hidden');
+          }
+          if (data.authorizedDashboard) {
+            var dashBtn = document.getElementById('btn-goto-dash');
+            if (dashBtn) dashBtn.classList.remove('hidden');
           }
         });
       } else {
