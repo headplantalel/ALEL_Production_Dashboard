@@ -516,7 +516,8 @@
                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 h-[110px] overflow-hidden transition-transform hover:-translate-y-1">
                    <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-1 z-10 relative">Daily Target Health</h3>
                    <div id="chart-summary-gauge" class="w-full flex justify-center -mt-5"></div>
-            </div>
+             </div>
+          </div>
          </div>
 
          <!-- QUALITY WATCH SECTION -->
@@ -535,7 +536,6 @@
                </div>
             </div>
          </div>
-      </div>
       </div>
 
       <!-- AI INSIGHTS VIEW -->
@@ -780,6 +780,11 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
           localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
           masterAuthData = data;
+          // Update Quality tab visibility from fresh data
+          if (data.authorizedFPY) {
+            var qt = document.getElementById('tab-quality');
+            if (qt) qt.classList.remove('hidden');
+          }
         });
       } else {
         document.getElementById('loader').classList.remove('hidden');
@@ -900,7 +905,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       if (document.activeElement) document.activeElement.blur(); // FIX: Drops focus to prevent auto-opening date pickers
       
        activeDashTab = tab;
-      ['section', 'master', 'management', 'ai', 'quality'].forEach(t => {
+      ['section', 'master', 'management', 'ai'].forEach(t => {
         let btn = document.getElementById('tab-' + t);
         let view = document.getElementById('view-' + t);
         if(t === tab) {
@@ -913,6 +918,23 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           view.classList.add('hidden');
         }
       });
+      // Handle quality tab separately (visibility gated by authorizedFPY)
+      (function(){
+        let qBtn = document.getElementById('tab-quality');
+        let qView = document.getElementById('view-quality');
+        if (!qBtn || !qView) return;
+        if (tab === 'quality') {
+          if (!qBtn.classList.contains('hidden')) {
+            qBtn.classList.add('bg-white', 'text-enovar', 'shadow-sm');
+            qBtn.classList.remove('text-gray-500');
+          }
+          qView.classList.remove('hidden');
+        } else {
+          qBtn.classList.remove('bg-white', 'text-enovar', 'shadow-sm');
+          qBtn.classList.add('text-gray-500');
+          qView.classList.add('hidden');
+        }
+      })();
       
 // Manage Scrollbars and Mobile Padding based on Tab
       const scrollContainer = document.getElementById('dash-scroll-container');
