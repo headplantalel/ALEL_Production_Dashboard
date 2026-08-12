@@ -336,6 +336,71 @@
     </div>
   </div>
 
+  <!-- Quality Entry Standalone Panel (like Data Entry) -->
+  <div id="quality-app" class="hidden bg-white/40 backdrop-blur-2xl p-6 sm:p-8 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] max-w-4xl w-full border border-white z-20 overflow-hidden box-border">
+    <div class="flex justify-between items-center gap-4 mb-6 pb-4 border-b border-gray-200/50">
+      <div class="flex items-center gap-3 shrink-0">
+        <img src="pulse.png" alt="ALEL Pulse" class="h-6 sm:h-8 object-contain shrink-0">
+        <span class="hidden md:block text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] border-l border-gray-300 pl-3">Daily Quality Entry</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="fpy-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[9px] sm:text-[10px] font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Dashboard</button>
+        <button id="fpy-goto-entry" onclick="switchPortal('entry')" class="hidden text-[9px] sm:text-[10px] font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Data Entry</button>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+      <div>
+        <h2 class="text-lg font-extrabold text-slate-800">Quality Entry</h2>
+        <p class="text-[10px] text-slate-500 mt-1 font-medium">Enter daily defective quantities. Produced figures are auto-loaded from production entries.</p>
+      </div>
+      <input type="text" id="fpy-date-picker" placeholder="Select date" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm w-36 cursor-pointer shrink-0" readonly>
+    </div>
+
+    <div id="fpy-entry-loader" class="text-center py-10 text-gray-400 text-xs font-medium hidden">Loading production data...</div>
+    <div id="fpy-entry-empty" class="text-center py-10 text-gray-400 text-xs font-medium hidden">No production recorded for this date.</div>
+
+    <div id="fpy-entry-table-wrap" class="hidden sm:block overflow-hidden rounded-xl border border-white/60">
+      <table class="w-full text-left text-[10px] sm:text-xs">
+        <thead class="bg-slate-100/80">
+          <tr class="text-slate-500 uppercase tracking-wider">
+            <th class="p-3 pl-4 font-extrabold">Item</th>
+            <th class="p-3 font-extrabold">Line</th>
+            <th class="p-3 font-extrabold text-center">Produced</th>
+            <th class="p-3 font-extrabold text-center">Defective</th>
+            <th class="p-3 font-extrabold text-center">FPY %</th>
+            <th class="p-3 pr-4 font-extrabold text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody id="fpy-entry-table" class="divide-y divide-white/40"></tbody>
+      </table>
+    </div>
+
+    <div id="fpy-entry-cards" class="sm:hidden space-y-2.5"></div>
+
+    <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-200/50">
+      <span id="fpy-save-status" class="text-[10px] text-gray-400 font-medium"></span>
+      <button onclick="saveFPY()" id="fpy-save-btn" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl text-xs font-bold shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed">Save All FPY</button>
+    </div>
+
+    <!-- User profile footer -->
+    <div class="mt-6 pt-5 border-t border-gray-200/50 flex flex-col gap-4 -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 p-5 sm:p-6 bg-white/30 rounded-b-2xl box-border">
+      <div class="flex flex-row items-center justify-between w-full">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <img id="fpy-display-pic" class="w-9 h-9 rounded-full shadow-sm border border-gray-200 flex-shrink-0" src="" alt="Profile">
+          <div class="flex flex-col truncate">
+            <span id="fpy-display-name" class="font-bold text-gray-800 text-xs truncate">Name</span>
+            <span id="fpy-display-email" class="text-[10px] text-gray-500 font-medium truncate">email@domain.com</span>
+          </div>
+        </div>
+        <button onclick="logout()" class="ml-2 flex-shrink-0 text-[10px] font-bold px-3 py-2 bg-white hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 rounded-lg transition-colors shadow-sm uppercase tracking-wider">Log Out</button>
+      </div>
+      <div class="w-full flex justify-center pt-2">
+        <img src="alel.png" alt="ALEL" class="h-5 object-contain opacity-60">
+      </div>
+    </div>
+  </div>
+
   <div id="history-view" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-2xl w-full border border-white z-20">
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
       <h2 class="text-lg font-bold text-gray-900">Entry History</h2>
@@ -388,9 +453,6 @@
           <button id="tab-master" onclick="switchDashTab('master')" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Analytics</button>
           <button id="tab-ai" onclick="switchDashTab('ai')" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap flex items-center gap-1">
             <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> AI Insights
-          </button>
-          <button id="tab-quality" onclick="switchDashTab('quality')" class="hidden px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap flex items-center gap-1">
-            <svg class="w-3.5 h-3.5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Quality
           </button>
         </div>
 
@@ -585,70 +647,6 @@
          </div>
        </div>
 
-       <!-- QUALITY / FPY ENTRY VIEW (QA-only) -->
-       <div id="view-quality" class="w-full hidden max-w-4xl mx-auto space-y-4">
-          <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white p-4 sm:p-5">
-             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                <div>
-                   <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
-                      <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                      Quality Entry
-                   </h2>
-                   <p class="text-[10px] text-slate-500 mt-1 font-medium">Enter daily defective quantities. Produced figures auto-loaded from production entries.</p>
-                </div>
-                <div class="flex items-center gap-2 shrink-0">
-                   <input type="text" id="fpy-date-picker" placeholder="Select date" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm w-32 cursor-pointer" readonly>
-                </div>
-             </div>
-             
-             <div id="fpy-entry-loader" class="text-center py-10 text-gray-400 text-xs font-medium hidden">Loading production data...</div>
-             <div id="fpy-entry-empty" class="text-center py-10 text-gray-400 text-xs font-medium hidden">No production recorded for this date.</div>
-
-             <!-- DESKTOP TABLE -->
-             <div id="fpy-entry-table-wrap" class="hidden sm:block overflow-hidden rounded-xl border border-white/60">
-                <table class="w-full text-left text-[10px] sm:text-xs">
-                   <thead class="bg-slate-100/80">
-                      <tr class="text-slate-500 uppercase tracking-wider">
-                         <th class="p-3 pl-4 font-extrabold w-[18%]">Item</th>
-                         <th class="p-3 font-extrabold w-[15%]">Line</th>
-                         <th class="p-3 font-extrabold text-center w-[12%]">Produced</th>
-                         <th class="p-3 font-extrabold text-center w-[18%]">Defective</th>
-                         <th class="p-3 font-extrabold text-center w-[12%]">FPY %</th>
-                         <th class="p-3 pr-4 font-extrabold text-center w-[12%]">Status</th>
-                      </tr>
-                   </thead>
-                   <tbody id="fpy-entry-table" class="divide-y divide-white/40"></tbody>
-                </table>
-             </div>
-
-             <!-- MOBILE CARDS -->
-             <div id="fpy-entry-cards" class="sm:hidden space-y-2.5"></div>
-
-             <div class="flex items-center justify-between mt-4 pt-3 border-t border-white/60">
-                <span id="fpy-save-status" class="text-[10px] text-gray-400 font-medium"></span>
-                <button onclick="saveFPY()" id="fpy-save-btn" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed">Save All FPY</button>
-             </div>
-          </div>
-
-          <!-- Recent FPY History -->
-          <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white p-4 sm:p-5">
-             <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-3">Recent Quality Records</h3>
-             <div id="fpy-history-table" class="overflow-hidden rounded-xl border border-white/60">
-                <table class="w-full text-left text-[10px]">
-                   <thead class="bg-slate-100/80">
-                      <tr class="text-slate-500 uppercase tracking-wider">
-                         <th class="p-2 pl-3 font-extrabold">Date</th>
-                         <th class="p-2 font-extrabold">Item</th>
-                         <th class="p-2 font-extrabold">Line</th>
-                         <th class="p-2 font-extrabold text-center">FPY%</th>
-                      </tr>
-                   </thead>
-                   <tbody id="fpy-history-body" class="divide-y divide-white/40"></tbody>
-                </table>
-             </div>
-          </div>
-       </div>
-
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZFSuNv7k3vU_CT0HRH8gTcKmvoDmujwwGMfi64n84IrdBrvQOw_jcyPqReXfz4teQxQ/exec"; 
     
@@ -722,6 +720,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
 
     function switchPortal(portalType) {
       document.getElementById('app').classList.add('hidden');
+      document.getElementById('quality-app').classList.add('hidden');
       document.getElementById('dashboard-app').classList.add('hidden');
       document.getElementById('history-view').classList.add('hidden');
       if (syncTimer) clearInterval(syncTimer); 
@@ -731,13 +730,9 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     }
 
     function openQualityEntry() {
-      if (!masterAuthData || !masterAuthData.authorizedDashboard) {
-        switchPortal('dashboard');
-        return;
-      }
-      activeDashTab = 'quality';
-      localStorage.setItem('activeDashTab', 'quality');
-      switchPortal('dashboard');
+      targetPortal = 'quality';
+      localStorage.setItem('active_portal', 'quality');
+      switchPortal('quality');
     }
 
     function openLogin(portalType) {
@@ -801,15 +796,13 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
           localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
           masterAuthData = data;
-          if (data.authorizedFPY) {
-            var qt = document.getElementById('tab-quality');
-            if (qt) qt.classList.remove('hidden');
-            var fpyBtn = document.getElementById('btn-goto-fpy');
-            if (fpyBtn) fpyBtn.classList.remove('hidden');
-          }
           if (data.authorizedDashboard) {
             var dashBtn = document.getElementById('btn-goto-dash');
             if (dashBtn) dashBtn.classList.remove('hidden');
+          }
+          if (data.authorizedFPY) {
+            var fpyBtn = document.getElementById('btn-goto-fpy');
+            if (fpyBtn) fpyBtn.classList.remove('hidden');
           }
         });
       } else {
@@ -829,13 +822,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       } else if (targetPortal === 'dashboard') {
         if (data.authorizedDashboard) setupDashboardUI(data); else showDenied();
       } else if (targetPortal === 'quality') {
-        if (data.authorizedFPY && data.authorizedDashboard) {
-          activeDashTab = 'quality';
-          localStorage.setItem('activeDashTab', 'quality');
-          setupDashboardUI(data);
-        } else {
-          showDenied();
-        }
+        if (data.authorizedFPY) setupQualityAppUI(data); else showDenied();
       }
     }
 
@@ -876,6 +863,44 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false });
     }
 
+    function setupQualityAppUI(data) {
+      document.getElementById('quality-app').classList.remove('hidden');
+      document.getElementById('fpy-display-pic').src = currentUser.picture;
+      document.getElementById('fpy-display-name').innerText = currentUser.name || data.displayName;
+      document.getElementById('fpy-display-email').innerText = currentUser.email;
+
+      if (data && data.authorizedDashboard) document.getElementById('fpy-goto-dash').classList.remove('hidden');
+      if (data && data.authorizedEntry) document.getElementById('fpy-goto-entry').classList.remove('hidden');
+
+      // Fetch available production dates for smart date picker
+      callAPI({ action: "getProductionDates" }, function(dateData) {
+        var availableDates = (dateData && dateData.dates) ? dateData.dates : [];
+        
+        var yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        var defaultDate = yesterday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        
+        // If yesterday has no production data, find the most recent date with data
+        if (availableDates.length > 0 && availableDates.indexOf(defaultDate) === -1) {
+          defaultDate = availableDates[0];
+        }
+
+        if (fpQuality) fpQuality.destroy();
+        fpQuality = flatpickr("#fpy-date-picker", {
+          defaultDate: defaultDate,
+          altInput: true,
+          altFormat: "F j, Y",
+          dateFormat: "M d, Y",
+          enable: availableDates.length > 0 ? availableDates.map(function(d) { return new Date(d); }) : undefined,
+          onChange: function(selectedDates, dateStr) { loadQualityEntry(dateStr); }
+        });
+
+        document.getElementById('fpy-date-picker').value = defaultDate;
+        loadQualityEntry(defaultDate);
+        fetchFPYData(renderFpyHistory);
+      });
+    }
+
     async function submitForm(e) {
       e.preventDefault();
       const itemVal = tsItem.getValue(), lineVal = tsLine.getValue(), timeVal = tsTime.getValue();
@@ -904,7 +929,6 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       // document.getElementById('bg-elements').classList.add('hidden'); // REMOVED so ambient orbs stay visible
       document.getElementById('dashboard-app').classList.remove('hidden');
       if (data && data.authorizedEntry) document.getElementById('btn-goto-entry').classList.remove('hidden');
-      if (data && data.authorizedFPY) document.getElementById('tab-quality').classList.remove('hidden');
       
       // NEW: Load saved chat history based on the user's email
       const savedHistory = localStorage.getItem('alel_ai_chat_' + currentUser.email);
@@ -955,23 +979,6 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           view.classList.add('hidden');
         }
       });
-      // Handle quality tab separately (visibility gated by authorizedFPY)
-      (function(){
-        let qBtn = document.getElementById('tab-quality');
-        let qView = document.getElementById('view-quality');
-        if (!qBtn || !qView) return;
-        if (tab === 'quality') {
-          if (!qBtn.classList.contains('hidden')) {
-            qBtn.classList.add('bg-white', 'text-enovar', 'shadow-sm');
-            qBtn.classList.remove('text-gray-500');
-          }
-          qView.classList.remove('hidden');
-        } else {
-          qBtn.classList.remove('bg-white', 'text-enovar', 'shadow-sm');
-          qBtn.classList.add('text-gray-500');
-          qView.classList.add('hidden');
-        }
-      })();
       
 // Manage Scrollbars and Mobile Padding based on Tab
       const scrollContainer = document.getElementById('dash-scroll-container');
@@ -996,13 +1003,6 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       // Crucial fix for ApexCharts rendering in hidden divs
       setTimeout(() => {
          buildDashboardFilters();
-         var filterContainer = document.getElementById('filter-container');
-         if (tab === 'quality') {
-           if (filterContainer) filterContainer.innerHTML = '';
-           setupQualityTab();
-         } else {
-           if (filterContainer && filterContainer.innerHTML === '') buildDashboardFilters();
-         }
          if (tab === 'management') {
            fetchFPYData(function(fpyRows) {
              renderFPYGauges(fpyRows);
@@ -2406,8 +2406,8 @@ let gaugeOptions = {
           fpyEntryRows.forEach(function(r) { r.saved = true; });
           renderFpyEntryGrid();
           fetchFPYData(function() { renderDashboard(); });
-          fpyDataCache = []; // force reload
-          if (activeDashTab === 'quality') fetchFPYData(renderFpyHistory);
+          fpyDataCache = [];
+          fetchFPYData(renderFpyHistory);
         } else {
           statusEl.textContent = 'Error: ' + (res.error || 'Unknown');
         }
