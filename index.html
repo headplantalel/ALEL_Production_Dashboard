@@ -1886,6 +1886,7 @@ if(fpSummary) fpSummary.destroy();
              type: 'area', // Forces Area chart universally
              height: 350, 
              fontFamily: font,
+             animations: { enabled: false },
              toolbar: { 
                  show: true, 
                  tools: { download: false, selection: false, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true },
@@ -2103,7 +2104,7 @@ if(fpSummary) fpSummary.destroy();
 let gaugeOptions = {
             series: [pctVal],
             labels: ['Target Achieved'],
-            chart: { type: 'radialBar', height: 130, sparkline: { enabled: true } }, // Reduced height heavily
+            chart: { type: 'radialBar', height: 130, sparkline: { enabled: true }, animations: { enabled: false } }, // Reduced height heavily
             plotOptions: {
                 radialBar: {
                     startAngle: -90, endAngle: 90,
@@ -2127,7 +2128,7 @@ let gaugeOptions = {
         let donutOptions = {
             series: Object.values(lineOutput),
             labels: Object.keys(lineOutput),
-            chart: { type: 'donut', height: 230 },
+            chart: { type: 'donut', height: 230, animations: { enabled: false } },
             plotOptions: { donut: { size: '65%' } },
             dataLabels: { enabled: false },
             legend: { 
@@ -2669,7 +2670,7 @@ let gaugeOptions = {
 
       var options = {
         series: [{ name: 'FPY %', data: fpyValues }],
-        chart: { type: 'line', height: 350, toolbar: { show: true } },
+        chart: { type: 'line', height: 350, toolbar: { show: true }, animations: { enabled: false } },
         stroke: { width: 3, curve: 'smooth' },
         markers: { size: 4 },
         colors: ['#8B5CF6'],
@@ -2798,7 +2799,7 @@ let gaugeOptions = {
         if (window.qualityTrendChart) window.qualityTrendChart.destroy();
         window.qualityTrendChart = new ApexCharts(chartEl, {
           series: [{ name: 'FPY %', data: fpyVals }],
-          chart: { type: 'line', height: 230, toolbar: { show: false } },
+          chart: { type: 'line', height: 230, toolbar: { show: false }, animations: { enabled: false } },
           stroke: { width: 3, curve: 'smooth' },
           markers: { size: 3 },
           colors: ['#8B5CF6'],
