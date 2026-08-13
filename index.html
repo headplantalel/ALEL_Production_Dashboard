@@ -53,6 +53,9 @@
     #bg-elements { transform: translateZ(0); backface-visibility: hidden; }
     /* Cap backdrop blur for smooth scrolling — the 24–40px blur re-samples every scroll frame */
     .backdrop-blur-xl, .backdrop-blur-2xl, .backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur, .backdrop-blur-sm { --tw-backdrop-blur: blur(6px); }
+    /* Skeleton loading shimmer */
+    .skeleton { background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%); background-size: 200% 100%; animation: skeletonShimmer 1.4s ease infinite; }
+    @keyframes skeletonShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     .ts-control { padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; background-color: rgba(255,255,255,0.8); transition: all 0.3s ease; }
     .ts-control.focus { border-color: #0D5C58; box-shadow: 0 0 0 3px rgba(13, 92, 88, 0.15); background-color: #FFF; }
     /* TomSelect single-line formatting fix */
@@ -465,6 +468,24 @@
     </div>
     <div id="dash-scroll-container" class="flex-1 w-full overflow-y-auto bg-transparent p-3 sm:p-6 pb-16 relative">
       
+      <!-- Loading Skeleton (shown while first data fetch is in progress) -->
+      <div id="dashboard-skeleton" class="hidden w-full space-y-4 max-w-7xl mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <div class="skeleton h-24 rounded-[1.5rem]"></div>
+          <div class="skeleton h-24 rounded-[1.5rem]"></div>
+          <div class="skeleton h-24 rounded-[1.5rem]"></div>
+          <div class="skeleton h-24 rounded-[1.5rem]"></div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div class="skeleton h-72 lg:col-span-2 rounded-[1.5rem]"></div>
+          <div class="skeleton h-72 rounded-[1.5rem]"></div>
+        </div>
+        <div class="flex items-center justify-center gap-2 pt-2 text-xs font-medium text-gray-400">
+          <svg class="animate-spin h-4 w-4 text-enovar" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          Loading data...
+        </div>
+      </div>
+      
       <div id="view-section" class="w-full space-y-4">
         <div id="section-charts-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-2 items-start">
           </div>
@@ -715,7 +736,7 @@
        </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7rIwY4zPz0KlbXSIj6BBgjOc506TV-AMcEIckrOw02Ldike87J0rxYJ0nYVYX4yYaPQ/exec"; 
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTZ5eC5s8u19mm-n9LDhbHkFUJd1xivY0BDBUgOxC5iMrGjaFfjBkd0jAHb0QaH63FYw/exec"; 
     
     let tsItem, tsLine, tsTime;
     let tsDashItem, tsDashVisibleCharts; 
@@ -1028,6 +1049,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       
       document.getElementById('loader-text').innerText = "Loading Analytics...";
       document.getElementById('loader').classList.remove('hidden');
+      document.getElementById('dashboard-skeleton').classList.remove('hidden');
       fetchDashboardData(true);
       syncTimer = setInterval(() => { fetchDashboardData(false); }, 60000);
     }
@@ -1047,7 +1069,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       
       callAPI(payload, function(data) {
         if(isInitialLoad) document.getElementById('loader').classList.add('hidden');
-        if (data.error) return; 
+        if (data.error) { document.getElementById('dashboard-skeleton').classList.add('hidden'); return; } 
         var newRaw = data.raw || [];
         // Lightweight fingerprint to skip chart re-render when data is unchanged.
         // Data is still fetched every 60s (all tabs stay fresh); only the expensive
@@ -1060,6 +1082,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         rawDashboardData = newRaw;
         if (isInitialLoad) {
           lastRawFingerprint = fp;
+          document.getElementById('dashboard-skeleton').classList.add('hidden');
           switchDashTab(activeDashTab);
         } else if (changed) {
           lastRawFingerprint = fp;
@@ -1726,10 +1749,10 @@ if(fpSummary) fpSummary.destroy();
               lineFPY[r.line].defective += r.defective;
             });
             Object.keys(lineFPY).forEach(function(l) {
-              var f = lineFPY[l].produced > 0 ? ((lineFPY[l].produced - lineFPY[l].defective) / lineFPY[l].produced * 100) : 100;
+              var f = (lineFPY[l].produced + lineFPY[l].defective) > 0 ? ((lineFPY[l].produced / (lineFPY[l].produced + lineFPY[l].defective)) * 100) : 100;
               if (f < worstFPY) { worstFPY = f; worstLine = l; }
             });
-            var avgFPY = totalProd > 0 ? ((totalProd - totalDef) / totalProd * 100) : 0;
+            var avgFPY = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
             var belowThreshold = fpyRows.filter(function(r) { return r.fpy < 90; }).length;
 
             document.getElementById('master-kpi-prod').innerText = avgFPY.toFixed(1) + '%';
@@ -2434,7 +2457,7 @@ let gaugeOptions = {
 
       fpyEntryRows.forEach(function(r, i) {
         var defVal = parseFloat(r.defective) || 0;
-        var fpy = r.produced > 0 ? ((r.produced - defVal) / r.produced * 100) : 0;
+        var fpy = (r.produced + defVal) > 0 ? ((r.produced / (r.produced + defVal)) * 100) : 0;
         var fpyColor = r.defective !== '' && r.defective !== null ? getFPYColor(fpy) : 'text-gray-400';
 
         // Desktop table row
@@ -2461,7 +2484,7 @@ let gaugeOptions = {
       var val = inputs.length > 0 ? (parseFloat(inputs[0].value) || 0) : 0;
       fpyEntryRows[idx].defective = val;
       var r = fpyEntryRows[idx];
-      var fpy = r.produced > 0 ? ((r.produced - val) / r.produced * 100) : 0;
+      var fpy = (r.produced + val) > 0 ? ((r.produced / (r.produced + val)) * 100) : 0;
       var previews = document.querySelectorAll('#fpy-preview-' + idx);
       var color = fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500';
       previews.forEach(function(el) {
@@ -2549,7 +2572,7 @@ let gaugeOptions = {
 
       var totalProd = 0, totalDef = 0;
       todayRows.forEach(function(r) { totalProd += r.produced; totalDef += r.defective; });
-      var fpy = totalProd > 0 ? ((totalProd - totalDef) / totalProd * 100) : 0;
+      var fpy = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
       var color = fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500';
       kpiEl.innerText = fpy.toFixed(1) + '%';
       kpiEl.className = 'text-2xl sm:text-3xl font-black ' + color + ' leading-none';
@@ -2562,7 +2585,7 @@ let gaugeOptions = {
       if (yesterdayRows.length > 0) {
         var yProd = 0, yDef = 0;
         yesterdayRows.forEach(function(r) { yProd += r.produced; yDef += r.defective; });
-        var yFPY = yProd > 0 ? ((yProd - yDef) / yProd * 100) : 0;
+        var yFPY = (yProd + yDef) > 0 ? ((yProd / (yProd + yDef)) * 100) : 0;
         var delta = fpy - yFPY;
         var deltaColor = delta >= 0 ? 'text-emerald-500' : 'text-red-500';
         var arrow = delta >= 0 ? '↑' : '↓';
@@ -2602,7 +2625,7 @@ let gaugeOptions = {
 
       container.innerHTML = '';
       lines.forEach(function(l) {
-        var fpy = l.produced > 0 ? ((l.produced - l.defective) / l.produced * 100) : 0;
+        var fpy = (l.produced + l.defective) > 0 ? ((l.produced / (l.produced + l.defective)) * 100) : 0;
         var color = fpy >= 95 ? '#10B981' : fpy >= 90 ? '#F59E0B' : '#EF4444';
         var circumference = 2 * Math.PI * 15.5;
         var offset = circumference - (Math.min(fpy, 100) / 100) * circumference;
@@ -2662,7 +2685,7 @@ let gaugeOptions = {
       var dates = Object.keys(dateMap).sort();
       var fpyValues = dates.map(function(d) {
         var dm = dateMap[d];
-        return dm.produced > 0 ? ((dm.produced - dm.defective) / dm.produced * 100) : null;
+          return (dm.produced + dm.defective) > 0 ? ((dm.produced / (dm.produced + dm.defective)) * 100) : null;
       });
 
       if (window.masterTrendChart) window.masterTrendChart.destroy();
@@ -2727,10 +2750,10 @@ let gaugeOptions = {
           lineData[r.line].defective += r.defective;
         });
 
-        var avgFPY = totalProd > 0 ? ((totalProd - totalDef) / totalProd * 100) : 0;
+        var avgFPY = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
         var worstLine = '', worstFPY = 100;
         Object.keys(lineData).forEach(function(l) {
-          var f = lineData[l].produced > 0 ? ((lineData[l].produced - lineData[l].defective) / lineData[l].produced * 100) : 100;
+          var f = (lineData[l].produced + lineData[l].defective) > 0 ? ((lineData[l].produced / (lineData[l].produced + lineData[l].defective)) * 100) : 100;
           if (f < worstFPY) { worstFPY = f; worstLine = l; }
         });
 
@@ -2748,7 +2771,7 @@ let gaugeOptions = {
         gaugeRowMobile.innerHTML = '';
         Object.keys(lineData).forEach(function(l) {
           var d = lineData[l];
-          var fpy = d.produced > 0 ? ((d.produced - d.defective) / d.produced * 100) : 0;
+          var fpy = (d.produced + d.defective) > 0 ? ((d.produced / (d.produced + d.defective)) * 100) : 0;
           var color = fpy >= 95 ? '#10B981' : fpy >= 90 ? '#F59E0B' : '#EF4444';
           var circ = 2 * Math.PI * 15.5;
           var off = circ - (Math.min(fpy, 100) / 100) * circ;
@@ -2792,7 +2815,7 @@ let gaugeOptions = {
         var dates = Object.keys(dateMap).sort();
         var fpyVals = dates.map(function(d) {
           var dm = dateMap[d];
-          return dm.produced > 0 ? ((dm.produced - dm.defective) / dm.produced * 100) : null;
+        return (dm.produced + dm.defective) > 0 ? ((dm.produced / (dm.produced + dm.defective)) * 100) : null;
         });
 
         if (window.qualityTrendChart) window.qualityTrendChart.destroy();
