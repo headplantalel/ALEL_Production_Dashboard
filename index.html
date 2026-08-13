@@ -273,13 +273,15 @@
   <div id="app" class="hidden bg-white/40 backdrop-blur-2xl p-6 sm:p-8 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] max-w-xl w-full border border-white z-20 overflow-hidden box-border">
     
     <!-- Top Header: Logo + Tagline beside it on laptop view -->
-    <div class="flex justify-between items-center gap-4 mb-6 pb-4 border-b border-gray-200/50">
-      <div class="flex items-center gap-3 shrink-0">
+    <div class="flex flex-wrap justify-between items-center gap-x-4 gap-y-2 mb-6 pb-4 border-b border-gray-200/50">
+      <div class="flex items-center gap-3 shrink-0 min-w-0">
         <img src="pulse.png" alt="ALEL Pulse" class="h-6 sm:h-8 object-contain shrink-0">
         <span class="hidden md:block text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] border-l border-gray-300 pl-3">Real-Time Production Telemetry & Analytics</span>
       </div>
-      <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[9px] sm:text-[10px] font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Dashboard</button>
-      <button id="btn-goto-fpy" onclick="openQualityEntry()" class="hidden text-[9px] sm:text-[10px] font-bold text-purple-700 bg-purple-50/80 hover:bg-purple-100 hover:text-purple-800 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-purple-200 shadow-sm shrink-0">Quality Entry</button>
+      <div class="flex items-center gap-2 flex-wrap shrink-0">
+        <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[9px] sm:text-[10px] font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Dashboard</button>
+        <button id="btn-goto-fpy" onclick="openQualityEntry()" class="hidden text-[9px] sm:text-[10px] font-bold text-purple-700 bg-purple-50/80 hover:bg-purple-100 hover:text-purple-800 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-purple-200 shadow-sm shrink-0">Quality Entry</button>
+      </div>
     </div>
     
     <form id="prodForm" onsubmit="submitForm(event)" class="space-y-4">
