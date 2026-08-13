@@ -31,26 +31,19 @@
   <link rel="apple-touch-icon" href="pulse.png">
   
   <title>ALEL Pulse</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://accounts.google.com" crossorigin>
+  <link href="output.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts" defer></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: { enovar: { DEFAULT: '#0D5C58', light: '#13827d', dark: '#083836' } },
-          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], serif: ['Playfair Display', 'Georgia', 'serif'] }
-        }
-      }
-    }
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
   
   <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js" defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
   <style>
@@ -726,6 +719,7 @@
     let targetPortal = null; 
     let masterAuthData = null; 
     let rawDashboardData = []; 
+    let lastRawFingerprint = '';
     let activeDashTab = localStorage.getItem('activeDashTab') || 'section';
 let dashFilters = JSON.parse(localStorage.getItem('dashFilters')) || {};
 
@@ -1049,9 +1043,23 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       callAPI(payload, function(data) {
         if(isInitialLoad) document.getElementById('loader').classList.add('hidden');
         if (data.error) return; 
-        rawDashboardData = data.raw; 
-        if(isInitialLoad) switchDashTab(activeDashTab); 
-        else renderDashboard(); 
+        var newRaw = data.raw || [];
+        // Lightweight fingerprint to skip chart re-render when data is unchanged.
+        // Data is still fetched every 60s (all tabs stay fresh); only the expensive
+        // destroy+recreate of ApexCharts is skipped when nothing changed.
+        var fp = newRaw.length;
+        var qtySum = 0, mpSum = 0;
+        for (var i = 0; i < newRaw.length; i++) { qtySum += newRaw[i].qty || 0; mpSum += newRaw[i].mp || 0; }
+        fp += '|' + qtySum + '|' + mpSum;
+        var changed = (fp !== lastRawFingerprint);
+        rawDashboardData = newRaw;
+        if (isInitialLoad) {
+          lastRawFingerprint = fp;
+          switchDashTab(activeDashTab);
+        } else if (changed) {
+          lastRawFingerprint = fp;
+          renderDashboard();
+        }
       });
     }
 

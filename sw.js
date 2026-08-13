@@ -1,7 +1,8 @@
-var CACHE = 'alel-pulse-v2';
+var CACHE = 'alel-pulse-v3';
 var URLS = [
   '/',
   '/index.html',
+  '/output.css',
   '/manifest.json',
   '/pulse.png',
   '/alel.png',
