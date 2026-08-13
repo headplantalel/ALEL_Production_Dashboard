@@ -47,7 +47,11 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
   <style>
-    body { background: linear-gradient(135deg, #F4F7F6 0%, #E6EDEB 100%); background-attachment: fixed; }
+    body { background: linear-gradient(135deg, #F4F7F6 0%, #E6EDEB 100%); background-attachment: scroll; }
+    html { min-height: 100%; }
+    /* GPU-promote the fixed ambient background so it composites once and never repaints on scroll */
+    #bg-elements, #bg-elements > div { transform: translateZ(0); will-change: transform, opacity; backface-visibility: hidden; }
+    #bg-elements > div[style*="radial-gradient"] { animation: none; }
     .ts-control { padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; background-color: rgba(255,255,255,0.8); transition: all 0.3s ease; }
     .ts-control.focus { border-color: #0D5C58; box-shadow: 0 0 0 3px rgba(13, 92, 88, 0.15); background-color: #FFF; }
     /* TomSelect single-line formatting fix */
@@ -162,8 +166,8 @@
   <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-slate-200">
     <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 1px, transparent 1px); background-size: 24px 24px; opacity: 0.06;"></div>
     <!-- Slow pulsing ambient orbs -->
-    <div class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-enovar/10 blur-[100px] animate-pulse" style="animation-duration: 8s;"></div>
-    <div class="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-blue-100/50 blur-[120px] animate-pulse" style="animation-duration: 12s;"></div>
+    <div class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-enovar/10 blur-[40px] animate-pulse" style="animation-duration: 8s;"></div>
+    <div class="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-blue-100/50 blur-[60px] animate-pulse" style="animation-duration: 12s;"></div>
   </div>
 
   <div id="landing-view" class="w-full h-[100dvh] flex flex-col items-center justify-center z-10 relative overflow-hidden">
