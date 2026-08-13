@@ -51,7 +51,6 @@
     html { min-height: 100%; }
     /* GPU-promote the fixed ambient background so it composites once and never repaints on scroll */
     #bg-elements { transform: translateZ(0); backface-visibility: hidden; }
-    #bg-elements > div[style*="animation-duration"] { transform: translateZ(0); will-change: transform, opacity; backface-visibility: hidden; }
     /* Cap backdrop blur for smooth scrolling — the 24–40px blur re-samples every scroll frame */
     .backdrop-blur-xl, .backdrop-blur-2xl, .backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur, .backdrop-blur-sm { --tw-backdrop-blur: blur(6px); }
     .ts-control { padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; background-color: rgba(255,255,255,0.8); transition: all 0.3s ease; }
@@ -167,9 +166,9 @@
   <!-- Ambient High-Contrast Glass Background -->
   <div id="bg-elements" class="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-slate-200">
     <div class="absolute inset-0" style="background-image: radial-gradient(#0D5C58 1px, transparent 1px); background-size: 24px 24px; opacity: 0.06;"></div>
-    <!-- Slow pulsing ambient orbs -->
-    <div class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-enovar/10 blur-[40px] animate-pulse" style="animation-duration: 8s;"></div>
-    <div class="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-blue-100/50 blur-[60px] animate-pulse" style="animation-duration: 12s;"></div>
+    <!-- Static ambient orbs (no animation — keeps GPU idle) -->
+    <div class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-enovar/10 blur-[40px]"></div>
+    <div class="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-blue-100/50 blur-[60px]"></div>
   </div>
 
   <div id="landing-view" class="w-full h-[100dvh] flex flex-col items-center justify-center z-10 relative overflow-hidden">
