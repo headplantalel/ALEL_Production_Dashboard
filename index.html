@@ -50,8 +50,10 @@
     body { background: linear-gradient(135deg, #F4F7F6 0%, #E6EDEB 100%); background-attachment: scroll; }
     html { min-height: 100%; }
     /* GPU-promote the fixed ambient background so it composites once and never repaints on scroll */
-    #bg-elements, #bg-elements > div { transform: translateZ(0); will-change: transform, opacity; backface-visibility: hidden; }
-    #bg-elements > div[style*="radial-gradient"] { animation: none; }
+    #bg-elements { transform: translateZ(0); backface-visibility: hidden; }
+    #bg-elements > div[style*="animation-duration"] { transform: translateZ(0); will-change: transform, opacity; backface-visibility: hidden; }
+    /* Cap backdrop blur for smooth scrolling — the 24–40px blur re-samples every scroll frame */
+    .backdrop-blur-xl, .backdrop-blur-2xl, .backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur, .backdrop-blur-sm { --tw-backdrop-blur: blur(6px); }
     .ts-control { padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid #D1D5DB; background-color: rgba(255,255,255,0.8); transition: all 0.3s ease; }
     .ts-control.focus { border-color: #0D5C58; box-shadow: 0 0 0 3px rgba(13, 92, 88, 0.15); background-color: #FFF; }
     /* TomSelect single-line formatting fix */
