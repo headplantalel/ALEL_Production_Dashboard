@@ -717,7 +717,7 @@
        </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl5NWePzanx4cABTYDI4742vwMbF3gJLwROT-LeqAMwfD_aLDhBwgNyeBsDmavktutIw/exec"; 
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7rIwY4zPz0KlbXSIj6BBgjOc506TV-AMcEIckrOw02Ldike87J0rxYJ0nYVYX4yYaPQ/exec"; 
     
     let tsItem, tsLine, tsTime;
     let tsDashItem, tsDashVisibleCharts; 
@@ -873,6 +873,10 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
             var fpyBtn = document.getElementById('btn-goto-fpy');
             if (fpyBtn) fpyBtn.classList.remove('hidden');
           }
+          // Refresh entry dropdowns with fresh master data (times/lines/items may have changed)
+          if (targetPortal === 'entry' && !document.getElementById('app').classList.contains('hidden')) {
+            refreshEntryDropdowns(data);
+          }
         });
       } else {
         document.getElementById('loader').classList.remove('hidden');
@@ -930,6 +934,25 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false });
       tsLine = new TomSelect("#line", { allowEmptyOption: true, create: false });
       tsTime = new TomSelect("#time", { allowEmptyOption: true, create: false });
+    }
+
+    function refreshEntryDropdowns(data) {
+      // Update TomSelect options with fresh master data without resetting the form
+      if (tsItem && data.items) {
+        tsItem.clear(); tsItem.clearOptions();
+        data.items.forEach(i => tsItem.addOption({ value: i, text: i }));
+        tsItem.refreshOptions(false);
+      }
+      if (tsLine && data.lines) {
+        tsLine.clear(); tsLine.clearOptions();
+        data.lines.forEach(l => tsLine.addOption({ value: l, text: l }));
+        tsLine.refreshOptions(false);
+      }
+      if (tsTime && data.times) {
+        tsTime.clear(); tsTime.clearOptions();
+        data.times.forEach(t => tsTime.addOption({ value: t, text: t }));
+        tsTime.refreshOptions(false);
+      }
     }
 
     function setupQualityAppUI(data) {
