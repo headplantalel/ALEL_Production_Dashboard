@@ -1997,18 +1997,14 @@ if(fpSummary) fpSummary.destroy();
               enabled: true,
               intersect: false,
               custom: function({series, seriesIndex, dataPointIndex, w}) {
-                  let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-                  
-                  // Dynamically swap the tooltip metric based on what the chart is showing
-                  let dynamicMetricHTML = '';
-                  if (currentMetric === 'quantity') {
-                      // If chart shows Qty, calculate and show Productivity in the tooltip
-                      let prodVal = data.mp > 0 ? (data.qty / data.mp).toFixed(1) : 0;
-                      dynamicMetricHTML = `<div style="margin-bottom: 2px;">Productivity: <span style="color: #10B981;">${prodVal}</span></div>`;
-                  } else {
-                      // If chart shows Productivity, show Qty in the tooltip
-                      dynamicMetricHTML = `<div style="margin-bottom: 2px;">Prod Qty: <span style="color: #60A5FA;">${data.qty}</span></div>`;
-                  }
+                   let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                   
+                   // Always show both Production Qty and Productivity (normalized by run time)
+                   let prodVal = (data.mp > 0 && (data.minutes || 60) > 0) ? (data.qty / (data.mp * (data.minutes || 60) / 60)).toFixed(1) : 0;
+                   let dynamicMetricHTML = `
+                     <div style="margin-bottom: 2px;">Prod Qty: <span style="color: #60A5FA;">${data.qty}</span></div>
+                     <div style="margin-bottom: 2px;">Productivity: <span style="color: #10B981;">${prodVal}</span></div>
+                   `;
                   
                    let remarksHTML = '';
                    if (data.remarks && data.remarks.trim()) {
