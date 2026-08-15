@@ -427,7 +427,7 @@
           <select id="time" required></select>
         </div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label for="manpower" data-i18n="manpower" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Manpower</label>
           <input type="number" id="manpower" name="manpower" inputmode="numeric" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
@@ -435,6 +435,10 @@
         <div>
           <label for="production" data-i18n="production_qty" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Production Qty</label>
           <input type="number" id="production" name="production" inputmode="numeric" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
+        </div>
+        <div>
+          <label for="minutes" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide"><span data-i18n="operating_minutes">Operating Minutes</span> <span data-i18n="full_hour_hint" class="text-gray-400 font-normal normal-case">(60 = full hour)</span></label>
+          <input type="number" id="minutes" name="minutes" inputmode="numeric" min="1" max="60" value="60" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
         </div>
       </div>
       <div>
@@ -1184,7 +1188,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         daily_view: "Daily View", monthly_view: "Monthly View", view_production: "View: Production", view_quality_fpy: "View: Quality / FPY", all_pgs: "All PGs",
         today: "Today", yesterday: "Yesterday", last_7_days: "Last 7 Days", last_30_days: "Last 30 Days", all_time: "All Time", date_range: "Date Range",
         last_6_months: "Last 6 Months", last_1_year: "Last 1 Year", month_range: "Month Range", to: "to", search_item: "Search Item…", last_hour: "Last Hour",
-        select_line: "Select Line…", select_time: "Select Time…"
+        select_line: "Select Line…", select_time: "Select Time…",
+        operating_minutes: "Operating Minutes", full_hour_hint: "60 = full hour"
       },
       bn: {
         select_workspace: "ওয়ার্কস্পেস নির্বাচন করুন",
@@ -1212,7 +1217,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         daily_view: "দৈনিক ভিউ", monthly_view: "মাসিক ভিউ", view_production: "দেখুন: উৎপাদন", view_quality_fpy: "দেখুন: কোয়ালিটি / FPY", all_pgs: "সব PG",
         today: "আজ", yesterday: "গতকাল", last_7_days: "শেষ ৭ দিন", last_30_days: "শেষ ৩০ দিন", all_time: "সব সময়", date_range: "তারিখের পরিসীমা",
         last_6_months: "শেষ ৬ মাস", last_1_year: "শেষ ১ বছর", month_range: "মাসের পরিসীমা", to: "থেকে", search_item: "আইটেম খুঁজুন…", last_hour: "শেষ ঘণ্টা",
-        select_line: "লাইন নির্বাচন করুন…", select_time: "সময় নির্বাচন করুন…"
+        select_line: "লাইন নির্বাচন করুন…", select_time: "সময় নির্বাচন করুন…",
+        operating_minutes: "অপারেটিং মিনিট", full_hour_hint: "৬০ = পূর্ণ ঘণ্টা"
       }
     };
     var currentLang = 'en';
@@ -1333,17 +1339,18 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       e.preventDefault();
       const itemVal = tsItem.getValue(), lineVal = tsLine.getValue(), timeVal = tsTime.getValue();
       const manpowerVal = document.getElementById('manpower').value, productionVal = document.getElementById('production').value;
+      const minutesVal = document.getElementById('minutes').value;
       
       if (!itemVal || !lineVal || !timeVal) { showToast(t('complete_dropdowns'), "error"); return; }
       
       const btn = document.getElementById('submitBtn'); btn.innerText = t('loading') + '…';
       const remarksVal = document.getElementById('remarks').value;
-      const formData = { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal, remarks: remarksVal };
+      const formData = { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal, minutes: minutesVal || 60, remarks: remarksVal };
       
       callAPI({ action: "submit", email: currentUser.email, formData: formData }, function(data) {
         btn.innerText = t('submit_entry');
         if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
-          document.getElementById('manpower').value = ''; document.getElementById('production').value = ''; document.getElementById('remarks').value = '';
+          document.getElementById('manpower').value = ''; document.getElementById('production').value = ''; document.getElementById('remarks').value = ''; document.getElementById('minutes').value = '60';
           tsItem.clear(); tsLine.clear(); tsTime.clear();
           document.getElementById('successMsg').classList.remove('hidden');
           setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3000);
@@ -1709,7 +1716,7 @@ if(fpSummary) fpSummary.destroy();
           let t = row.time.trim();
           let key = row.line + '::' + row.itemCode + '::' + row.item;
           if (!lineItemData[key]) lineItemData[key] = { line: row.line, itemStr: `[${row.itemCode}] - ${row.item}`, times: {} };
-          if (!lineItemData[key].times[t]) lineItemData[key].times[t] = { act: 0, tgt: 0, qty: 0, mp: 0, count: 0 };
+          if (!lineItemData[key].times[t]) lineItemData[key].times[t] = { act: 0, tgt: 0, qty: 0, mp: 0, count: 0, minutes: 60 };
           
           lineItemData[key].times[t].qty += row.qty;
           lineItemData[key].times[t].mp += row.mp;
@@ -1717,6 +1724,7 @@ if(fpSummary) fpSummary.destroy();
           lineItemData[key].times[t].tgt += row.targetProductivity;
           lineItemData[key].times[t].count++;
           if (row.remarks) lineItemData[key].times[t].remarks = row.remarks;
+          if (row.minutes) lineItemData[key].times[t].minutes = row.minutes;
         });
 
         let visListHtml = '';
@@ -1738,8 +1746,9 @@ if(fpSummary) fpSummary.destroy();
           let actData = [], targetArr = [], qtyArr = [], mpArr = [];
           let hasData = false, latestTarget = 0;
           
-           let lastValidTime = "N/A", lastQty = 0, lastMp = 0, lastAct = 0, lastTgt = 0;
-          let revRemarks = [];
+           let lastValidTime = "N/A", lastQty = 0, lastMp = 0, lastAct = 0, lastTgt = 0, lastMinutes = 60;
+           let minArr = [];
+           let revRemarks = [];
 
           sortedTimes.forEach(t => {
             let cell = lineItemData[key].times[t];
@@ -1748,35 +1757,37 @@ if(fpSummary) fpSummary.destroy();
                let tgt = parseFloat((cell.tgt / cell.count).toFixed(1));
                let expectedQty = parseFloat((tgt * cell.mp).toFixed(0));
                
-               lastValidTime = t;
-               lastQty = cell.qty;
-               lastMp = cell.mp;
-               lastAct = act;
-               lastTgt = tgt;
-               
-               if (currentMetric === 'productivity') {
-                   actData.push(act);
-                   targetArr.push(tgt);
-               } else {
-                   actData.push(cell.qty);
-                   targetArr.push(expectedQty);
-               }
-               
-                if(tgt > 0) latestTarget = tgt; 
-               qtyArr.push(cell.qty); mpArr.push(cell.mp); revRemarks.push(cell.remarks || '');
-               hasData = true;
-            } else {
-               actData.push(null); targetArr.push(0); qtyArr.push(0); mpArr.push(0); revRemarks.push('');
+                lastValidTime = t;
+                lastQty = cell.qty;
+                lastMp = cell.mp;
+                lastAct = act;
+                lastTgt = tgt;
+                lastMinutes = cell.minutes;
+                
+                if (currentMetric === 'productivity') {
+                    actData.push(act);
+                    targetArr.push(tgt);
+                } else {
+                    actData.push(cell.qty);
+                    targetArr.push(expectedQty);
+                }
+                
+                 if(tgt > 0) latestTarget = tgt; 
+                qtyArr.push(cell.qty); mpArr.push(cell.mp); minArr.push(cell.minutes || 60); revRemarks.push(cell.remarks || '');
+                hasData = true;
+             } else {
+                actData.push(null); targetArr.push(0); qtyArr.push(0); mpArr.push(0); minArr.push(60); revRemarks.push('');
             }
           });
           if (!hasData) return;
 
-           let revTimes = [...sortedTimes].reverse(); 
-           let revActData = [...actData].reverse();
-           let revTargetArr = [...targetArr].reverse();
-           let revQtyArr = [...qtyArr].reverse();
-           let revMpArr = [...mpArr].reverse();
-           revRemarks = revRemarks.reverse();
+            let revTimes = [...sortedTimes].reverse(); 
+            let revActData = [...actData].reverse();
+            let revTargetArr = [...targetArr].reverse();
+            let revQtyArr = [...qtyArr].reverse();
+            let revMpArr = [...mpArr].reverse();
+            let revMinArr = [...minArr].reverse();
+            revRemarks = revRemarks.reverse();
 
           let barColors = [];
           let seriesData = revTimes.map((t, i) => {
@@ -1788,14 +1799,15 @@ if(fpSummary) fpSummary.destroy();
              
              barColors.push(isUnderperforming ? '#EF4444' : '#0D5C58');
 
-              return {
-                  x: getOrdinal(sortedTimes.indexOf(t) + 1), 
-                  y: actVal,
-                  realTime: t,
-                  qty: revQtyArr[i],
-                  mp: revMpArr[i],
-                  remarks: revRemarks[i] || '',
-                  target: tgtForThisHour,
+               return {
+                   x: getOrdinal(sortedTimes.indexOf(t) + 1), 
+                   y: actVal,
+                   realTime: t,
+                   qty: revQtyArr[i],
+                   mp: revMpArr[i],
+                   minutes: revMinArr[i],
+                   remarks: revRemarks[i] || '',
+                   target: tgtForThisHour,
                  // ONLY add individual bar markers if we are in Quantity mode
                  goals: (currentMetric === 'quantity' && tgtForThisHour > 0) ? [{
                      name: 'Target',
@@ -1831,7 +1843,7 @@ if(fpSummary) fpSummary.destroy();
           let tooltipText = '';
           if (lastValidTime !== "N/A") {
              let headerDisplayTgt = currentMetric === 'productivity' ? lastTgt : Math.round(lastTgt * lastMp);
-             tooltipText = `${t('last_hour')}: ${lastValidTime} — Q: ${lastQty} · M: ${lastMp} · P: ${lastAct} · T: ${headerDisplayTgt}`;
+             tooltipText = `${t('last_hour')}: ${lastValidTime} — Q: ${lastQty} · M: ${lastMp} · P: ${lastAct} · T: ${headerDisplayTgt} · ${t('operating_minutes')}: ${lastMinutes}m`;
           }
 
           // Added flex-col and sm:flex-row to make it wrap properly on mobile phones
@@ -1916,6 +1928,29 @@ if(fpSummary) fpSummary.destroy();
             }
           });
 
+          // Amber dot indicators for bars where the line ran less than a full hour
+          let minutesAnnotations = [];
+          seriesData.forEach((d, i) => {
+            if (d.minutes && d.minutes < 60) {
+              minutesAnnotations.push({
+                x: d.y + (currentMetric === 'quantity' ? maxAct * 0.03 : 1) + (currentMetric === 'quantity' ? maxAct * 0.05 : 1.5),
+                y: d.x,
+                marker: {
+                  size: 7,
+                  fillColor: '#F59E0B',
+                  strokeColor: '#fff',
+                  strokeWidth: 1.5,
+                  radius: 3
+                },
+                label: {
+                  text: '',
+                  borderColor: 'transparent',
+                  style: { background: 'transparent' }
+                }
+              });
+            }
+          });
+
           let options = {
             chart: { 
                type: 'bar', height: chartHeight, toolbar: { show: false }, zoom: {enabled: false}, 
@@ -1977,7 +2012,7 @@ if(fpSummary) fpSummary.destroy();
                    } 
                }] : [],
                 // INJECT the grouped quantity labels here + blue dot remarks
-                points: qtyAnnotations.concat(remarksAnnotations)
+                points: qtyAnnotations.concat(remarksAnnotations).concat(minutesAnnotations)
             },
             tooltip: {
               enabled: true,
@@ -2001,10 +2036,16 @@ if(fpSummary) fpSummary.destroy();
                      remarksHTML = `<div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid #374151; color: #93C5FD; font-size: 10px; font-style: italic;">💬 ${data.remarks}</div>`;
                    }
                    
+                   let minutesHTML = '';
+                   if (data.minutes && data.minutes < 60) {
+                     minutesHTML = `<div style="margin-top: 2px; color: #FBBF24; font-size: 10px;">⏱ ${data.minutes} min</div>`;
+                   }
+                   
                    return `<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; background: #1F2937; color: white; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                        <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #374151; color: #9CA3AF; font-size: 10px; text-transform: uppercase;">Time Slot: ${data.realTime}</div>
                        ${dynamicMetricHTML}
                        <div>Manpower: <span style="color: #F87171;">${data.mp}</span></div>
+                       ${minutesHTML}
                        ${remarksHTML}
                    </div>`;
               }
