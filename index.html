@@ -1933,14 +1933,14 @@ if(fpSummary) fpSummary.destroy();
           seriesData.forEach((d, i) => {
             if (d.minutes && d.minutes < 60) {
               minutesAnnotations.push({
-                x: d.y + (currentMetric === 'quantity' ? maxAct * 0.03 : 1) + (currentMetric === 'quantity' ? maxAct * 0.05 : 1.5),
+                x: d.y + maxAct * 0.07,
                 y: d.x,
                 marker: {
-                  size: 7,
+                  size: 9,
                   fillColor: '#F59E0B',
                   strokeColor: '#fff',
-                  strokeWidth: 1.5,
-                  radius: 3
+                  strokeWidth: 2,
+                  radius: 4
                 },
                 label: {
                   text: '',
@@ -2036,10 +2036,10 @@ if(fpSummary) fpSummary.destroy();
                      remarksHTML = `<div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid #374151; color: #93C5FD; font-size: 10px; font-style: italic;">💬 ${data.remarks}</div>`;
                    }
                    
-                   let minutesHTML = '';
-                   if (data.minutes && data.minutes < 60) {
-                     minutesHTML = `<div style="margin-top: 2px; color: #FBBF24; font-size: 10px;">⏱ ${data.minutes} min</div>`;
-                   }
+                    let minutesHTML = '';
+                    if (data.minutes && data.minutes < 60) {
+                      minutesHTML = `<div style="margin-top: 4px; color: #FBBF24; font-size: 11px; font-weight: 700;">⏱ ${data.minutes} min run time</div>`;
+                    }
                    
                    return `<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; background: #1F2937; color: white; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                        <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #374151; color: #9CA3AF; font-size: 10px; text-transform: uppercase;">Time Slot: ${data.realTime}</div>
