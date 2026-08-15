@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://accounts.google.com" crossorigin>
   <link href="output.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/apexcharts" defer></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
@@ -53,8 +53,6 @@
     #bg-elements { transform: translateZ(0); backface-visibility: hidden; }
     /* Cap backdrop blur for smooth scrolling — the 24–40px blur re-samples every scroll frame */
     .backdrop-blur-xl, .backdrop-blur-2xl, .backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur, .backdrop-blur-sm { --tw-backdrop-blur: blur(6px); }
-    /* Brand serif display face (Playfair already loaded) for main headings */
-    .font-display { font-family: 'Playfair Display', Georgia, serif; }
     /* Smooth, visible keyboard focus ring */
     a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #0D5C58; outline-offset: 2px; border-radius: 0.375rem; }
     /* Respect users who prefer reduced motion */
@@ -192,7 +190,7 @@
       <!-- Central Brand Identity -->
       <div class="flex flex-col items-center justify-center animate-fade-up opacity-0 drop-shadow-sm mb-10">
         <img src="pulse.png" alt="ALEL Pulse" class="h-[96px] md:h-[130px] object-contain mb-5 transition-transform duration-700 hover:scale-105">
-        <p class="font-display italic text-lg md:text-2xl text-enovar-dark text-center leading-snug">Real-Time Production Telemetry &amp; Analytics</p>
+        <p class="text-lg md:text-2xl font-semibold text-enovar-dark text-center leading-snug tracking-tight">Real-Time Production Telemetry &amp; Analytics</p>
       </div>
 
       <!-- Capsule Badge -->
@@ -209,7 +207,7 @@
           <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-enovar/10 group-hover:border-enovar/20 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
             <svg class="w-6 h-6 text-slate-400 group-hover:text-enovar transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
           </div>
-          <h3 class="font-display text-2xl font-semibold text-slate-900 mb-3 tracking-tight">Data Entry</h3>
+          <h3 class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Data Entry</h3>
           <p class="text-sm text-slate-500 font-medium leading-relaxed">Log real-time shift metrics, manpower deployments, and production yields with precision.</p>
         </button>
 
@@ -218,7 +216,7 @@
           <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-enovar/10 group-hover:border-enovar/20 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
             <svg class="w-6 h-6 text-slate-400 group-hover:text-enovar transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           </div>
-          <h3 class="font-display text-2xl font-semibold text-slate-900 mb-3 tracking-tight">Dashboard</h3>
+          <h3 class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Dashboard</h3>
           <p class="text-sm text-slate-500 font-medium leading-relaxed">Access live operational analytics, AI-driven insights, and master data overviews.</p>
         </button>
 
@@ -227,7 +225,7 @@
           <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-purple-100/50 group-hover:border-purple-300/30 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
             <svg class="w-6 h-6 text-slate-400 group-hover:text-purple-600 transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           </div>
-          <h3 class="font-display text-2xl font-semibold text-slate-900 mb-3 tracking-tight">Quality Entry</h3>
+          <h3 class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Quality Entry</h3>
           <p class="text-sm text-slate-500 font-medium leading-relaxed">Record daily defect quantities per item and line. First pass yield tracking for QA.</p>
         </button>
 
@@ -258,7 +256,7 @@
     <div class="w-14 h-14 bg-enovar/5 rounded-2xl flex items-center justify-center mb-4 border border-enovar/10 shadow-sm">
       <svg class="w-7 h-7 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
     </div>
-    <h1 id="login-title" class="font-display text-xl font-semibold text-gray-900 tracking-tight">System Login</h1>
+    <h1 id="login-title" class="text-xl font-bold text-gray-900 tracking-tight">System Login</h1>
     <p class="text-xs text-gray-500 mt-1.5 mb-4">Authenticate with your Google Workspace account.</p>
     <button onclick="togglePortalTarget()" id="login-switch-btn" class="mb-6 text-[10px] font-bold text-enovar bg-enovar/10 hover:bg-enovar/20 px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Switch Portal</button>
     <div id="g_id_onload" data-client_id="537235659462-je47c211i8eqatakdl4sr08kq0kle8fq.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
@@ -363,7 +361,7 @@
 
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3">
       <div>
-        <h2 class="font-display text-lg sm:text-xl font-semibold text-slate-800">Quality Entry</h2>
+        <h2 class="text-lg sm:text-xl font-bold text-slate-800">Quality Entry</h2>
         <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 font-medium">Enter daily defective quantities.</p>
       </div>
       <input type="text" id="fpy-date-picker" placeholder="Select date" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm w-32 sm:w-36 cursor-pointer shrink-0" readonly>
@@ -434,7 +432,7 @@
       <div class="flex items-center gap-3 sm:gap-4 shrink-0">
         <img src="pulse.png" alt="ALEL Pulse" class="h-5 sm:h-7 object-contain shrink-0">
         <div class="w-px h-5 bg-slate-300 hidden sm:block shrink-0"></div>
-        <span class="font-display text-base sm:text-lg font-semibold text-slate-800 tracking-wide flex items-center gap-1.5">
+        <span class="text-base sm:text-lg font-bold text-slate-800 tracking-wide flex items-center gap-1.5">
           Dashboard
           <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 live-pulse shrink-0 ml-1 mr-2" title="Live Auto-Sync"></span>
         </span>
