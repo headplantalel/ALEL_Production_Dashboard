@@ -105,6 +105,8 @@
     [data-theme="dark"] .border-enovar\/10 { border-color: rgba(45,212,191,0.15); }
     [data-theme="dark"] .border-enovar\/20 { border-color: rgba(45,212,191,0.25); }
     [data-theme="dark"] .border-enovar\/30 { border-color: rgba(45,212,191,0.35); }
+    /* Make the brand logo white in dark mode so it stays visible */
+    [data-theme="dark"] img[src="pulse.png"] { filter: brightness(0) invert(1); }
     [data-theme="dark"] .text-emerald-800, [data-theme="dark"] .text-amber-800, [data-theme="dark"] .text-red-800, [data-theme="dark"] .text-purple-800 { color: #e2e8f0; }
     [data-theme="dark"] .bg-emerald-50, [data-theme="dark"] .bg-green-50 { background-color: rgba(16,185,129,0.15); }
     [data-theme="dark"] .bg-amber-50 { background-color: rgba(245,158,11,0.15); }
@@ -299,7 +301,7 @@
     <div class="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-blue-100/50 blur-[60px]"></div>
   </div>
 
-  <div id="landing-view" class="w-full h-[100dvh] flex flex-col items-center justify-center z-10 relative overflow-hidden">
+  <div id="landing-view" class="w-full min-h-[100dvh] flex flex-col items-center justify-center z-10 relative overflow-x-hidden py-8">
     
     <!-- Central Content Wrapper -->
     <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center -mt-10 sm:-mt-16">
@@ -547,7 +549,7 @@
   <div id="dashboard-app" class="hidden fixed inset-0 w-full h-full bg-white/85 backdrop-blur-md z-50 flex flex-col overflow-hidden">
     
     <!-- Upgraded Glassmorphism Top Nav -->
-    <div class="flex justify-between items-center px-3 sm:px-6 py-3 bg-white/60 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.03)] border-b border-white w-full z-20 relative shrink-0">
+    <div class="flex flex-wrap justify-between items-center gap-y-2 px-3 sm:px-6 py-3 bg-white/60 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.03)] border-b border-white w-full z-20 relative shrink-0">
       
       <!-- Left Side: Logos and Dashboard Title -->
       <div class="flex items-center gap-3 sm:gap-4 shrink-0">
@@ -1145,7 +1147,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       });
     }
     function isDark() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
-    function dashLineColor() { return isDark() ? '#cbd5e1' : '#374151'; }
+    function dashLineColor() { return isDark() ? '#2dd4bf' : '#0D5C58'; }
+    function barLabelColor() { return isDark() ? '#e2e8f0' : '#374151'; }
 
     // --- LANGUAGE / i18n ---
     var I18N = {
@@ -1936,7 +1939,7 @@ if(fpSummary) fpSummary.destroy();
                textAnchor: 'start', 
                offsetX: 20,
                background: { enabled: false }, 
-                style: { fontSize: '11px', colors: [dashLineColor()], fontWeight: 700 },
+                style: { fontSize: '11px', colors: [barLabelColor()], fontWeight: 700 },
                formatter: function(val) {
                   if(val === 0 || val === null || val === undefined) return '';
                   return `${val}`;
