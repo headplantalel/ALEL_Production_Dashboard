@@ -1755,7 +1755,7 @@ if(fpSummary) fpSummary.destroy();
             if (cell) {
                let act = parseFloat((cell.act / cell.count).toFixed(1));
                let tgt = parseFloat((cell.tgt / cell.count).toFixed(1));
-               let expectedQty = parseFloat((tgt * cell.mp).toFixed(0));
+               let expectedQty = parseFloat((tgt * cell.mp * (cell.minutes || 60) / 60).toFixed(0));
                
                 lastValidTime = t;
                 lastQty = cell.qty;
@@ -1794,10 +1794,12 @@ if(fpSummary) fpSummary.destroy();
              let actVal = revActData[i] !== null ? revActData[i] : 0;
              let tgtForThisHour = revTargetArr[i] > 0 ? revTargetArr[i] : (currentMetric === 'productivity' ? latestTarget : 0);
              
-             // BOTH metrics now use the 90% threshold for turning red
-             let isUnderperforming = (actVal > 0 && actVal < (0.9 * tgtForThisHour));
-             
-             barColors.push(isUnderperforming ? '#EF4444' : '#0D5C58');
+              // BOTH metrics now use the 90% threshold for turning red
+              let isUnderperforming = (actVal > 0 && actVal < (0.9 * tgtForThisHour));
+              // Partial run (< 60 min) takes priority with an amber outline
+              let isPartial = (revMinArr[i] && revMinArr[i] < 60);
+              
+              barColors.push(isPartial ? '#F59E0B' : isUnderperforming ? '#EF4444' : '#0D5C58');
 
                return {
                    x: getOrdinal(sortedTimes.indexOf(t) + 1), 
@@ -1928,29 +1930,6 @@ if(fpSummary) fpSummary.destroy();
             }
           });
 
-          // Amber dot indicators for bars where the line ran less than a full hour
-          let minutesAnnotations = [];
-          seriesData.forEach((d, i) => {
-            if (d.minutes && d.minutes < 60) {
-              minutesAnnotations.push({
-                x: d.y + maxAct * 0.07,
-                y: d.x,
-                marker: {
-                  size: 9,
-                  fillColor: '#F59E0B',
-                  strokeColor: '#fff',
-                  strokeWidth: 2,
-                  radius: 4
-                },
-                label: {
-                  text: '',
-                  borderColor: 'transparent',
-                  style: { background: 'transparent' }
-                }
-              });
-            }
-          });
-
           let options = {
             chart: { 
                type: 'bar', height: chartHeight, toolbar: { show: false }, zoom: {enabled: false}, 
@@ -2012,7 +1991,7 @@ if(fpSummary) fpSummary.destroy();
                    } 
                }] : [],
                 // INJECT the grouped quantity labels here + blue dot remarks
-                points: qtyAnnotations.concat(remarksAnnotations).concat(minutesAnnotations)
+                points: qtyAnnotations.concat(remarksAnnotations)
             },
             tooltip: {
               enabled: true,
@@ -2037,9 +2016,9 @@ if(fpSummary) fpSummary.destroy();
                    }
                    
                     let minutesHTML = '';
-                    if (data.minutes && data.minutes < 60) {
-                      minutesHTML = `<div style="margin-top: 4px; color: #FBBF24; font-size: 11px; font-weight: 700;">⏱ ${data.minutes} min run time</div>`;
-                    }
+                    let runMins = (data.minutes && data.minutes < 60) ? data.minutes : 60;
+                    let minsColor = (data.minutes && data.minutes < 60) ? '#FBBF24' : '#9CA3AF';
+                    minutesHTML = `<div style="margin-top: 4px; color: ${minsColor}; font-size: 11px; font-weight: 700;">⏱ ${runMins} min run time</div>`;
                    
                    return `<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; background: #1F2937; color: white; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                        <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #374151; color: #9CA3AF; font-size: 10px; text-transform: uppercase;">Time Slot: ${data.realTime}</div>
