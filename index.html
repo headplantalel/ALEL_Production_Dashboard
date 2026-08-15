@@ -437,7 +437,7 @@
           <input type="number" id="production" name="production" inputmode="numeric" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
         </div>
         <div>
-          <label for="minutes" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide"><span data-i18n="operating_minutes">Operating Minutes</span> <span data-i18n="full_hour_hint" class="text-gray-400 font-normal normal-case">(60 = full hour)</span></label>
+          <label for="minutes" data-i18n="operating_minutes" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Operating Minutes</label>
           <input type="number" id="minutes" name="minutes" inputmode="numeric" min="1" max="60" value="60" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
         </div>
       </div>
@@ -1843,7 +1843,7 @@ if(fpSummary) fpSummary.destroy();
           let tooltipText = '';
           if (lastValidTime !== "N/A") {
              let headerDisplayTgt = currentMetric === 'productivity' ? lastTgt : Math.round(lastTgt * lastMp);
-             tooltipText = `${t('last_hour')}: ${lastValidTime} — Q: ${lastQty} · M: ${lastMp} · P: ${lastAct} · T: ${headerDisplayTgt} · ${t('operating_minutes')}: ${lastMinutes}m`;
+             tooltipText = `${t('last_hour')}: ${lastValidTime} — Q: ${lastQty} · M: ${lastMp} · P: ${lastAct} · T: ${headerDisplayTgt}`;
           }
 
           // Added flex-col and sm:flex-row to make it wrap properly on mobile phones
