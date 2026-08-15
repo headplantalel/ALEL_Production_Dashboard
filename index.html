@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://accounts.google.com" crossorigin>
   <link href="output.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/apexcharts" defer></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
@@ -283,13 +283,13 @@
       <!-- Central Brand Identity -->
       <div class="flex flex-col items-center justify-center animate-fade-up opacity-0 drop-shadow-sm mb-10">
         <img src="pulse.png" alt="ALEL Pulse" class="h-[96px] md:h-[130px] object-contain mb-5 transition-transform duration-700 hover:scale-105">
-        <p class="text-lg md:text-2xl font-semibold text-enovar-dark text-center leading-snug tracking-tight">Real-Time Production Telemetry &amp; Analytics</p>
+        <p data-i18n="tagline" class="text-lg md:text-2xl font-semibold text-enovar-dark text-center leading-snug tracking-tight">Real-Time Production Telemetry &amp; Analytics</p>
       </div>
 
       <!-- Capsule Badge -->
       <div class="inline-flex items-center justify-center bg-white/50 border border-white/80 backdrop-blur-xl rounded-full px-6 py-2.5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] mb-12 animate-fade-up opacity-0 delay-100">
          <span class="w-1.5 h-1.5 rounded-full bg-enovar mr-3 animate-pulse"></span>
-         <p class="text-[11px] sm:text-xs text-slate-600 font-bold tracking-widest uppercase">Select Workspace</p>
+         <p data-i18n="select_workspace" class="text-[11px] sm:text-xs text-slate-600 font-bold tracking-widest uppercase">Select Workspace</p>
       </div>
 
       <!-- Glassmorphism Cards -->
@@ -300,8 +300,8 @@
           <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-enovar/10 group-hover:border-enovar/20 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
             <svg class="w-6 h-6 text-slate-400 group-hover:text-enovar transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
           </div>
-          <h3 class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Data Entry</h3>
-          <p class="text-sm text-slate-500 font-medium leading-relaxed">Log real-time shift metrics, manpower deployments, and production yields with precision.</p>
+          <h3 data-i18n="data_entry" class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Data Entry</h3>
+          <p data-i18n="data_entry_desc" class="text-sm text-slate-500 font-medium leading-relaxed">Log real-time shift metrics, manpower deployments, and production yields with precision.</p>
         </button>
 
         <!-- Dashboard Card -->
@@ -309,8 +309,8 @@
           <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-enovar/10 group-hover:border-enovar/20 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
             <svg class="w-6 h-6 text-slate-400 group-hover:text-enovar transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           </div>
-          <h3 class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Dashboard</h3>
-          <p class="text-sm text-slate-500 font-medium leading-relaxed">Access live operational analytics, AI-driven insights, and master data overviews.</p>
+          <h3 data-i18n="dashboard" class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Dashboard</h3>
+          <p data-i18n="dashboard_desc" class="text-sm text-slate-500 font-medium leading-relaxed">Access live operational analytics, AI-driven insights, and master data overviews.</p>
         </button>
 
         <!-- Quality Entry Card -->
@@ -318,8 +318,8 @@
           <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-purple-100/50 group-hover:border-purple-300/30 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
             <svg class="w-6 h-6 text-slate-400 group-hover:text-purple-600 transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           </div>
-          <h3 class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Quality Entry</h3>
-          <p class="text-sm text-slate-500 font-medium leading-relaxed">Record daily defect quantities per item and line. First pass yield tracking for QA.</p>
+          <h3 data-i18n="quality_entry" class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Quality Entry</h3>
+          <p data-i18n="quality_entry_desc" class="text-sm text-slate-500 font-medium leading-relaxed">Record daily defect quantities per item and line. First pass yield tracking for QA.</p>
         </button>
 
       </div>
@@ -350,7 +350,7 @@
       <svg class="w-7 h-7 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
     </div>
     <h1 id="login-title" class="text-xl font-bold text-gray-900 tracking-tight">System Login</h1>
-    <p class="text-xs text-gray-500 mt-1.5 mb-4">Authenticate with your Google Workspace account.</p>
+    <p data-i18n="auth_msg" class="text-xs text-gray-500 mt-1.5 mb-4">Authenticate with your Google Workspace account.</p>
     <button onclick="togglePortalTarget()" id="login-switch-btn" class="mb-6 text-[10px] font-bold text-enovar bg-enovar/10 hover:bg-enovar/20 px-3 py-1.5 rounded-md uppercase tracking-wider transition-colors">Switch Portal</button>
     <div id="g_id_onload" data-client_id="537235659462-je47c211i8eqatakdl4sr08kq0kle8fq.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
     <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"></div>
@@ -362,11 +362,11 @@
   </div>
   
   <div id="denied" class="hidden bg-white/90 backdrop-blur-lg p-8 rounded-2xl shadow-xl text-center max-w-md w-full border-t-4 border-red-500 z-20">
-    <h2 class="text-lg font-bold text-gray-900 mb-1">Access Denied</h2>
+    <h2 data-i18n="access_denied" class="text-lg font-bold text-gray-900 mb-1">Access Denied</h2>
     <p class="text-gray-500 text-xs mb-6">User <span id="user-email" class="font-bold text-gray-800"></span> does not have access to the <span id="denied-portal" class="font-bold text-gray-800">portal</span>.</p>
-    <button id="requestBtn" onclick="requestAccess()" class="w-full bg-enovar hover:bg-enovar-light text-white font-medium text-sm py-2.5 rounded-xl transition-all shadow-sm mb-2.5">Request Admin Access</button>
-    <button onclick="returnToLanding()" class="w-full bg-enovar/10 hover:bg-enovar/20 text-enovar font-medium text-sm py-2.5 rounded-xl transition-all mb-2.5">Back to Home</button>
-    <button onclick="logout()" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium text-sm py-2.5 rounded-xl transition-all border border-gray-200">Switch Account</button>
+    <button id="requestBtn" onclick="requestAccess()" data-i18n="request_access" class="w-full bg-enovar hover:bg-enovar-light text-white font-medium text-sm py-2.5 rounded-xl transition-all shadow-sm mb-2.5">Request Admin Access</button>
+    <button onclick="returnToLanding()" data-i18n="back_home" class="w-full bg-enovar/10 hover:bg-enovar/20 text-enovar font-medium text-sm py-2.5 rounded-xl transition-all mb-2.5">Back to Home</button>
+    <button onclick="logout()" data-i18n="switch_account" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium text-sm py-2.5 rounded-xl transition-all border border-gray-200">Switch Account</button>
     <div id="requestSuccess" class="hidden mt-4 text-green-700 font-medium bg-green-50 p-3 rounded-xl border border-green-200 text-xs">Request sent to Administration.</div>
   </div>
   
@@ -379,46 +379,47 @@
         <img src="pulse.png" alt="ALEL Pulse" class="h-6 sm:h-8 object-contain shrink-0">
       </div>
       <div class="flex items-center gap-2 flex-wrap shrink-0">
-        <button id="btn-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[11px] sm:text-xs font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Dashboard</button>
-        <button id="btn-goto-fpy" onclick="openQualityEntry()" class="hidden text-[11px] sm:text-xs font-bold text-purple-700 bg-purple-50/80 hover:bg-purple-100 hover:text-purple-800 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-purple-200 shadow-sm shrink-0">Quality Entry</button>
+        <button id="btn-goto-dash" onclick="switchPortal('dashboard')" data-i18n="dashboard" class="hidden text-[11px] sm:text-xs font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Dashboard</button>
+        <button id="btn-goto-fpy" onclick="openQualityEntry()" data-i18n="quality_entry" class="hidden text-[11px] sm:text-xs font-bold text-purple-700 bg-purple-50/80 hover:bg-purple-100 hover:text-purple-800 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-purple-200 shadow-sm shrink-0">Quality Entry</button>
         <button onclick="cycleTheme()" aria-label="Change theme" title="Change theme" class="text-[11px] sm:text-xs font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 px-2 py-1 rounded-md border border-gray-200 shadow-sm shrink-0 leading-none"><span class="theme-toggle-icon">☀</span></button>
+        <button onclick="cycleLanguage()" aria-label="Change language" title="Change language" class="text-[11px] sm:text-xs font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 px-2 py-1 rounded-md border border-gray-200 shadow-sm shrink-0 leading-none"><span class="lang-toggle-btn">বাং</span></button>
       </div>
     </div>
     
     <form id="prodForm" onsubmit="submitForm(event)" class="space-y-4">
       <div>
-        <label for="item" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Select Item</label>
+        <label for="item" data-i18n="select_item" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Select Item</label>
         <select id="item" required></select>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label for="line" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Line Name</label>
+          <label for="line" data-i18n="line_name" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Line Name</label>
           <select id="line" required></select>
         </div>
         <div>
-          <label for="time" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Time Slot</label>
+          <label for="time" data-i18n="time_slot" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Time Slot</label>
           <select id="time" required></select>
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label for="manpower" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Manpower</label>
+          <label for="manpower" data-i18n="manpower" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Manpower</label>
           <input type="number" id="manpower" name="manpower" inputmode="numeric" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
         </div>
         <div>
-          <label for="production" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Production Qty</label>
+          <label for="production" data-i18n="production_qty" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Production Qty</label>
           <input type="number" id="production" name="production" inputmode="numeric" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
         </div>
       </div>
       <div>
-        <label for="remarks" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Remarks <span class="text-gray-400 font-normal lowercase">(optional)</span></label>
+        <label for="remarks" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide"><span data-i18n="remarks">Remarks</span> <span data-i18n="optional" class="text-gray-400 font-normal lowercase">(optional)</span></label>
         <input type="text" id="remarks" name="remarks" placeholder="e.g. Machine breakdown, material shortage…" class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
       </div>
       <div class="pt-3">
-        <button type="submit" id="submitBtn" class="w-full bg-enovar hover:bg-enovar-dark text-white font-semibold text-sm py-3 rounded-xl transition-all shadow-md hover:shadow-lg">Submit Entry</button>
-        <button type="button" onclick="openHistory()" class="w-full bg-white/80 hover:bg-gray-50 text-enovar border border-gray-200 font-semibold text-sm py-2.5 rounded-xl mt-2.5 transition-all shadow-sm">View My Past Entries</button>
+        <button type="submit" id="submitBtn" data-i18n="submit_entry" class="w-full bg-enovar hover:bg-enovar-dark text-white font-semibold text-sm py-3 rounded-xl transition-all shadow-md hover:shadow-lg">Submit Entry</button>
+        <button type="button" onclick="openHistory()" data-i18n="view_past" class="w-full bg-white/80 hover:bg-gray-50 text-enovar border border-gray-200 font-semibold text-sm py-2.5 rounded-xl mt-2.5 transition-all shadow-sm">View My Past Entries</button>
       </div>
-      <div id="successMsg" class="hidden bg-green-50 text-green-700 text-center font-medium text-sm py-2.5 rounded-xl mt-3 border border-green-200">Data logged successfully</div>
+      <div id="successMsg" data-i18n="data_logged" class="hidden bg-green-50 text-green-700 text-center font-medium text-sm py-2.5 rounded-xl mt-3 border border-green-200">Data logged successfully</div>
     </form>
     
     <div class="mt-6 pt-5 border-t border-gray-200/50 flex flex-col gap-4 -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 p-5 sm:p-6 bg-white/30 rounded-b-2xl box-border">
@@ -448,15 +449,16 @@
         <span class="hidden sm:block text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] border-l border-gray-300 pl-3">Daily Quality Entry</span>
       </div>
       <div class="flex items-center gap-1.5 sm:gap-2">
-        <button id="fpy-goto-dash" onclick="switchPortal('dashboard')" class="hidden text-[10px] sm:text-xs font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Dashboard</button>
-        <button id="fpy-goto-entry" onclick="switchPortal('entry')" class="hidden text-[10px] sm:text-xs font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Data Entry</button>
+        <button id="fpy-goto-dash" onclick="switchPortal('dashboard')" data-i18n="dashboard" class="hidden text-[10px] sm:text-xs font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Dashboard</button>
+        <button id="fpy-goto-entry" onclick="switchPortal('entry')" data-i18n="data_entry" class="hidden text-[10px] sm:text-xs font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Data Entry</button>
         <button onclick="cycleTheme()" aria-label="Change theme" title="Change theme" class="text-[10px] sm:text-xs font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 px-2 py-1 rounded-md border border-gray-200 shadow-sm shrink-0 leading-none"><span class="theme-toggle-icon">☀</span></button>
+        <button onclick="cycleLanguage()" aria-label="Change language" title="Change language" class="text-[10px] sm:text-xs font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 px-2 py-1 rounded-md border border-gray-200 shadow-sm shrink-0 leading-none"><span class="lang-toggle-btn">বাং</span></button>
       </div>
     </div>
 
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3">
       <div>
-        <h2 class="text-lg sm:text-xl font-bold text-slate-800">Quality Entry</h2>
+        <h2 data-i18n="quality_entry" class="text-lg sm:text-xl font-bold text-slate-800">Quality Entry</h2>
         <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 font-medium">Enter daily defective quantities.</p>
       </div>
       <input type="text" id="fpy-date-picker" placeholder="Select date" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm w-32 sm:w-36 cursor-pointer shrink-0" readonly>
@@ -508,8 +510,8 @@
 
   <div id="history-view" class="hidden bg-white/95 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl max-w-2xl w-full border border-white z-20">
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-      <h2 class="text-lg font-bold text-gray-900">Entry History</h2>
-      <button onclick="closeHistory()" class="text-xs text-enovar font-bold px-3 py-1.5 bg-gray-50 hover:bg-enovar/10 border border-gray-200 hover:border-enovar/30 rounded-lg transition-all shadow-sm">Back to Input</button>
+      <h2 data-i18n="entry_history" class="text-lg font-bold text-gray-900">Entry History</h2>
+      <button onclick="closeHistory()" data-i18n="back_to_input" class="text-xs text-enovar font-bold px-3 py-1.5 bg-gray-50 hover:bg-enovar/10 border border-gray-200 hover:border-enovar/30 rounded-lg transition-all shadow-sm">Back to Input</button>
     </div>
     <div class="mb-5">
       <label class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Select Date</label>
@@ -535,10 +537,13 @@
       
       <!-- Right Side: Navigation + Icon Buttons -->
       <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <button id="btn-goto-entry" onclick="switchPortal('entry')" class="hidden hide-in-fullscreen text-[11px] sm:text-xs font-bold text-enovar bg-white/60 hover:bg-white px-2 py-1.5 sm:px-3 rounded-lg border border-white shadow-sm transition-colors whitespace-nowrap">Data Entry</button>
-        <button id="btn-goto-fpy-dash" onclick="openQualityEntry()" class="hidden hide-in-fullscreen text-[11px] sm:text-xs font-bold text-purple-600 bg-white/60 hover:bg-purple-50 px-2 py-1.5 sm:px-3 rounded-lg border border-white shadow-sm transition-colors whitespace-nowrap">Quality Entry</button>
+        <button id="btn-goto-entry" onclick="switchPortal('entry')" data-i18n="data_entry" class="hidden hide-in-fullscreen text-[11px] sm:text-xs font-bold text-enovar bg-white/60 hover:bg-white px-2 py-1.5 sm:px-3 rounded-lg border border-white shadow-sm transition-colors whitespace-nowrap">Data Entry</button>
+        <button id="btn-goto-fpy-dash" onclick="openQualityEntry()" data-i18n="quality_entry" class="hidden hide-in-fullscreen text-[11px] sm:text-xs font-bold text-purple-600 bg-white/60 hover:bg-purple-50 px-2 py-1.5 sm:px-3 rounded-lg border border-white shadow-sm transition-colors whitespace-nowrap">Quality Entry</button>
         <button onclick="cycleTheme()" aria-label="Change theme" title="Change theme" class="hide-in-fullscreen text-slate-500 hover:text-enovar p-1.5 sm:p-2 rounded-xl hover:bg-white/80 transition-colors shadow-sm border border-transparent hover:border-white text-base leading-none">
           <span class="theme-toggle-icon">☀</span>
+        </button>
+        <button onclick="cycleLanguage()" aria-label="Change language" title="Change language" class="hide-in-fullscreen text-[11px] sm:text-xs font-bold text-slate-500 hover:text-enovar px-2 py-1 rounded-lg hover:bg-white/80 transition-colors shadow-sm border border-transparent hover:border-white">
+          <span class="lang-toggle-btn">বাং</span>
         </button>
         <button onclick="toggleFullscreen()" aria-label="Toggle Fullscreen" class="text-slate-500 hover:text-enovar p-1.5 sm:p-2 rounded-xl hover:bg-white/80 transition-colors shadow-sm border border-transparent hover:border-white" title="Toggle Fullscreen">
           <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
@@ -554,14 +559,14 @@
       <div class="w-full px-4 sm:px-6 py-2.5 flex flex-col md:flex-row justify-between items-center gap-3">
         
         <div class="flex bg-white/30 backdrop-blur-md p-1.5 rounded-xl border border-white/60 w-full md:w-auto overflow-x-auto no-scrollbar shrink-0 shadow-inner">
-          <button id="tab-section" onclick="switchDashTab('section')" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Daily Status</button>
-          <button id="tab-management" onclick="switchDashTab('management')" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Summary</button>
-          <button id="tab-master" onclick="switchDashTab('master')" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Analytics</button>
+          <button id="tab-section" onclick="switchDashTab('section')" data-i18n="daily_status" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg bg-white text-enovar shadow-sm transition-all whitespace-nowrap">Daily Status</button>
+          <button id="tab-management" onclick="switchDashTab('management')" data-i18n="summary" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Summary</button>
+          <button id="tab-master" onclick="switchDashTab('master')" data-i18n="analytics" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap">Analytics</button>
           <button id="tab-ai" onclick="switchDashTab('ai')" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap flex items-center gap-1">
-            <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> AI Insights
+            <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> <span data-i18n="ai_insights">AI Insights</span>
           </button>
           <button id="tab-quality" onclick="switchDashTab('quality')" class="px-5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-gray-800 transition-all whitespace-nowrap flex items-center gap-1">
-            <svg class="w-3.5 h-3.5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Quality
+            <svg class="w-3.5 h-3.5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span data-i18n="quality">Quality</span>
           </button>
         </div>
 
@@ -845,8 +850,8 @@
       <h3 id="modal-title">Edit</h3>
       <div id="modal-body"></div>
       <div class="flex gap-2 mt-3">
-        <button id="modal-cancel" class="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-600 font-semibold text-sm hover:bg-gray-50">Cancel</button>
-        <button id="modal-confirm" class="flex-1 px-4 py-2 rounded-lg bg-enovar text-white font-semibold text-sm hover:bg-enovar-dark">Save</button>
+        <button id="modal-cancel" data-i18n="cancel" class="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-600 font-semibold text-sm hover:bg-gray-50">Cancel</button>
+        <button id="modal-confirm" data-i18n="save" class="flex-1 px-4 py-2 rounded-lg bg-enovar text-white font-semibold text-sm hover:bg-enovar-dark">Save</button>
       </div>
     </div>
   </div>
@@ -884,6 +889,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
 
     window.onload = function() {
       applyTheme(localStorage.getItem('alel_theme') || 'light');
+      applyLanguage(localStorage.getItem('alel_lang') || 'en');
       const savedToken = localStorage.getItem('google_token');
       const savedPortal = localStorage.getItem('active_portal');
       
@@ -907,9 +913,9 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     }
 
     function updatePortalUI() {
-      const title = targetPortal === 'dashboard' ? 'Dashboard' : targetPortal === 'quality' ? 'Quality Entry' : 'Data Entry';
-      const nextPortal = targetPortal === 'entry' ? 'Dashboard' : targetPortal === 'dashboard' ? 'Quality Entry' : 'Data Entry';
-      const switchText = 'Switch to ' + nextPortal;
+      const title = targetPortal === 'dashboard' ? t('dashboard') : targetPortal === 'quality' ? t('quality_entry') : t('data_entry');
+      const nextPortal = targetPortal === 'entry' ? t('dashboard') : targetPortal === 'dashboard' ? t('quality_entry') : t('data_entry');
+      const switchText = (currentLang === 'bn' ? 'সুইচ করুন: ' : 'Switch to ') + nextPortal;
       document.getElementById('login-title').innerText = title;
       if(document.getElementById('login-switch-btn')) document.getElementById('login-switch-btn').innerText = switchText;
     }
@@ -1115,6 +1121,79 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       });
     }
 
+    // --- LANGUAGE / i18n ---
+    var I18N = {
+      en: {
+        select_workspace: "Select Workspace",
+        data_entry: "Data Entry", dashboard: "Dashboard", quality_entry: "Quality Entry",
+        data_entry_desc: "Log real-time shift metrics, manpower deployments, and production yields with precision.",
+        dashboard_desc: "Access live operational analytics, AI-driven insights, and master data overviews.",
+        quality_entry_desc: "Record daily defect quantities per item and line. First pass yield tracking for QA.",
+        tagline: "Real-Time Production Telemetry & Analytics",
+        system_login: "System Login", auth_msg: "Authenticate with your Google Workspace account.",
+        select_item: "Select Item", line_name: "Line Name", time_slot: "Time Slot", manpower: "Manpower",
+        production_qty: "Production Qty", remarks: "Remarks", optional: "optional",
+        submit_entry: "Submit Entry", view_past: "View My Past Entries",
+        daily_status: "Daily Status", summary: "Summary", analytics: "Analytics", ai_insights: "AI Insights", quality: "Quality",
+        access_denied: "Access Denied", request_access: "Request Admin Access", back_home: "Back to Home", switch_account: "Switch Account",
+        total_production: "Total Production", peak_manpower: "Peak Manpower", actual_productivity: "Actual Productivity",
+        target_productivity: "Target Productivity", first_pass_yield: "First Pass Yield",
+        save_all_fpy: "Save All FPY", loading: "Loading", no_data: "No data", logout: "Log Out",
+        entry_history: "Entry History", back_to_input: "Back to Input",
+        data_logged: "Data logged successfully", entry_deleted: "Entry deleted", undo: "Undo",
+        entry_updated: "Entry updated", update_failed: "Update failed", conversation_cleared: "Conversation cleared",
+        submit_confirm: "Submit this production data?", complete_dropdowns: "Please complete all dropdown selections.",
+        submission_failed: "Submission failed", edit_entry: "Edit Entry", edit_qty: "Production Quantity", edit_mp: "Manpower", cancel: "Cancel", save: "Save"
+      },
+      bn: {
+        select_workspace: "ওয়ার্কস্পেস নির্বাচন করুন",
+        data_entry: "ডেটা এন্ট্রি", dashboard: "ড্যাশবোর্ড", quality_entry: "কোয়ালিটি এন্ট্রি",
+        data_entry_desc: "রিয়েল-টাইম শিফট মেট্রিক্স, ম্যানপাওয়ার এবং উৎপাদন ফলাফল সঠিকভাবে লগ করুন।",
+        dashboard_desc: "লাইভ অপারেশনাল অ্যানালিটিক্স, এআই-চালিত ইনসাইট এবং মাস্টার ডেটা দেখুন।",
+        quality_entry_desc: "প্রতিটি আইটেম ও লাইনের দৈনিক ত্রুটিপূর্ণ পরিমাণ রেকর্ড করুন।",
+        tagline: "রিয়েল-টাইম প্রোডাকশন টেলিমেট্রি ও অ্যানালিটিক্স",
+        system_login: "সিস্টেম লগইন", auth_msg: "আপনার Google Workspace অ্যাকাউন্ট দিয়ে প্রমাণীকরণ করুন।",
+        select_item: "আইটেম নির্বাচন করুন", line_name: "লাইনের নাম", time_slot: "সময়ের স্লট", manpower: "ম্যানপাওয়ার",
+        production_qty: "উৎপাদনের পরিমাণ", remarks: "মন্তব্য", optional: "ঐচ্ছিক",
+        submit_entry: "এন্ট্রি জমা দিন", view_past: "আমার পূর্বের এন্ট্রি দেখুন",
+        daily_status: "দৈনিক অবস্থা", summary: "সারসংক্ষেপ", analytics: "অ্যানালিটিক্স", ai_insights: "এআই ইনসাইট", quality: "কোয়ালিটি",
+        access_denied: "প্রবেশাধিকার নেই", request_access: "প্রবেশাধিকারের অনুরোধ করুন", back_home: "হোমে ফিরুন", switch_account: "অ্যাকাউন্ট পরিবর্তন",
+        total_production: "মোট উৎপাদন", peak_manpower: "সর্বোচ্চ ম্যানপাওয়ার", actual_productivity: "প্রকৃত উৎপাদনশীলতা",
+        target_productivity: "লক্ষ্য উৎপাদনশীলতা", first_pass_yield: "ফার্স্ট পাস ইল্ড",
+        save_all_fpy: "সব FPY সংরক্ষণ করুন", loading: "লোড হচ্ছে", no_data: "ডেটা নেই", logout: "লগ আউট",
+        entry_history: "এন্ট্রির ইতিহাস", back_to_input: "ইনপুটে ফিরুন",
+        data_logged: "ডেটা সফলভাবে লগ হয়েছে", entry_deleted: "এন্ট্রি মুছে ফেলা হয়েছে", undo: "পূর্বাবস্থায় ফেরান",
+        entry_updated: "এন্ট্রি আপডেট হয়েছে", update_failed: "আপডেট ব্যর্থ হয়েছে", conversation_cleared: "কথোপকথন মুছে ফেলা হয়েছে",
+        submit_confirm: "এই প্রোডাকশন ডেটা জমা দেবেন?", complete_dropdowns: "অনুগ্রহ করে সব ড্রপডাউন নির্বাচন সম্পূর্ণ করুন।",
+        submission_failed: "জমা দেওয়া ব্যর্থ হয়েছে", edit_entry: "এন্ট্রি সম্পাদনা", edit_qty: "উৎপাদনের পরিমাণ", edit_mp: "ম্যানপাওয়ার", cancel: "বাতিল", save: "সংরক্ষণ"
+      }
+    };
+    var currentLang = 'en';
+    function t(key) { return (I18N[currentLang] && I18N[currentLang][key]) || I18N.en[key] || key; }
+    function applyLanguage(lang) {
+      if (lang !== 'bn' && lang !== 'en') lang = 'en';
+      currentLang = lang;
+      localStorage.setItem('alel_lang', lang);
+      document.documentElement.setAttribute('lang', lang);
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var key = el.getAttribute('data-i18n');
+        if (I18N[lang] && I18N[lang][key]) el.textContent = I18N[lang][key];
+        else if (I18N.en[key]) el.textContent = I18N.en[key];
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+        var key = el.getAttribute('data-i18n-placeholder');
+        el.setAttribute('placeholder', t(key));
+      });
+      document.querySelectorAll('.lang-toggle-btn').forEach(function(b) {
+        b.textContent = lang === 'bn' ? 'EN' : 'বাং';
+      });
+      document.body.style.fontFamily = lang === 'bn' ? "'Noto Sans Bengali', Inter, system-ui, sans-serif" : '';
+      renderDashboard();
+    }
+    function cycleLanguage() {
+      applyLanguage(currentLang === 'en' ? 'bn' : 'en');
+    }
+
     // --- DATA ENTRY PORTAL LOGIC ---
     function setupEntryAppUI(data) {
       document.getElementById('bg-elements').classList.remove('hidden');
@@ -1207,21 +1286,21 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       const itemVal = tsItem.getValue(), lineVal = tsLine.getValue(), timeVal = tsTime.getValue();
       const manpowerVal = document.getElementById('manpower').value, productionVal = document.getElementById('production').value;
       
-      if (!itemVal || !lineVal || !timeVal) { showToast("Please complete all dropdown selections.", "error"); return; }
+      if (!itemVal || !lineVal || !timeVal) { showToast(t('complete_dropdowns'), "error"); return; }
       
-      const btn = document.getElementById('submitBtn'); btn.innerText = 'Submitting…';
+      const btn = document.getElementById('submitBtn'); btn.innerText = t('loading') + '…';
       const remarksVal = document.getElementById('remarks').value;
       const formData = { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal, remarks: remarksVal };
       
       callAPI({ action: "submit", email: currentUser.email, formData: formData }, function(data) {
-        btn.innerText = 'Submit Entry';
+        btn.innerText = t('submit_entry');
         if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
           document.getElementById('manpower').value = ''; document.getElementById('production').value = ''; document.getElementById('remarks').value = '';
           tsItem.clear(); tsLine.clear(); tsTime.clear();
           document.getElementById('successMsg').classList.remove('hidden');
           setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3000);
-          showToast("Data logged successfully", "success");
-        } else { showToast("Submission failed: " + (data.error || "Check backend setup."), "error"); }
+          showToast(t('data_logged'), "success");
+        } else { showToast(t('submission_failed') + ": " + (data.error || "Check backend setup."), "error"); }
       });
     }
 
@@ -2413,7 +2492,7 @@ let gaugeOptions = {
       aiChatHistory = [];
       localStorage.removeItem('alel_ai_chat_' + currentUser.email);
       renderAIChatHistory();
-      showToast("Conversation cleared", "info");
+      showToast(t('conversation_cleared'), "info");
     }
 
     function sendAIMessage() {
@@ -2538,8 +2617,8 @@ let gaugeOptions = {
           if (data.status === "Success") { card.remove(); if(historyCache[dateStr].length === 0) renderEntriesFromCache(); }
         });
       }, 5000);
-      showToast("Entry deleted", "info", {
-        actionLabel: "Undo",
+      showToast(t('entry_deleted'), "info", {
+        actionLabel: t('undo'),
         duration: 5000,
         onAction: function() {
           clearTimeout(timer);
@@ -2551,9 +2630,9 @@ let gaugeOptions = {
 
     function handleEdit(rowIndex, cacheIndex, dateStr) {
       const entry = historyCache[dateStr][cacheIndex];
-      openModal("Edit Entry", [
-        { key: 'qty', label: 'Production Quantity', value: entry.qty },
-        { key: 'manpower', label: 'Manpower', value: entry.manpower }
+      openModal(t('edit_entry'), [
+        { key: 'qty', label: t('edit_qty'), value: entry.qty },
+        { key: 'manpower', label: t('edit_mp'), value: entry.manpower }
       ], function(values) {
         const newQty = values.qty, newManpower = values.manpower;
         if (newQty == entry.qty && newManpower == entry.manpower) return;
@@ -2563,9 +2642,9 @@ let gaugeOptions = {
         callAPI({ action: "editEntry", rowIndex: rowIndex, newQty: newQty, newManpower: newManpower }, function(data) {
           if (data.status === "Success") {
             setTimeout(() => { document.getElementById(`entry-card-${rowIndex}`).classList.remove('ring-1', 'ring-enovar', 'bg-white'); }, 1000);
-            showToast("Entry updated", "success");
+            showToast(t('entry_updated'), "success");
           } else {
-            showToast("Update failed", "error");
+            showToast(t('update_failed'), "error");
           }
         });
       });
