@@ -95,6 +95,16 @@
     [data-theme="dark"] .border-gray-300, [data-theme="dark"] .border-slate-300 { border-color: #475569; }
     [data-theme="dark"] .text-enovar { color: #2dd4bf; }
     [data-theme="dark"] .text-enovar-dark { color: #5eead4; }
+    [data-theme="dark"] .bg-enovar { background-color: #14b8a6; }
+    [data-theme="dark"] .hover\:bg-enovar-dark:hover { background-color: #0d9488; }
+    [data-theme="dark"] .hover\:bg-enovar-light:hover { background-color: #2dd4bf; }
+    [data-theme="dark"] .bg-enovar\/10 { background-color: rgba(45,212,191,0.12); }
+    [data-theme="dark"] .bg-enovar\/20 { background-color: rgba(45,212,191,0.2); }
+    [data-theme="dark"] .bg-enovar\/5 { background-color: rgba(45,212,191,0.08); }
+    [data-theme="dark"] .border-enovar { border-color: #14b8a6; }
+    [data-theme="dark"] .border-enovar\/10 { border-color: rgba(45,212,191,0.15); }
+    [data-theme="dark"] .border-enovar\/20 { border-color: rgba(45,212,191,0.25); }
+    [data-theme="dark"] .border-enovar\/30 { border-color: rgba(45,212,191,0.35); }
     [data-theme="dark"] .text-emerald-800, [data-theme="dark"] .text-amber-800, [data-theme="dark"] .text-red-800, [data-theme="dark"] .text-purple-800 { color: #e2e8f0; }
     [data-theme="dark"] .bg-emerald-50, [data-theme="dark"] .bg-green-50 { background-color: rgba(16,185,129,0.15); }
     [data-theme="dark"] .bg-amber-50 { background-color: rgba(245,158,11,0.15); }
@@ -184,6 +194,8 @@
         overflow-y: auto !important; /* Enables scrolling if there are >6 charts */
         background-color: #f9fafb !important; /* Keeps the background clean */
     }
+    [data-theme="dark"] #dashboard-app.fullscreen-active { background-color: #0b1220 !important; }
+    [data-theme="sepia"] #dashboard-app.fullscreen-active { background-color: #efe4cf !important; }
     #dashboard-app.fullscreen-active .hide-in-fullscreen {
         display: none !important;
     }
@@ -616,7 +628,7 @@
               <span id="master-kpi-output" class="text-3xl font-black text-slate-800">0</span>
            </div>
            <div class="bg-white/80 backdrop-blur-xl p-5 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
-              <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Avg. Daily Manpower</span>
+              <span data-i18n="avg_daily_manpower" class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Avg. Daily Manpower</span>
               <span id="master-kpi-mp" class="text-3xl font-black text-slate-800">0</span>
            </div>
         </div>
@@ -767,31 +779,31 @@
        <div id="view-quality" class="w-full sm:h-full flex flex-col space-y-3 hidden max-w-7xl mx-auto">
           <!-- Date Filter Row -->
           <div class="flex items-center gap-3 shrink-0">
-             <select id="quality-date-preset" onchange="renderQualityDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm">
-                <option value="today">Today</option>
-                <option value="yesterday">Yesterday</option>
-                <option value="7">Last 7 Days</option>
-                <option value="30">Last 30 Days</option>
-                <option value="all">All Time</option>
-             </select>
+              <select id="quality-date-preset" onchange="renderQualityDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm">
+                 <option value="today" data-i18n="today">Today</option>
+                 <option value="yesterday" data-i18n="yesterday">Yesterday</option>
+                 <option value="7" data-i18n="last_7_days">Last 7 Days</option>
+                 <option value="30" data-i18n="last_30_days">Last 30 Days</option>
+                 <option value="all" data-i18n="all_time">All Time</option>
+              </select>
           </div>
 
           <!-- KPI Row -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 shrink-0">
              <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
-                <span class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Average FPY</span>
+                <span data-i18n="average_fpy" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Average FPY</span>
                 <span id="quality-kpi-avg" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">—</span>
              </div>
              <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
-                <span class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Worst FPY</span>
+                <span data-i18n="worst_fpy" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Worst FPY</span>
                 <span id="quality-kpi-worst" class="text-lg sm:text-3xl font-black text-red-500 leading-none">—</span>
              </div>
              <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
-                <span class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Total Defectives</span>
+                <span data-i18n="total_defectives" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Total Defectives</span>
                 <span id="quality-kpi-def" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">0</span>
              </div>
              <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
-                <span class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Items Tracked</span>
+                <span data-i18n="items_tracked" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Items Tracked</span>
                 <span id="quality-kpi-items" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">0</span>
              </div>
           </div>
@@ -1144,7 +1156,13 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         data_logged: "Data logged successfully", entry_deleted: "Entry deleted", undo: "Undo",
         entry_updated: "Entry updated", update_failed: "Update failed", conversation_cleared: "Conversation cleared",
         submit_confirm: "Submit this production data?", complete_dropdowns: "Please complete all dropdown selections.",
-        submission_failed: "Submission failed", edit_entry: "Edit Entry", edit_qty: "Production Quantity", edit_mp: "Manpower", cancel: "Cancel", save: "Save"
+        submission_failed: "Submission failed", edit_entry: "Edit Entry", edit_qty: "Production Quantity", edit_mp: "Manpower", cancel: "Cancel", save: "Save",
+        avg_daily_manpower: "Avg. Daily Manpower", average_fpy: "Average FPY", worst_fpy: "Worst FPY", total_defectives: "Total Defectives", items_tracked: "Items Tracked",
+        all_sections: "All Sections", view_productivity: "View: Productivity", view_production_qty: "View: Production Qty", filter_charts: "Filter Charts",
+        daily_view: "Daily View", monthly_view: "Monthly View", view_production: "View: Production", view_quality_fpy: "View: Quality / FPY", all_pgs: "All PGs",
+        today: "Today", yesterday: "Yesterday", last_7_days: "Last 7 Days", last_30_days: "Last 30 Days", all_time: "All Time", date_range: "Date Range",
+        last_6_months: "Last 6 Months", last_1_year: "Last 1 Year", month_range: "Month Range", to: "to", search_item: "Search Item…", last_hour: "Last Hour",
+        select_line: "Select Line…", select_time: "Select Time…"
       },
       bn: {
         select_workspace: "ওয়ার্কস্পেস নির্বাচন করুন",
@@ -1166,7 +1184,13 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         data_logged: "ডেটা সফলভাবে লগ হয়েছে", entry_deleted: "এন্ট্রি মুছে ফেলা হয়েছে", undo: "পূর্বাবস্থায় ফেরান",
         entry_updated: "এন্ট্রি আপডেট হয়েছে", update_failed: "আপডেট ব্যর্থ হয়েছে", conversation_cleared: "কথোপকথন মুছে ফেলা হয়েছে",
         submit_confirm: "এই প্রোডাকশন ডেটা জমা দেবেন?", complete_dropdowns: "অনুগ্রহ করে সব ড্রপডাউন নির্বাচন সম্পূর্ণ করুন।",
-        submission_failed: "জমা দেওয়া ব্যর্থ হয়েছে", edit_entry: "এন্ট্রি সম্পাদনা", edit_qty: "উৎপাদনের পরিমাণ", edit_mp: "ম্যানপাওয়ার", cancel: "বাতিল", save: "সংরক্ষণ"
+        submission_failed: "জমা দেওয়া ব্যর্থ হয়েছে", edit_entry: "এন্ট্রি সম্পাদনা", edit_qty: "উৎপাদনের পরিমাণ", edit_mp: "ম্যানপাওয়ার", cancel: "বাতিল", save: "সংরক্ষণ",
+        avg_daily_manpower: "গড় দৈনিক ম্যানপাওয়ার", average_fpy: "গড় FPY", worst_fpy: "সর্বনিম্ন FPY", total_defectives: "মোট ত্রুটিপূর্ণ", items_tracked: "ট্র্যাক করা আইটেম",
+        all_sections: "সব সেকশন", view_productivity: "দেখুন: উৎপাদনশীলতা", view_production_qty: "দেখুন: উৎপাদনের পরিমাণ", filter_charts: "চার্ট ফিল্টার করুন",
+        daily_view: "দৈনিক ভিউ", monthly_view: "মাসিক ভিউ", view_production: "দেখুন: উৎপাদন", view_quality_fpy: "দেখুন: কোয়ালিটি / FPY", all_pgs: "সব PG",
+        today: "আজ", yesterday: "গতকাল", last_7_days: "শেষ ৭ দিন", last_30_days: "শেষ ৩০ দিন", all_time: "সব সময়", date_range: "তারিখের পরিসীমা",
+        last_6_months: "শেষ ৬ মাস", last_1_year: "শেষ ১ বছর", month_range: "মাসের পরিসীমা", to: "থেকে", search_item: "আইটেম খুঁজুন…", last_hour: "শেষ ঘণ্টা",
+        select_line: "লাইন নির্বাচন করুন…", select_time: "সময় নির্বাচন করুন…"
       }
     };
     var currentLang = 'en';
@@ -1189,6 +1213,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         b.textContent = lang === 'bn' ? 'EN' : 'বাং';
       });
       document.body.style.fontFamily = lang === 'bn' ? "'Noto Sans Bengali', Inter, system-ui, sans-serif" : '';
+      if (rawDashboardData && rawDashboardData.length > 0) buildDashboardFilters();
       renderDashboard();
     }
     function cycleLanguage() {
@@ -1211,11 +1236,11 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       
       if(tsItem) { tsItem.destroy(); tsLine.destroy(); tsTime.destroy(); }
       
-      const itemSelect = document.getElementById('item'); itemSelect.innerHTML = '<option value="">Search Item…</option>'; 
+      const itemSelect = document.getElementById('item'); itemSelect.innerHTML = '<option value="">' + t('search_item') + '</option>'; 
       data.items.forEach(i => itemSelect.add(new Option(i, i)));
-      const lineSelect = document.getElementById('line'); lineSelect.innerHTML = '<option value="">Select Line…</option>'; 
+      const lineSelect = document.getElementById('line'); lineSelect.innerHTML = '<option value="">' + t('select_line') + '</option>'; 
       data.lines.forEach(l => lineSelect.add(new Option(l, l)));
-      const timeSelect = document.getElementById('time'); timeSelect.innerHTML = '<option value="">Select Time…</option>'; 
+      const timeSelect = document.getElementById('time'); timeSelect.innerHTML = '<option value="">' + t('select_time') + '</option>'; 
       data.times.forEach(t => timeSelect.add(new Option(t, t)));
       
       tsItem = new TomSelect("#item", { allowEmptyOption: true, create: false });
@@ -1417,9 +1442,9 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       if (!presetSelect) return;
       
       if (viewType === 'daily') {
-          presetSelect.innerHTML = `<option value="7">Last 7 Days</option><option value="30">Last 30 Days</option><option value="today">Today</option><option value="custom">Date Range</option><option value="all">All Time</option>`;
+          presetSelect.innerHTML = `<option value="7">${t('last_7_days')}</option><option value="30">${t('last_30_days')}</option><option value="today">${t('today')}</option><option value="custom">${t('date_range')}</option><option value="all">${t('all_time')}</option>`;
       } else {
-          presetSelect.innerHTML = `<option value="6m">Last 6 Months</option><option value="1y">Last 1 Year</option><option value="custom">Month Range</option><option value="all">All Time</option>`;
+          presetSelect.innerHTML = `<option value="6m">${t('last_6_months')}</option><option value="1y">${t('last_1_year')}</option><option value="custom">${t('month_range')}</option><option value="all">${t('all_time')}</option>`;
       }
       
       if(!isInit) { toggleMasterDateRange(); }
@@ -1466,7 +1491,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       if(activeDashTab === 'section') {
         html = `
           <select id="filter-section" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-            <option value="all">All Sections</option>
+            <option value="all">${t('all_sections')}</option>
             ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
           </select>
           
@@ -1474,13 +1499,13 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           <input type="text" id="filter-date" value="${todayStr}" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm cursor-pointer w-28 text-center bg-white" readonly>
 
            <select id="metric-toggle" onchange="currentMetric = this.value; renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-            <option value="productivity" ${currentMetric === 'productivity' ? 'selected' : ''}>View: Productivity</option>
-            <option value="quantity" ${currentMetric === 'quantity' ? 'selected' : ''}>View: Production Qty</option>
+            <option value="productivity" ${currentMetric === 'productivity' ? 'selected' : ''}>${t('view_productivity')}</option>
+            <option value="quantity" ${currentMetric === 'quantity' ? 'selected' : ''}>${t('view_production_qty')}</option>
           </select>
           
           <div class="relative inline-block text-left">
             <button onclick="document.getElementById('chart-vis-menu').classList.toggle('hidden')" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 hover:bg-gray-50 shadow-sm flex items-center gap-2">
-              Filter Charts <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+              ${t('filter_charts')} <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             <div id="chart-vis-menu" class="hidden absolute right-0 mt-2 w-64 rounded-md shadow-xl bg-white ring-1 ring-black ring-opacity-5 z-50 p-3 max-h-64 overflow-y-auto">
                <div id="chart-vis-list" class="space-y-2"></div>
@@ -1498,16 +1523,16 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
 
         html = `
           <select id="master-view-type" onchange="updateMasterViewType()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm bg-enovar/5">
-            <option value="daily">Daily View</option>
-            <option value="monthly">Monthly View</option>
+            <option value="daily">${t('daily_view')}</option>
+            <option value="monthly">${t('monthly_view')}</option>
           </select>
           <select id="master-metric-toggle" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-            <option value="productivity">View: Productivity</option>
-            <option value="quantity">View: Production</option>
-            <option value="quality">View: Quality / FPY</option>
+            <option value="productivity">${t('view_productivity')}</option>
+            <option value="quantity">${t('view_production')}</option>
+            <option value="quality">${t('view_quality_fpy')}</option>
           </select>
           <select id="filter-pg-master" onchange="this.classList.toggle('text-enovar', this.value !== 'all'); this.classList.toggle('border-enovar', this.value !== 'all'); updateMasterDropdowns();" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm transition-colors">
-            <option value="all">All PGs</option>
+            <option value="all">${t('all_pgs')}</option>
             ${Array.from(pgs).sort().map(p => `<option value="${p}">${p}</option>`).join('')}
           </select>
           <select id="master-date-preset" onchange="toggleMasterDateRange()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
@@ -1515,20 +1540,20 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           </select>
           <div id="master-date-range-container" class="hidden flex items-center gap-1 bg-white border border-gray-200 rounded-md px-2 shadow-sm">
             <input type="date" id="filter-start" value="${startStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
-            <span class="text-gray-400 text-xs">to</span>
+            <span class="text-gray-400 text-xs">${t('to')}</span>
             <input type="date" id="filter-end" value="${endStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
           </div>
           <div id="master-month-range-container" class="hidden flex items-center gap-1 bg-white border border-gray-200 rounded-md px-2 shadow-sm">
             <input type="month" id="filter-start-month" value="${startMonthStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
-            <span class="text-gray-400 text-xs">to</span>
+            <span class="text-gray-400 text-xs">${t('to')}</span>
             <input type="month" id="filter-end-month" value="${endMonthStr}" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold py-1.5 outline-none text-gray-700 bg-transparent">
           </div>
-          <div class="w-full md:w-[300px]"><select id="filter-item" placeholder="Search Item…"></select></div>
+          <div class="w-full md:w-[300px]"><select id="filter-item" placeholder="${t('search_item')}"></select></div>
         `;
        } else if (activeDashTab === 'management') {
          html = `
           <select id="filter-section-summary" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-            <option value="all">All Sections</option>
+            <option value="all">${t('all_sections')}</option>
             ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
           </select>
           <input type="text" id="filter-date-summary" value="${todayStr}" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm cursor-pointer w-28 text-center bg-white" readonly>
@@ -1577,7 +1602,7 @@ if(fpSummary) fpSummary.destroy();
         updateMasterViewType(true); // Initialize the date presets immediately
         
         const iSel = document.getElementById('filter-item');
-        iSel.innerHTML = '<option value="">Search Item…</option>';
+        iSel.innerHTML = '<option value="">' + t('search_item') + '</option>';
         Array.from(items).sort().forEach(i => iSel.add(new Option(i, i)));
         if(tsDashItem) tsDashItem.destroy();
         tsDashItem = new TomSelect("#filter-item", { allowEmptyOption: true, create: false, onChange: function() { renderDashboard(); } });
@@ -1781,29 +1806,19 @@ if(fpSummary) fpSummary.destroy();
           
           let chartHeight = Math.max(250, sortedTimes.length * 30); 
 
-          let rightHeaderHTML = '';
+          let tooltipText = '';
           if (lastValidTime !== "N/A") {
              let headerDisplayTgt = currentMetric === 'productivity' ? lastTgt : Math.round(lastTgt * lastMp);
-             rightHeaderHTML = `
-              <div class="text-right shrink-0 bg-gray-50 rounded-lg px-2 py-1 border border-gray-200 shadow-sm self-start">
-                <div class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Last Hour: ${lastValidTime}</div>
-                <div class="flex items-center justify-end gap-2 text-[10px] font-bold">
-                  <span class="text-blue-600" title="Production Qty">Q:${lastQty}</span>
-                  <span class="text-red-500" title="Manpower">M:${lastMp}</span>
-                  <span class="text-enovar" title="Productivity">P:${lastAct}</span>
-                  <span class="text-slate-600" title="Target for this specific hour">T:${headerDisplayTgt}</span>
-                </div>
-              </div>`;
+             tooltipText = `${t('last_hour')}: ${lastValidTime} — Q: ${lastQty} · M: ${lastMp} · P: ${lastAct} · T: ${headerDisplayTgt}`;
           }
 
           // Added flex-col and sm:flex-row to make it wrap properly on mobile phones
           wrapper.innerHTML = `
             <div class="border-b border-gray-100 pb-2 mb-0 shrink-0 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
               <div class="min-w-0 flex-1">
-                <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
-                <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
+                <h3 class="text-sm font-black text-gray-800 truncate" title="${tooltipText}">${lineItemData[key].line}</h3>
+                <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate" title="${tooltipText}">${lineItemData[key].itemStr}</p>
               </div>
-              ${rightHeaderHTML}
             </div>
             <div id="${chartId}" class="w-full mt-1" style="height: ${chartHeight}px"></div>
           `;
