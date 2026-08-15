@@ -1796,10 +1796,8 @@ if(fpSummary) fpSummary.destroy();
              
               // BOTH metrics now use the 90% threshold for turning red
               let isUnderperforming = (actVal > 0 && actVal < (0.9 * tgtForThisHour));
-              // Partial run (< 60 min) takes priority with an amber outline
-              let isPartial = (revMinArr[i] && revMinArr[i] < 60);
               
-              barColors.push(isPartial ? '#F59E0B' : isUnderperforming ? '#EF4444' : '#0D5C58');
+              barColors.push(isUnderperforming ? '#EF4444' : '#0D5C58');
 
                return {
                    x: getOrdinal(sortedTimes.indexOf(t) + 1), 
@@ -1907,16 +1905,18 @@ if(fpSummary) fpSummary.destroy();
               }
           }
 
-          // Blue dot indicators for bars that have remarks
-          let remarksAnnotations = [];
+          // Dot indicators: amber for partial runs (< 60 min), blue for remarks (amber takes priority)
+          let dotAnnotations = [];
           seriesData.forEach((d, i) => {
-            if (d.remarks && d.remarks.trim()) {
-              remarksAnnotations.push({
+            let isPartial = (d.minutes && d.minutes < 60);
+            let hasRemarks = (d.remarks && d.remarks.trim());
+            if (isPartial || hasRemarks) {
+              dotAnnotations.push({
                 x: d.y + (currentMetric === 'quantity' ? maxAct * 0.03 : 1),
                 y: d.x,
                 marker: {
                   size: 7,
-                  fillColor: '#3B82F6',
+                  fillColor: isPartial ? '#F59E0B' : '#3B82F6',
                   strokeColor: '#fff',
                   strokeWidth: 1.5,
                   radius: 3
@@ -1991,7 +1991,7 @@ if(fpSummary) fpSummary.destroy();
                    } 
                }] : [],
                 // INJECT the grouped quantity labels here + blue dot remarks
-                points: qtyAnnotations.concat(remarksAnnotations)
+                points: qtyAnnotations.concat(dotAnnotations)
             },
             tooltip: {
               enabled: true,
