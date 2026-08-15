@@ -161,6 +161,17 @@
     .toast button { font-weight: 700; color: #0D5C58; background: none; border: none; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 0.375rem; }
     .toast button:hover { background: rgba(13,92,88,0.1); }
     @keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    /* Hover tooltip (instant, custom) */
+    .tooltip-holder { position: relative; }
+    .tooltip-holder:hover::after {
+      content: attr(data-tip);
+      position: absolute; top: 100%; left: 0; z-index: 60;
+      margin-top: 6px; padding: 0.45rem 0.7rem;
+      background: rgba(17,24,39,0.95); color: #fff;
+      border-radius: 0.5rem; font-size: 11px; font-weight: 600;
+      white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.18); pointer-events: none;
+    }
+    [data-theme="dark"] .tooltip-holder:hover::after { background: rgba(255,255,255,0.96); color: #1f2937; }
     /* Modal (for edit prompts) */
     #modal-overlay { position: fixed; inset: 0; z-index: 90; background: rgba(15,23,42,0.4); display: flex; align-items: center; justify-content: center; padding: 1rem; }
     #modal-overlay.hidden { display: none !important; }
@@ -1133,6 +1144,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         el.textContent = theme === 'light' ? '☀' : theme === 'dark' ? '🌙' : '☕';
       });
     }
+    function isDark() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
+    function dashLineColor() { return isDark() ? '#cbd5e1' : '#374151'; }
 
     // --- LANGUAGE / i18n ---
     var I18N = {
@@ -1780,7 +1793,7 @@ if(fpSummary) fpSummary.destroy();
                      value: tgtForThisHour,
                      strokeWidth: 2,
                      strokeHeight: 14,
-                     strokeColor: '#374151',
+                     strokeColor: dashLineColor(),
                      strokeDashArray: 2 // Makes the individual bar markers dashed
                  }] : []
              };
@@ -1813,11 +1826,12 @@ if(fpSummary) fpSummary.destroy();
           }
 
           // Added flex-col and sm:flex-row to make it wrap properly on mobile phones
+          let tipAttr = tooltipText ? ' tooltip-holder" data-tip="' + tooltipText + '"' : '';
           wrapper.innerHTML = `
             <div class="border-b border-gray-100 pb-2 mb-0 shrink-0 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-              <div class="min-w-0 flex-1">
-                <h3 class="text-sm font-black text-gray-800 truncate" title="${tooltipText}">${lineItemData[key].line}</h3>
-                <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate" title="${tooltipText}">${lineItemData[key].itemStr}</p>
+              <div class="min-w-0 flex-1${tipAttr}">
+                <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
+                <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
               </div>
             </div>
             <div id="${chartId}" class="w-full mt-1" style="height: ${chartHeight}px"></div>
@@ -1922,7 +1936,7 @@ if(fpSummary) fpSummary.destroy();
                textAnchor: 'start', 
                offsetX: 20,
                background: { enabled: false }, 
-               style: { fontSize: '11px', colors: ['#374151'], fontWeight: 700 },
+                style: { fontSize: '11px', colors: [dashLineColor()], fontWeight: 700 },
                formatter: function(val) {
                   if(val === 0 || val === null || val === undefined) return '';
                   return `${val}`;
@@ -1942,16 +1956,16 @@ if(fpSummary) fpSummary.destroy();
                // ONLY show the global straight dashed line in Productivity mode
                xaxis: (annotationVal > 0 && currentMetric === 'productivity') ? [{ 
                   x: annotationVal, 
-                  borderColor: '#475569', 
-                  strokeDashArray: 4, 
-                  strokeWidth: 1, // Makes the line thin
-                  label: { 
-                     text: annotationText, 
-                     position: 'top', 
-                     textAnchor: 'start', 
-                     offsetX: 5,
-                     style: {color: '#fff', background: '#475569'} 
-                  } 
+                   borderColor: dashLineColor(), 
+                   strokeDashArray: 4, 
+                   strokeWidth: 1, // Makes the line thin
+                   label: { 
+                      text: annotationText, 
+                      position: 'top', 
+                      textAnchor: 'start', 
+                      offsetX: 5,
+                      style: {color: '#fff', background: '#475569'} 
+                   } 
                }] : [],
                 // INJECT the grouped quantity labels here + blue dot remarks
                 points: qtyAnnotations.concat(remarksAnnotations)
