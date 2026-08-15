@@ -1135,6 +1135,11 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       document.documentElement.setAttribute('data-theme', theme === 'light' ? '' : theme);
       localStorage.setItem('alel_theme', theme);
       updateThemeIcon(theme);
+      // Re-render charts immediately so inline chart colors (dashed lines, bar labels) update to match theme
+      if (rawDashboardData && rawDashboardData.length > 0) {
+        if (activeDashTab === 'quality') renderQualityDashboard();
+        else renderDashboard();
+      }
     }
     function cycleTheme() {
       var cur = localStorage.getItem('alel_theme') || 'light';
