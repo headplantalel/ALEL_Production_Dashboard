@@ -304,7 +304,7 @@
   <div id="landing-view" class="w-full min-h-[100dvh] flex flex-col items-center justify-center z-10 relative overflow-x-hidden py-8">
     
     <!-- Central Content Wrapper -->
-    <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center -mt-10 sm:-mt-16">
+    <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center">
       
       <!-- Central Brand Identity -->
       <div class="flex flex-col items-center justify-center animate-fade-up opacity-0 drop-shadow-sm mb-10">
@@ -351,8 +351,8 @@
       </div>
     </div>
     
-    <!-- Absolute Anchored Footer Watermark (Colored but Dimmed) -->
-    <div class="absolute bottom-0 left-0 w-full grid grid-cols-3 items-end px-6 sm:px-12 pb-6 sm:pb-8 animate-fade-up opacity-0 delay-500 pointer-events-none">
+    <!-- Footer Watermark (Colored but Dimmed) -->
+    <div class="w-full max-w-5xl mx-auto grid grid-cols-3 items-end px-6 sm:px-12 pb-4 pt-8 animate-fade-up opacity-0 delay-500 pointer-events-none shrink-0">
       <!-- Left: ALEL -->
       <div class="flex justify-start">
         <img src="alel.png" alt="ALEL" class="w-[70px] md:w-[90px] h-auto object-contain opacity-50 mix-blend-multiply">
@@ -1148,6 +1148,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     }
     function isDark() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
     function dashLineColor() { return isDark() ? '#2dd4bf' : '#0D5C58'; }
+    function targetLineColor() { return isDark() ? '#ffffff' : '#475569'; }
     function barLabelColor() { return isDark() ? '#e2e8f0' : '#374151'; }
 
     // --- LANGUAGE / i18n ---
@@ -1959,7 +1960,7 @@ if(fpSummary) fpSummary.destroy();
                // ONLY show the global straight dashed line in Productivity mode
                xaxis: (annotationVal > 0 && currentMetric === 'productivity') ? [{ 
                   x: annotationVal, 
-                   borderColor: dashLineColor(), 
+                   borderColor: targetLineColor(), 
                    strokeDashArray: 4, 
                    strokeWidth: 1, // Makes the line thin
                    label: { 
@@ -1967,7 +1968,7 @@ if(fpSummary) fpSummary.destroy();
                       position: 'top', 
                       textAnchor: 'start', 
                       offsetX: 5,
-                      style: {color: '#fff', background: '#475569'} 
+                      style: {color: '#fff', background: isDark() ? '#64748b' : '#475569'} 
                    } 
                }] : [],
                 // INJECT the grouped quantity labels here + blue dot remarks
