@@ -887,7 +887,7 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtYEWuOep1SJYgYWWnN5PqGjzq32tsb0KsxDKxLfbfypXILW2z0otqdhkYqvWdBXinxQ/exec"; 
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4n6NE8oBG551HsW9Q_fgQXIO-bK9pJHiD9WMAy9oniQzR1zBHSGuqKL934QgHoLa89A/exec"; 
     
     let tsItem, tsLine, tsTime;
     let tsDashItem, tsDashVisibleCharts; 
@@ -2016,9 +2016,9 @@ if(fpSummary) fpSummary.destroy();
                    }
                    
                     let minutesHTML = '';
-                    let runMins = (data.minutes && data.minutes < 60) ? data.minutes : 60;
-                    let minsColor = (data.minutes && data.minutes < 60) ? '#FBBF24' : '#9CA3AF';
-                    minutesHTML = `<div style="margin-top: 4px; color: ${minsColor}; font-size: 11px; font-weight: 700;">⏱ ${runMins} min run time</div>`;
+                    if (data.minutes && data.minutes < 60) {
+                      minutesHTML = `<div style="margin-top: 4px; color: #FBBF24; font-size: 11px; font-weight: 700;">⏱ ${data.minutes} min run time</div>`;
+                    }
                    
                    return `<div style="padding: 8px 12px; font-size: 12px; font-weight: 600; background: #1F2937; color: white; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                        <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #374151; color: #9CA3AF; font-size: 10px; text-transform: uppercase;">Time Slot: ${data.realTime}</div>
