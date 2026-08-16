@@ -887,7 +887,7 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbm1MaHdrEwXkUgfIsaS_lTa25mC_fyswTEuwsAKAPYobSufMNLcCW02txE4oweFxCTw/exec"; 
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCn3fwCQCR6DLGHXXBms4bupJZo4HxCYqz9TnpaLbAKBPwPNNpQTm9LN_eMWNVgrZNaQ/exec"; 
     
     let tsItem, tsLine, tsTime;
     let tsDashItem, tsDashVisibleCharts; 
@@ -1533,12 +1533,15 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       let html = '';
       
       let dates = new Set(), sections = new Set(), pgs = new Set(), items = new Set();
-      if (activeDashTab === 'master' && productionMetadata) {
-        (productionMetadata.pgs || []).forEach(p => pgs.add(p));
-        (productionMetadata.items || []).forEach(it => { if (it.label) items.add(it.label); });
+      // Prefer full metadata (all dates/sections) so date pickers never fade out;
+      // raw data is date-filtered so it can't be the source for "enable" dates.
+      if (productionMetadata) {
         (productionMetadata.dates || []).forEach(d => dates.add(d));
         (productionMetadata.sections || []).forEach(s => sections.add(s));
-      } else if(rawDashboardData.length > 0) {
+        (productionMetadata.pgs || []).forEach(p => pgs.add(p));
+        (productionMetadata.items || []).forEach(it => { if (it.label) items.add(it.label); });
+      }
+      if(rawDashboardData.length > 0) {
         rawDashboardData.forEach(r => { 
           if(r.date) dates.add(r.date);
           if(r.section) sections.add(r.section);
@@ -1627,15 +1630,15 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
          if(dashFilters['sec_date']) document.getElementById('filter-date').value = dashFilters['sec_date'];
          
          if(fpSection) fpSection.destroy(); 
-         fpSection = flatpickr("#filter-date", {
-            dateFormat: "M d, Y", 
-            disableMobile: true, 
-            enable: Array.from(dates).map(dateStr => new Date(dateStr)), 
-            onChange: function(selectedDates, dateStr, instance) { 
-               renderDashboard(); 
-               instance.element.blur(); // Forces the browser to drop focus after selection
-            }
-         });
+          fpSection = flatpickr("#filter-date", {
+             dateFormat: "M d, Y", 
+             disableMobile: true, 
+             enable: Array.from(dates).map(dateStr => new Date(dateStr)), 
+             onChange: function(selectedDates, dateStr, instance) { 
+                fetchDashboardData(false); 
+                instance.element.blur(); // Forces the browser to drop focus after selection
+             }
+          });
       }
       
       if (activeDashTab === 'management') {
@@ -1651,10 +1654,10 @@ if(fpSummary) fpSummary.destroy();
                instance.element.blur();
                setTimeout(() => instance.close(), 10);
             },
-            onChange: function(selectedDates, dateStr, instance) { 
-               renderDashboard(); 
-               instance.element.blur(); // Forces the browser to drop focus after selection
-            }
+             onChange: function(selectedDates, dateStr, instance) { 
+                fetchDashboardData(false); 
+                instance.element.blur(); // Forces the browser to drop focus after selection
+             }
          });
       }
       
