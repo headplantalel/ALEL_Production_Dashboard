@@ -887,7 +887,7 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCn3fwCQCR6DLGHXXBms4bupJZo4HxCYqz9TnpaLbAKBPwPNNpQTm9LN_eMWNVgrZNaQ/exec"; 
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1orXIzjwCsizSqnA2mE5jXH5hs0wFcagZnbhu-2ZRNvD0A1E4ApL1QNkkxHUKVQGLig/exec"; 
     
     let tsItem, tsLine, tsTime;
     let tsDashItem, tsDashVisibleCharts; 
@@ -2639,6 +2639,16 @@ let gaugeOptions = {
                   ${msg.text}
                </div>
             </div>`;
+        } else if (msg.role === 'error') {
+          chatWindow.innerHTML += `
+            <div class="flex items-start gap-3">
+               <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0 border border-red-200">
+                  <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path></svg>
+               </div>
+               <div class="bg-red-50 p-3 rounded-2xl rounded-tl-none shadow-sm border border-red-100 text-sm text-red-600 max-w-[85%] leading-relaxed">
+                  ${msg.text}
+               </div>
+            </div>`;
         } else {
           chatWindow.innerHTML += `
             <div class="flex items-start gap-3">
@@ -2710,12 +2720,12 @@ let gaugeOptions = {
          inputEl.disabled = false;
          btn.innerText = 'Send';
          
-         if (res.reply) {
-            aiChatHistory.push({ role: "model", text: res.reply });
-            localStorage.setItem('alel_ai_chat_' + currentUser.email, JSON.stringify(aiChatHistory));
-         } else {
-            chatWindow.innerHTML += `<div class="text-xs text-red-500 text-center my-2">${res.error || "Unknown Error"}</div>`;
-         }
+          if (res.reply) {
+             aiChatHistory.push({ role: res.status === "Error" ? "error" : "model", text: res.reply });
+             localStorage.setItem('alel_ai_chat_' + currentUser.email, JSON.stringify(aiChatHistory));
+          } else {
+             chatWindow.innerHTML += `<div class="text-xs text-red-500 text-center my-2">${res.error || "Unknown Error"}</div>`;
+          }
          
          renderAIChatHistory();
          inputEl.focus();
