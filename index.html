@@ -899,6 +899,11 @@
     let lastRawFingerprint = '';
     let productionMetadata = null; // {pgs, items, dates, sections} — cached, for Analytics dropdowns
     let activeDashTab = localStorage.getItem('activeDashTab') || 'section';
+    const CACHE_WINDOW_DAYS = 60;           // client-side rolling window (days)
+    const FULL_REFRESH_MS = 10 * 60 * 1000; // periodic full window re-fetch (10 min)
+    let windowStartDate = null;             // Date — start of cached window
+    let windowEndDate = null;               // Date — end of cached window (today)
+    let fullRefreshTimer = null;
 let dashFilters = JSON.parse(localStorage.getItem('dashFilters')) || {};
 
 // NEW: Clear dates on a hard refresh so they always default back to today
@@ -1382,54 +1387,80 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       // Fetch lightweight dropdown metadata first (Analytics tab no longer needs full raw data)
       callAPI({ action: "getProductionMetadata" }, function(meta) {
         if (meta && !meta.error) productionMetadata = meta;
-        fetchDashboardData(true);
-        syncTimer = setInterval(() => { fetchDashboardData(false); }, 60000);
+        fetchDashboardData('initial');
+        syncTimer = setInterval(() => { fetchDashboardData('sync'); }, 60000);
+        fullRefreshTimer = setInterval(() => { fetchDashboardData('full'); }, FULL_REFRESH_MS);
       });
     }
 
-    function fetchDashboardData(isInitialLoad) {
-      // Analytics tab is now server-aggregated (getAggregatedData); AI is server-side.
-      // These tabs don't need the full raw payload — renderDashboard() pulls what it needs.
-      if (activeDashTab === 'master' || activeDashTab === 'ai') {
-        if (isInitialLoad) {
-          document.getElementById('loader').classList.add('hidden');
-          document.getElementById('dashboard-skeleton').classList.add('hidden');
-          switchDashTab(activeDashTab);
-        } else {
-          renderDashboard();
-        }
+    function computeFingerprint(rows) {
+      var qtySum = 0, mpSum = 0;
+      for (var i = 0; i < rows.length; i++) { qtySum += rows[i].qty || 0; mpSum += rows[i].mp || 0; }
+      return rows.length + '|' + qtySum + '|' + mpSum;
+    }
+
+    // True when the requested range fits entirely inside the cached window
+    function isRangeInWindow(startDate, endDate) {
+      if (!windowStartDate || !windowEndDate) return false;
+      if (startDate.getTime() === 0) return false;                       // "all time" sentinel
+      if (endDate.getTime() >= 8640000000000000) return false;           // "all time" sentinel
+      return startDate.getTime() >= windowStartDate.getTime() && endDate.getTime() <= windowEndDate.getTime();
+    }
+
+    // True when a single date string falls inside the cached window
+    function isDateInWindow(dateStr) {
+      if (!windowStartDate || !windowEndDate) return false;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return false;
+      return d.getTime() >= windowStartDate.getTime() && d.getTime() <= windowEndDate.getTime();
+    }
+
+    // Fetch a single out-of-window date and merge it into the cache
+    function fetchDateIntoCache(dateStr, callback) {
+      callAPI({ action: "getDashboardRawData", startDate: dateStr, endDate: dateStr }, function(data) {
+        if (data.error) { if (callback) callback(false); return; }
+        var rows = data.raw || [];
+        rawDashboardData = rawDashboardData.filter(function(r) { return r.date !== dateStr; }).concat(rows);
+        lastRawFingerprint = computeFingerprint(rawDashboardData);
+        if (callback) callback(true);
+      });
+    }
+
+    function fetchDashboardData(mode) {
+      // mode: 'initial' (full window + loader + switch), 'sync' (today merge), 'full' (full window silent)
+      if (mode === 'initial' || mode === 'full') {
+        const start = new Date(); start.setHours(0,0,0,0); start.setDate(start.getDate() - (CACHE_WINDOW_DAYS - 1));
+        const end = new Date(); end.setHours(23,59,59,999);
+        windowStartDate = start; windowEndDate = end;
+        var payload = { action: "getDashboardRawData", startDate: Utilities_formatDateClient(start), endDate: Utilities_formatDateClient(end) };
+        callAPI(payload, function(data) {
+          if (mode === 'initial') {
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('dashboard-skeleton').classList.add('hidden');
+          }
+          if (data.error) return;
+          var newRaw = data.raw || [];
+          var fp = computeFingerprint(newRaw);
+          var changed = (fp !== lastRawFingerprint);
+          rawDashboardData = newRaw;
+          lastRawFingerprint = fp;
+          if (mode === 'initial') {
+            switchDashTab(activeDashTab);
+          } else if (changed) {
+            renderDashboard();
+          }
+        });
         return;
       }
-      var payload = { action: "getDashboardRawData" };
-      
-      // Send active tab's date filter to reduce server payload on sync
-      // Only for Section/Management tabs — Analytics/AI need full data
-      if (activeDashTab === 'section') {
-        var d = document.getElementById('filter-date');
-        if (d && d.value) { payload.startDate = d.value; payload.endDate = d.value; }
-      } else if (activeDashTab === 'management') {
-        var d = document.getElementById('filter-date-summary');
-        if (d && d.value) { payload.startDate = d.value; payload.endDate = d.value; }
-      }
-      
-      callAPI(payload, function(data) {
-        if(isInitialLoad) document.getElementById('loader').classList.add('hidden');
-        if (data.error) { document.getElementById('dashboard-skeleton').classList.add('hidden'); return; } 
-        var newRaw = data.raw || [];
-        // Lightweight fingerprint to skip chart re-render when data is unchanged.
-        // Data is still fetched every 60s (all tabs stay fresh); only the expensive
-        // destroy+recreate of ApexCharts is skipped when nothing changed.
-        var fp = newRaw.length;
-        var qtySum = 0, mpSum = 0;
-        for (var i = 0; i < newRaw.length; i++) { qtySum += newRaw[i].qty || 0; mpSum += newRaw[i].mp || 0; }
-        fp += '|' + qtySum + '|' + mpSum;
-        var changed = (fp !== lastRawFingerprint);
-        rawDashboardData = newRaw;
-        if (isInitialLoad) {
-          lastRawFingerprint = fp;
-          document.getElementById('dashboard-skeleton').classList.add('hidden');
-          switchDashTab(activeDashTab);
-        } else if (changed) {
+
+      // mode === 'sync': refresh today only, merge into the cached window
+      var todayStr = Utilities_formatDateClient(new Date());
+      callAPI({ action: "getDashboardRawData", startDate: todayStr, endDate: todayStr }, function(data) {
+        if (data.error) return;
+        var todayRows = data.raw || [];
+        rawDashboardData = rawDashboardData.filter(function(r) { return r.date !== todayStr; }).concat(todayRows);
+        var fp = computeFingerprint(rawDashboardData);
+        if (fp !== lastRawFingerprint) {
           lastRawFingerprint = fp;
           renderDashboard();
         }
@@ -1481,11 +1512,6 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           renderQualityDashboard();
         }
         renderDashboard(); 
-        // Analytics is server-aggregated; Section/Management show raw rows, so
-        // refetch raw data for them on tab switch (keeps them fresh + populated).
-        if (tab === 'section' || tab === 'management') {
-          fetchDashboardData(false);
-        }
          window.dispatchEvent(new Event('resize'));
       }, 50);
     }
@@ -1635,7 +1661,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
              disableMobile: true, 
              enable: Array.from(dates).map(dateStr => new Date(dateStr)), 
              onChange: function(selectedDates, dateStr, instance) { 
-                fetchDashboardData(false); 
+                renderDashboard(); 
                 instance.element.blur(); // Forces the browser to drop focus after selection
              }
           });
@@ -1655,7 +1681,7 @@ if(fpSummary) fpSummary.destroy();
                setTimeout(() => instance.close(), 10);
             },
              onChange: function(selectedDates, dateStr, instance) { 
-                fetchDashboardData(false); 
+                renderDashboard(); 
                 instance.element.blur(); // Forces the browser to drop focus after selection
              }
          });
@@ -1715,6 +1741,154 @@ if(fpSummary) fpSummary.destroy();
       keys.forEach(function(k, i) { labels[i].innerText = t(k); });
     }
 
+    // Client-side aggregation — mirrors getAggregatedData (verified bit-for-bit).
+    function aggregateLocal(rows, startDate, endDate, viewType, pg, item) {
+      let fData = rows.filter(function(row) {
+        if (pg !== 'all' && row.pg !== pg) return false;
+        if (item && item !== '' && ("[" + row.itemCode + "] - " + row.item) !== item) return false;
+        let rDate = new Date(row.date);
+        if (rDate < startDate || rDate > endDate) return false;
+        return true;
+      });
+
+      let sumQty = 0, weightedProdSum = 0, weightedTgtSum = 0;
+      let dataMap = {};
+      let dailyLineMp = {};
+      const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+      fData.forEach(function(r) {
+        sumQty += r.qty;
+        if (r.productivity > 0) weightedProdSum += (r.productivity * r.qty);
+        if (r.targetProductivity > 0) weightedTgtSum += (r.targetProductivity * r.qty);
+
+        let rDate = new Date(r.date);
+        let key, label;
+        if (viewType === 'daily') {
+          key = r.date;
+          label = r.date;
+        } else {
+          key = rDate.getFullYear() + "-" + String(rDate.getMonth() + 1).padStart(2, '0');
+          label = MONTHS[rDate.getMonth()] + " " + rDate.getFullYear();
+        }
+
+        if (!dataMap[key]) dataMap[key] = { label: label, actSum: 0, tgtSum: 0, qty: 0, tgtQtySum: 0 };
+        dataMap[key].qty += r.qty;
+        if (r.productivity > 0) {
+          dataMap[key].actSum += (r.productivity * r.qty);
+          dataMap[key].tgtSum += (r.targetProductivity * r.qty);
+        }
+        if (r.targetProductivity > 0 && r.mp > 0) {
+          dataMap[key].tgtQtySum += (r.targetProductivity * r.mp);
+        }
+
+        if (!dailyLineMp[r.date]) dailyLineMp[r.date] = {};
+        dailyLineMp[r.date][r.line] = Math.max(dailyLineMp[r.date][r.line] || 0, r.mp);
+      });
+
+      return { dataMap: dataMap, sumQty: sumQty, weightedProdSum: weightedProdSum, weightedTgtSum: weightedTgtSum, dailyLineMp: dailyLineMp };
+    }
+
+    // Render the Analytics KPI cards + area chart from an aggregated result.
+    function renderMaster(agg, viewType, masterMetric) {
+      const font = 'Inter, sans-serif';
+      setMasterKpiLabels('productivity');
+      var dataMap = (agg && agg.dataMap) ? agg.dataMap : {};
+      var sumQty = (agg && agg.sumQty) ? agg.sumQty : 0;
+      var weightedProdSum = (agg && agg.weightedProdSum) ? agg.weightedProdSum : 0;
+      var weightedTgtSum = (agg && agg.weightedTgtSum) ? agg.weightedTgtSum : 0;
+      var dailyLineMp = (agg && agg.dailyLineMp) ? agg.dailyLineMp : {};
+
+      let activeDays = Object.keys(dailyLineMp).length;
+      let dailyMpSums = 0;
+      Object.values(dailyLineMp).forEach(function(lines) {
+        let dayTotal = 0;
+        Object.values(lines).forEach(function(mp) { dayTotal += mp; });
+        dailyMpSums += dayTotal;
+      });
+
+      let avgDailyMp = activeDays > 0 ? Math.round(dailyMpSums / activeDays) : 0;
+      let avgProd = sumQty > 0 ? (weightedProdSum / sumQty).toFixed(1) : "0.0";
+      let avgTarget = sumQty > 0 ? (weightedTgtSum / sumQty).toFixed(1) : "0.0";
+
+      document.getElementById('master-kpi-prod').innerText = avgProd;
+      document.getElementById('master-kpi-target').innerText = avgTarget;
+      document.getElementById('master-kpi-output').innerText = sumQty.toLocaleString();
+      document.getElementById('master-kpi-mp').innerText = avgDailyMp.toLocaleString();
+
+      let titleEl = document.getElementById('chart-master-title');
+      if (titleEl) {
+        let metricName = masterMetric === 'productivity' ? 'Productivity' : 'Production';
+        titleEl.innerText = viewType === 'daily' ? `Daily ${metricName} Trend` : `Month-over-Month ${metricName}`;
+      }
+
+      let tKeys = Object.keys(dataMap).sort(function(a, b) {
+        if (viewType === 'daily') return new Date(a) - new Date(b);
+        return a > b ? 1 : -1;
+      });
+
+      let categories = tKeys.map(function(k) { return dataMap[k].label; });
+
+      let actVals = tKeys.map(function(k) {
+        if (masterMetric === 'productivity') return dataMap[k].qty > 0 ? parseFloat((dataMap[k].actSum / dataMap[k].qty).toFixed(1)) : 0;
+        else return dataMap[k].qty;
+      });
+
+      let tgtVals = tKeys.map(function(k) {
+        if (masterMetric === 'productivity') return dataMap[k].qty > 0 ? parseFloat((dataMap[k].tgtSum / dataMap[k].qty).toFixed(1)) : 0;
+        else return Math.round(dataMap[k].tgtQtySum);
+      });
+
+      let allValidVals = actVals.concat(tgtVals).filter(function(v) { return v > 0; });
+      let maxVal = Math.max.apply(null, allValidVals);
+      let minVal = Math.min.apply(null, allValidVals);
+
+      if (maxVal === -Infinity) maxVal = 100;
+      if (minVal === Infinity) minVal = 0;
+
+      let chartMin = minVal > 0 ? Math.floor(minVal * 0.85) : 0;
+      let chartMax = maxVal > 0 ? Math.ceil(maxVal * 1.05) : 100;
+
+      let series = [
+        { name: masterMetric === 'productivity' ? 'Actual Productivity' : 'Actual Production', data: actVals },
+        { name: masterMetric === 'productivity' ? 'Target Productivity' : 'Target Production', type: 'line', data: tgtVals }
+      ];
+
+      let options = {
+        chart: {
+          type: 'area',
+          height: 350,
+          fontFamily: font,
+          animations: { enabled: false },
+          toolbar: {
+            show: true,
+            tools: { download: false, selection: false, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true },
+            autoSelected: 'pan'
+          },
+          zoom: { enabled: false }
+        },
+        series: series,
+        stroke: { width: [3, 3], curve: 'smooth', dashArray: [0, 4] },
+        markers: { size: 5, hover: { size: 7 } },
+        colors: ['#0D5C58', '#EF4444'],
+        grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } },
+        xaxis: { categories: categories, labels: { style: { colors: '#6B7280' } } },
+        yaxis: {
+          min: chartMin,
+          max: chartMax,
+          labels: { style: { colors: '#6B7280' } }
+        },
+        fill: {
+          type: ['gradient', 'solid'],
+          gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 }
+        },
+        dataLabels: { enabled: false }
+      };
+
+      if (window.masterTrendChart) window.masterTrendChart.destroy();
+      window.masterTrendChart = new ApexCharts(document.querySelector("#chart-master-trend"), options);
+      window.masterTrendChart.render();
+    }
+
     function renderDashboard() {
       // Analytics tab is server-aggregated, so it must render even without raw rows.
       if((!rawDashboardData || rawDashboardData.length === 0) && activeDashTab !== 'master') return;
@@ -1731,7 +1905,8 @@ if(fpSummary) fpSummary.destroy();
       // TAB 1: LINE GRID (Horizontal Hollow Bars)
       // ==========================================
       if (activeDashTab === 'section') {
-        const dateVal = document.getElementById('filter-date').value;
+        // Normalize to "MMM dd, yyyy" (Flatpickr uses "M d, Y" without leading zeros)
+        const dateVal = Utilities_formatDateClient(new Date(document.getElementById('filter-date').value));
         const secVal = document.getElementById('filter-section').value;
         
         let fData = rawDashboardData.filter(row => {
@@ -1739,6 +1914,12 @@ if(fpSummary) fpSummary.destroy();
           if (row.date !== dateVal) return false;
           return true;
         });
+
+        // Out-of-window date fallback: fetch it server-side, then re-render.
+        if (fData.length === 0 && !isDateInWindow(dateVal)) {
+          fetchDateIntoCache(dateVal, function(ok) { if (ok) renderDashboard(); });
+          return;
+        }
 
         const grid = document.getElementById('section-charts-grid');
         const emptyMsg = document.getElementById('section-empty-msg');
@@ -2165,128 +2346,34 @@ if(fpSummary) fpSummary.destroy();
         const valPg = document.getElementById('filter-pg-master') ? document.getElementById('filter-pg-master').value : 'all';
         const valItem = tsDashItem ? tsDashItem.getValue() : '';
 
-        // 1. SERVER-SIDE AGGREGATION (Phase 1) — offload filtering + grouping to Apps Script
-        var aggStart = null, aggEnd = null;
-        if (startDate.getTime() > 0) aggStart = Utilities_formatDateClient(startDate);
-        if (endDate.getTime() < 8640000000000000) aggEnd = Utilities_formatDateClient(endDate);
+        // 1. AGGREGATE — locally when the range fits the cached 60-day window, else server
+        if (isRangeInWindow(startDate, endDate) && rawDashboardData.length > 0) {
+          renderMaster(aggregateLocal(rawDashboardData, startDate, endDate, viewType, valPg, valItem), viewType, masterMetric);
+        } else {
+          var aggStart = null, aggEnd = null;
+          if (startDate.getTime() > 0) aggStart = Utilities_formatDateClient(startDate);
+          if (endDate.getTime() < 8640000000000000) aggEnd = Utilities_formatDateClient(endDate);
 
-        callAPI({
-          action: "getAggregatedData",
-          startDate: aggStart,
-          endDate: aggEnd,
-          viewType: viewType,
-          pg: valPg,
-          item: valItem
-        }, function(agg) {
-          if (agg && agg.error) return;
-          setMasterKpiLabels('productivity');
-          var dataMap = (agg && agg.dataMap) ? agg.dataMap : {};
-          var sumQty = (agg && agg.sumQty) ? agg.sumQty : 0;
-          var weightedProdSum = (agg && agg.weightedProdSum) ? agg.weightedProdSum : 0;
-          var weightedTgtSum = (agg && agg.weightedTgtSum) ? agg.weightedTgtSum : 0;
-          var dailyLineMp = (agg && agg.dailyLineMp) ? agg.dailyLineMp : {};
-
-          // 2. CALCULATE KPIs
-          let activeDays = Object.keys(dailyLineMp).length;
-          let dailyMpSums = 0;
-          Object.values(dailyLineMp).forEach(function(lines) {
-              let dayTotal = 0;
-              Object.values(lines).forEach(function(mp) { dayTotal += mp; });
-              dailyMpSums += dayTotal;
+          callAPI({
+            action: "getAggregatedData",
+            startDate: aggStart,
+            endDate: aggEnd,
+            viewType: viewType,
+            pg: valPg,
+            item: valItem
+          }, function(agg) {
+            if (agg && agg.error) return;
+            renderMaster(agg, viewType, masterMetric);
           });
-
-          let avgDailyMp = activeDays > 0 ? Math.round(dailyMpSums / activeDays) : 0;
-          let avgProd = sumQty > 0 ? (weightedProdSum / sumQty).toFixed(1) : "0.0";
-          let avgTarget = sumQty > 0 ? (weightedTgtSum / sumQty).toFixed(1) : "0.0";
-
-          document.getElementById('master-kpi-prod').innerText = avgProd;
-          document.getElementById('master-kpi-target').innerText = avgTarget;
-          document.getElementById('master-kpi-output').innerText = sumQty.toLocaleString();
-          document.getElementById('master-kpi-mp').innerText = avgDailyMp.toLocaleString();
-          
-          let titleEl = document.getElementById('chart-master-title');
-          if (titleEl) {
-              let metricName = masterMetric === 'productivity' ? 'Productivity' : 'Production';
-              titleEl.innerText = viewType === 'daily' ? `Daily ${metricName} Trend` : `Month-over-Month ${metricName}`;
-          }
-
-          // 3. PREPARE CHART DATA FOR SELECTED METRIC
-          let tKeys = Object.keys(dataMap).sort(function(a, b) {
-              if (viewType === 'daily') return new Date(a) - new Date(b);
-              return a > b ? 1 : -1;
-          });
-          
-          let categories = tKeys.map(function(k) { return dataMap[k].label; });
-          
-          let actVals = tKeys.map(function(k) {
-              if (masterMetric === 'productivity') return dataMap[k].qty > 0 ? parseFloat((dataMap[k].actSum / dataMap[k].qty).toFixed(1)) : 0;
-              else return dataMap[k].qty;
-          });
-          
-          let tgtVals = tKeys.map(function(k) {
-              if (masterMetric === 'productivity') return dataMap[k].qty > 0 ? parseFloat((dataMap[k].tgtSum / dataMap[k].qty).toFixed(1)) : 0;
-              else return Math.round(dataMap[k].tgtQtySum);
-          });
-
-          // 4. CALCULATE DYNAMIC Y-AXIS MIN/MAX
-          let allValidVals = actVals.concat(tgtVals).filter(function(v) { return v > 0; });
-          let maxVal = Math.max.apply(null, allValidVals);
-          let minVal = Math.min.apply(null, allValidVals);
-          
-          if (maxVal === -Infinity) maxVal = 100;
-          if (minVal === Infinity) minVal = 0;
-          
-          let chartMin = minVal > 0 ? Math.floor(minVal * 0.85) : 0; 
-          let chartMax = maxVal > 0 ? Math.ceil(maxVal * 1.05) : 100;
-
-          // 5. CONFIGURE AREA/LINE CHART FOR BOTH VIEWS
-          let series = [
-            { name: masterMetric === 'productivity' ? 'Actual Productivity' : 'Actual Production', data: actVals },
-            { name: masterMetric === 'productivity' ? 'Target Productivity' : 'Target Production', type: 'line', data: tgtVals }
-          ];
-
-          let options = {
-            chart: { 
-               type: 'area',
-               height: 350, 
-               fontFamily: font,
-               animations: { enabled: false },
-               toolbar: { 
-                   show: true, 
-                   tools: { download: false, selection: false, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true },
-                   autoSelected: 'pan'
-               },
-               zoom: { enabled: false }
-            },
-            series: series,
-            stroke: { width: [3, 3], curve: 'smooth', dashArray: [0, 4] },
-            markers: { size: 5, hover: { size: 7 } },
-            colors: ['#0D5C58', '#EF4444'],
-            grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } }, 
-            xaxis: { categories: categories, labels: { style: { colors: '#6B7280' } } },
-            yaxis: { 
-               min: chartMin, 
-               max: chartMax, 
-               labels: { style: { colors: '#6B7280' } } 
-            },
-            fill: { 
-               type: ['gradient', 'solid'], 
-               gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } 
-            },
-            dataLabels: { enabled: false }
-          };
-
-          if (window.masterTrendChart) window.masterTrendChart.destroy();
-          window.masterTrendChart = new ApexCharts(document.querySelector("#chart-master-trend"), options);
-          window.masterTrendChart.render();
-        });
+        }
       }
       // ==========================================
       // TAB 3: SUMMARY (Single Day Snapshot)
       // ==========================================
       if (activeDashTab === 'management') {
         const secVal = document.getElementById('filter-section-summary') ? document.getElementById('filter-section-summary').value : 'all';
-        const dateVal = document.getElementById('filter-date-summary') ? document.getElementById('filter-date-summary').value : '';
+        const dateVal = (document.getElementById('filter-date-summary') && document.getElementById('filter-date-summary').value)
+          ? Utilities_formatDateClient(new Date(document.getElementById('filter-date-summary').value)) : '';
         
         // --- 1. FIND PREVIOUS DATE FOR TRENDS ---
         let availableDates = [...new Set(rawDashboardData.map(r => r.date))].sort((a,b) => new Date(b) - new Date(a));
@@ -2310,6 +2397,12 @@ if(fpSummary) fpSummary.destroy();
           if (row.date !== dateVal) return false;
           return true;
         });
+
+        // Out-of-window date fallback: fetch it server-side, then re-render.
+        if (fData.length === 0 && !isDateInWindow(dateVal)) {
+          fetchDateIntoCache(dateVal, function(ok) { if (ok) renderDashboard(); });
+          return;
+        }
 
         let totalQty = 0, weightedProdSum = 0, weightedTgtSum = 0;
         let lineMp = {}, lineOutput = {}, itemMap = {}; 
