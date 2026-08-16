@@ -1186,7 +1186,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         entry_updated: "Entry updated", update_failed: "Update failed", conversation_cleared: "Conversation cleared",
         submit_confirm: "Submit this production data?", complete_dropdowns: "Please complete all dropdown selections.",
         submission_failed: "Submission failed", edit_entry: "Edit Entry", edit_qty: "Production Quantity", edit_mp: "Manpower", cancel: "Cancel", save: "Save",
-        avg_daily_manpower: "Avg. Daily Manpower", average_fpy: "Average FPY", worst_fpy: "Worst FPY", total_defectives: "Total Defectives", items_tracked: "Items Tracked",
+        avg_daily_manpower: "Avg. Daily Manpower", average_fpy: "Average FPY", worst_fpy: "Worst FPY", total_defectives: "Total Defectives", items_tracked: "Items Tracked", below_threshold: "Below Threshold",
         all_sections: "All Sections", view_productivity: "View: Productivity", view_production_qty: "View: Production Qty", filter_charts: "Filter Charts",
         daily_view: "Daily View", monthly_view: "Monthly View", view_production: "View: Production", view_quality_fpy: "View: Quality / FPY", all_pgs: "All PGs",
         today: "Today", yesterday: "Yesterday", last_7_days: "Last 7 Days", last_30_days: "Last 30 Days", all_time: "All Time", date_range: "Date Range",
@@ -1215,7 +1215,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         entry_updated: "এন্ট্রি আপডেট হয়েছে", update_failed: "আপডেট ব্যর্থ হয়েছে", conversation_cleared: "কথোপকথন মুছে ফেলা হয়েছে",
         submit_confirm: "এই প্রোডাকশন ডেটা জমা দেবেন?", complete_dropdowns: "অনুগ্রহ করে সব ড্রপডাউন নির্বাচন সম্পূর্ণ করুন।",
         submission_failed: "জমা দেওয়া ব্যর্থ হয়েছে", edit_entry: "এন্ট্রি সম্পাদনা", edit_qty: "উৎপাদনের পরিমাণ", edit_mp: "ম্যানপাওয়ার", cancel: "বাতিল", save: "সংরক্ষণ",
-        avg_daily_manpower: "গড় দৈনিক ম্যানপাওয়ার", average_fpy: "গড় FPY", worst_fpy: "সর্বনিম্ন FPY", total_defectives: "মোট ত্রুটিপূর্ণ", items_tracked: "ট্র্যাক করা আইটেম",
+        avg_daily_manpower: "গড় দৈনিক ম্যানপাওয়ার", average_fpy: "গড় FPY", worst_fpy: "সর্বনিম্ন FPY", total_defectives: "মোট ত্রুটিপূর্ণ", items_tracked: "ট্র্যাক করা আইটেম", below_threshold: "থ্রেশহোল্ডের নিচে",
         all_sections: "সব সেকশন", view_productivity: "দেখুন: উৎপাদনশীলতা", view_production_qty: "দেখুন: উৎপাদনের পরিমাণ", filter_charts: "চার্ট ফিল্টার করুন",
         daily_view: "দৈনিক ভিউ", monthly_view: "মাসিক ভিউ", view_production: "দেখুন: উৎপাদন", view_quality_fpy: "দেখুন: কোয়ালিটি / FPY", all_pgs: "সব PG",
         today: "আজ", yesterday: "গতকাল", last_7_days: "শেষ ৭ দিন", last_30_days: "শেষ ৩০ দিন", all_time: "সব সময়", date_range: "তারিখের পরিসীমা",
@@ -1702,6 +1702,16 @@ if(fpSummary) fpSummary.destroy();
       }
     }
 
+    // Reset Analytics KPI card labels when switching between Quality and Productivity metrics
+    function setMasterKpiLabels(mode) {
+      const labels = document.querySelectorAll('#view-master .grid > div > span:first-child');
+      if (!labels || labels.length < 4) return;
+      const keys = mode === 'quality'
+        ? ['average_fpy', 'worst_fpy', 'total_defectives', 'below_threshold']
+        : ['actual_productivity', 'target_productivity', 'total_production', 'avg_daily_manpower'];
+      keys.forEach(function(k, i) { labels[i].innerText = t(k); });
+    }
+
     function renderDashboard() {
       // Analytics tab is server-aggregated, so it must render even without raw rows.
       if((!rawDashboardData || rawDashboardData.length === 0) && activeDashTab !== 'master') return;
@@ -2090,11 +2100,8 @@ if(fpSummary) fpSummary.destroy();
               return;
             }
             
-            // Update KPI labels
-            document.querySelector('#view-master .grid > div:nth-child(1) span').innerText = 'Average FPY %';
-            document.querySelector('#view-master .grid > div:nth-child(2) span').innerText = 'Worst FPY';
-            document.querySelector('#view-master .grid > div:nth-child(3) span').innerText = 'Total Defectives';
-            document.querySelector('#view-master .grid > div:nth-child(4) span').innerText = 'Below Threshold';
+            // Update KPI labels for Quality mode
+            setMasterKpiLabels('quality');
             
             var totalProd = 0, totalDef = 0;
             var lineFPY = {}, worstFPY = 100, worstLine = '';
@@ -2169,6 +2176,7 @@ if(fpSummary) fpSummary.destroy();
           item: valItem
         }, function(agg) {
           if (agg && agg.error) return;
+          setMasterKpiLabels('productivity');
           var dataMap = (agg && agg.dataMap) ? agg.dataMap : {};
           var sumQty = (agg && agg.sumQty) ? agg.sumQty : 0;
           var weightedProdSum = (agg && agg.weightedProdSum) ? agg.weightedProdSum : 0;
