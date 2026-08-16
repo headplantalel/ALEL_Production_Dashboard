@@ -2709,24 +2709,35 @@ let gaugeOptions = {
       const dateString = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
       const systemInstruction = `System Note: The current date is ${dateString}. When the user refers to relative terms like 'today', 'yesterday', or 'last week', calculate the target date based on this current date.`;
 
-      // Send payload to backend (Notice we REMOVED the 'data' payload to kill the upload delay!)
-      callAPI({ 
-          action: "askGemini", 
-          prompt: message, 
-          history: recentHistory,
-          systemContext: systemInstruction // <--- New parameter
-      }, function(res) {
-         document.getElementById(loadingId).remove();
+      // Send payload to backend with a timeout so the "Analyzing…" bubble never hangs forever
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
+      fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: "askGemini", prompt: message, history: recentHistory, systemContext: systemInstruction }), signal: controller.signal })
+      .then(res => res.json())
+      .then(function(res) {
+         clearTimeout(timeoutId);
+         const loadingEl = document.getElementById(loadingId);
+         if (loadingEl) loadingEl.remove();
          inputEl.disabled = false;
          btn.innerText = 'Send';
-         
-          if (res.reply) {
-             aiChatHistory.push({ role: res.status === "Error" ? "error" : "model", text: res.reply });
-             localStorage.setItem('alel_ai_chat_' + currentUser.email, JSON.stringify(aiChatHistory));
-          } else {
-             chatWindow.innerHTML += `<div class="text-xs text-red-500 text-center my-2">${res.error || "Unknown Error"}</div>`;
-          }
-         
+         if (res && res.reply) {
+            aiChatHistory.push({ role: res.status === "Error" ? "error" : "model", text: res.reply });
+         } else {
+            aiChatHistory.push({ role: "error", text: (res && res.error) ? res.error : "Unknown Error" });
+         }
+         localStorage.setItem('alel_ai_chat_' + currentUser.email, JSON.stringify(aiChatHistory));
+         renderAIChatHistory();
+         inputEl.focus();
+      })
+      .catch(function(err) {
+         clearTimeout(timeoutId);
+         console.error(err);
+         const loadingEl = document.getElementById(loadingId);
+         if (loadingEl) loadingEl.remove();
+         inputEl.disabled = false;
+         btn.innerText = 'Send';
+         aiChatHistory.push({ role: "error", text: "The AI assistant couldn't reach the server. Please try again." });
+         localStorage.setItem('alel_ai_chat_' + currentUser.email, JSON.stringify(aiChatHistory));
          renderAIChatHistory();
          inputEl.focus();
       });
