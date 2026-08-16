@@ -887,7 +887,7 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4n6NE8oBG551HsW9Q_fgQXIO-bK9pJHiD9WMAy9oniQzR1zBHSGuqKL934QgHoLa89A/exec"; 
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbm1MaHdrEwXkUgfIsaS_lTa25mC_fyswTEuwsAKAPYobSufMNLcCW02txE4oweFxCTw/exec"; 
     
     let tsItem, tsLine, tsTime;
     let tsDashItem, tsDashVisibleCharts; 
@@ -897,6 +897,7 @@
     let masterAuthData = null; 
     let rawDashboardData = []; 
     let lastRawFingerprint = '';
+    let productionMetadata = null; // {pgs, items, dates, sections} — cached, for Analytics dropdowns
     let activeDashTab = localStorage.getItem('activeDashTab') || 'section';
 let dashFilters = JSON.parse(localStorage.getItem('dashFilters')) || {};
 
@@ -1140,7 +1141,9 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       localStorage.setItem('alel_theme', theme);
       updateThemeIcon(theme);
       // Re-render charts immediately so inline chart colors (dashed lines, bar labels) update to match theme
-      if (rawDashboardData && rawDashboardData.length > 0) {
+      if (activeDashTab === 'master') {
+        renderDashboard();
+      } else if (rawDashboardData && rawDashboardData.length > 0) {
         if (activeDashTab === 'quality') renderQualityDashboard();
         else renderDashboard();
       }
@@ -1241,7 +1244,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         b.textContent = lang === 'bn' ? 'EN' : 'বাং';
       });
       document.body.style.fontFamily = lang === 'bn' ? "'Noto Sans Bengali', Inter, system-ui, sans-serif" : '';
-      if (rawDashboardData && rawDashboardData.length > 0) buildDashboardFilters();
+      if (activeDashTab === 'master' && productionMetadata) buildDashboardFilters();
+      else if (rawDashboardData && rawDashboardData.length > 0) buildDashboardFilters();
       renderDashboard();
     }
     function cycleLanguage() {
@@ -1375,11 +1379,27 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       document.getElementById('loader-text').innerText = "Loading Analytics…";
       document.getElementById('loader').classList.remove('hidden');
       document.getElementById('dashboard-skeleton').classList.remove('hidden');
-      fetchDashboardData(true);
-      syncTimer = setInterval(() => { fetchDashboardData(false); }, 60000);
+      // Fetch lightweight dropdown metadata first (Analytics tab no longer needs full raw data)
+      callAPI({ action: "getProductionMetadata" }, function(meta) {
+        if (meta && !meta.error) productionMetadata = meta;
+        fetchDashboardData(true);
+        syncTimer = setInterval(() => { fetchDashboardData(false); }, 60000);
+      });
     }
 
     function fetchDashboardData(isInitialLoad) {
+      // Analytics tab is now server-aggregated (getAggregatedData); AI is server-side.
+      // These tabs don't need the full raw payload — renderDashboard() pulls what it needs.
+      if (activeDashTab === 'master' || activeDashTab === 'ai') {
+        if (isInitialLoad) {
+          document.getElementById('loader').classList.add('hidden');
+          document.getElementById('dashboard-skeleton').classList.add('hidden');
+          switchDashTab(activeDashTab);
+        } else {
+          renderDashboard();
+        }
+        return;
+      }
       var payload = { action: "getDashboardRawData" };
       
       // Send active tab's date filter to reduce server payload on sync
@@ -1461,6 +1481,11 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           renderQualityDashboard();
         }
         renderDashboard(); 
+        // Analytics is server-aggregated; Section/Management show raw rows, so
+        // refetch raw data for them on tab switch (keeps them fresh + populated).
+        if (tab === 'section' || tab === 'management') {
+          fetchDashboardData(false);
+        }
          window.dispatchEvent(new Event('resize'));
       }, 50);
     }
@@ -1485,10 +1510,11 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       let pgVal = document.getElementById('filter-pg-master') ? document.getElementById('filter-pg-master').value : 'all';
       let items = new Set();
       
-      rawDashboardData.forEach(r => { 
+      var src = (productionMetadata && productionMetadata.items) ? productionMetadata.items : [];
+      src.forEach(it => {
         // Only collect items that belong to the selected PG
-        if(pgVal === 'all' || r.pg === pgVal) {
-           if(r.itemCode && r.item) items.add(`[${r.itemCode}] - ${r.item}`);
+        if(pgVal === 'all' || it.pg === pgVal) {
+           if(it.label) items.add(it.label);
         }
       });
       
@@ -1507,7 +1533,12 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       let html = '';
       
       let dates = new Set(), sections = new Set(), pgs = new Set(), items = new Set();
-      if(rawDashboardData.length > 0) {
+      if (activeDashTab === 'master' && productionMetadata) {
+        (productionMetadata.pgs || []).forEach(p => pgs.add(p));
+        (productionMetadata.items || []).forEach(it => { if (it.label) items.add(it.label); });
+        (productionMetadata.dates || []).forEach(d => dates.add(d));
+        (productionMetadata.sections || []).forEach(s => sections.add(s));
+      } else if(rawDashboardData.length > 0) {
         rawDashboardData.forEach(r => { 
           if(r.date) dates.add(r.date);
           if(r.section) sections.add(r.section);
@@ -1672,7 +1703,8 @@ if(fpSummary) fpSummary.destroy();
     }
 
     function renderDashboard() {
-      if(!rawDashboardData || rawDashboardData.length === 0) return;
+      // Analytics tab is server-aggregated, so it must render even without raw rows.
+      if((!rawDashboardData || rawDashboardData.length === 0) && activeDashTab !== 'master') return;
       const font = 'Inter, sans-serif';
       // SAVE STATE TO MEMORY
       if(document.getElementById('filter-section')) dashFilters['sec_zone'] = document.getElementById('filter-section').value;
@@ -2123,145 +2155,120 @@ if(fpSummary) fpSummary.destroy();
         const valPg = document.getElementById('filter-pg-master') ? document.getElementById('filter-pg-master').value : 'all';
         const valItem = tsDashItem ? tsDashItem.getValue() : '';
 
-        // 1. FILTER DATA BY PG, ITEM, AND DATE
-        let fData = rawDashboardData.filter(row => {
-          if (valPg !== 'all' && row.pg !== valPg) return false;
-          if (valItem && valItem !== '' && `[${row.itemCode}] - ${row.item}` !== valItem) return false;
-          let rDate = new Date(row.date);
-          if (rDate < startDate || rDate > endDate) return false;
-          return true;
-        });
+        // 1. SERVER-SIDE AGGREGATION (Phase 1) — offload filtering + grouping to Apps Script
+        var aggStart = null, aggEnd = null;
+        if (startDate.getTime() > 0) aggStart = Utilities_formatDateClient(startDate);
+        if (endDate.getTime() < 8640000000000000) aggEnd = Utilities_formatDateClient(endDate);
 
-        let sumQty = 0, weightedProdSum = 0, weightedTgtSum = 0;
-        let dataMap = {}; 
-        let dailyLineMp = {}; 
+        callAPI({
+          action: "getAggregatedData",
+          startDate: aggStart,
+          endDate: aggEnd,
+          viewType: viewType,
+          pg: valPg,
+          item: valItem
+        }, function(agg) {
+          if (agg && agg.error) return;
+          var dataMap = (agg && agg.dataMap) ? agg.dataMap : {};
+          var sumQty = (agg && agg.sumQty) ? agg.sumQty : 0;
+          var weightedProdSum = (agg && agg.weightedProdSum) ? agg.weightedProdSum : 0;
+          var weightedTgtSum = (agg && agg.weightedTgtSum) ? agg.weightedTgtSum : 0;
+          var dailyLineMp = (agg && agg.dailyLineMp) ? agg.dailyLineMp : {};
 
-        // 2. AGGREGATE BASED ON VIEW TYPE
-        fData.forEach(r => {
-          sumQty += r.qty;
+          // 2. CALCULATE KPIs
+          let activeDays = Object.keys(dailyLineMp).length;
+          let dailyMpSums = 0;
+          Object.values(dailyLineMp).forEach(function(lines) {
+              let dayTotal = 0;
+              Object.values(lines).forEach(function(mp) { dayTotal += mp; });
+              dailyMpSums += dayTotal;
+          });
+
+          let avgDailyMp = activeDays > 0 ? Math.round(dailyMpSums / activeDays) : 0;
+          let avgProd = sumQty > 0 ? (weightedProdSum / sumQty).toFixed(1) : "0.0";
+          let avgTarget = sumQty > 0 ? (weightedTgtSum / sumQty).toFixed(1) : "0.0";
+
+          document.getElementById('master-kpi-prod').innerText = avgProd;
+          document.getElementById('master-kpi-target').innerText = avgTarget;
+          document.getElementById('master-kpi-output').innerText = sumQty.toLocaleString();
+          document.getElementById('master-kpi-mp').innerText = avgDailyMp.toLocaleString();
           
-          if(r.productivity > 0) weightedProdSum += (r.productivity * r.qty); 
-          if(r.targetProductivity > 0) weightedTgtSum += (r.targetProductivity * r.qty); 
-          
-          let rDate = new Date(r.date);
-          let key, label;
-          
-          if (viewType === 'daily') {
-              key = r.date;
-              label = r.date;
-          } else { 
-              key = rDate.getFullYear() + "-" + String(rDate.getMonth() + 1).padStart(2, '0');
-              label = rDate.toLocaleString('default', { month: 'short', year: 'numeric' });
+          let titleEl = document.getElementById('chart-master-title');
+          if (titleEl) {
+              let metricName = masterMetric === 'productivity' ? 'Productivity' : 'Production';
+              titleEl.innerText = viewType === 'daily' ? `Daily ${metricName} Trend` : `Month-over-Month ${metricName}`;
           }
+
+          // 3. PREPARE CHART DATA FOR SELECTED METRIC
+          let tKeys = Object.keys(dataMap).sort(function(a, b) {
+              if (viewType === 'daily') return new Date(a) - new Date(b);
+              return a > b ? 1 : -1;
+          });
           
-          if(!dataMap[key]) dataMap[key] = { label: label, actSum: 0, tgtSum: 0, qty: 0, tgtQtySum: 0 };
+          let categories = tKeys.map(function(k) { return dataMap[k].label; });
           
-          dataMap[key].qty += r.qty;
-          if(r.productivity > 0) { 
-              dataMap[key].actSum += (r.productivity * r.qty); 
-              dataMap[key].tgtSum += (r.targetProductivity * r.qty); 
-          }
-          if(r.targetProductivity > 0 && r.mp > 0) {
-              dataMap[key].tgtQtySum += (r.targetProductivity * r.mp);
-          }
+          let actVals = tKeys.map(function(k) {
+              if (masterMetric === 'productivity') return dataMap[k].qty > 0 ? parseFloat((dataMap[k].actSum / dataMap[k].qty).toFixed(1)) : 0;
+              else return dataMap[k].qty;
+          });
           
-          if(!dailyLineMp[r.date]) dailyLineMp[r.date] = {};
-          dailyLineMp[r.date][r.line] = Math.max(dailyLineMp[r.date][r.line] || 0, r.mp);
+          let tgtVals = tKeys.map(function(k) {
+              if (masterMetric === 'productivity') return dataMap[k].qty > 0 ? parseFloat((dataMap[k].tgtSum / dataMap[k].qty).toFixed(1)) : 0;
+              else return Math.round(dataMap[k].tgtQtySum);
+          });
+
+          // 4. CALCULATE DYNAMIC Y-AXIS MIN/MAX
+          let allValidVals = actVals.concat(tgtVals).filter(function(v) { return v > 0; });
+          let maxVal = Math.max.apply(null, allValidVals);
+          let minVal = Math.min.apply(null, allValidVals);
+          
+          if (maxVal === -Infinity) maxVal = 100;
+          if (minVal === Infinity) minVal = 0;
+          
+          let chartMin = minVal > 0 ? Math.floor(minVal * 0.85) : 0; 
+          let chartMax = maxVal > 0 ? Math.ceil(maxVal * 1.05) : 100;
+
+          // 5. CONFIGURE AREA/LINE CHART FOR BOTH VIEWS
+          let series = [
+            { name: masterMetric === 'productivity' ? 'Actual Productivity' : 'Actual Production', data: actVals },
+            { name: masterMetric === 'productivity' ? 'Target Productivity' : 'Target Production', type: 'line', data: tgtVals }
+          ];
+
+          let options = {
+            chart: { 
+               type: 'area',
+               height: 350, 
+               fontFamily: font,
+               animations: { enabled: false },
+               toolbar: { 
+                   show: true, 
+                   tools: { download: false, selection: false, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true },
+                   autoSelected: 'pan'
+               },
+               zoom: { enabled: false }
+            },
+            series: series,
+            stroke: { width: [3, 3], curve: 'smooth', dashArray: [0, 4] },
+            markers: { size: 5, hover: { size: 7 } },
+            colors: ['#0D5C58', '#EF4444'],
+            grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } }, 
+            xaxis: { categories: categories, labels: { style: { colors: '#6B7280' } } },
+            yaxis: { 
+               min: chartMin, 
+               max: chartMax, 
+               labels: { style: { colors: '#6B7280' } } 
+            },
+            fill: { 
+               type: ['gradient', 'solid'], 
+               gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } 
+            },
+            dataLabels: { enabled: false }
+          };
+
+          if (window.masterTrendChart) window.masterTrendChart.destroy();
+          window.masterTrendChart = new ApexCharts(document.querySelector("#chart-master-trend"), options);
+          window.masterTrendChart.render();
         });
-
-        // 3. CALCULATE KPIs
-        let activeDays = Object.keys(dailyLineMp).length;
-        let dailyMpSums = 0;
-        Object.values(dailyLineMp).forEach(lines => {
-            let dayTotal = 0;
-            Object.values(lines).forEach(mp => dayTotal += mp);
-            dailyMpSums += dayTotal;
-        });
-
-        let avgDailyMp = activeDays > 0 ? Math.round(dailyMpSums / activeDays) : 0;
-        let avgProd = sumQty > 0 ? (weightedProdSum / sumQty).toFixed(1) : "0.0";
-        let avgTarget = sumQty > 0 ? (weightedTgtSum / sumQty).toFixed(1) : "0.0";
-
-        document.getElementById('master-kpi-prod').innerText = avgProd;
-        document.getElementById('master-kpi-target').innerText = avgTarget;
-        document.getElementById('master-kpi-output').innerText = sumQty.toLocaleString();
-        document.getElementById('master-kpi-mp').innerText = avgDailyMp.toLocaleString();
-        
-        let titleEl = document.getElementById('chart-master-title');
-        if (titleEl) {
-            let metricName = masterMetric === 'productivity' ? 'Productivity' : 'Production';
-            titleEl.innerText = viewType === 'daily' ? `Daily ${metricName} Trend` : `Month-over-Month ${metricName}`;
-        }
-
-        // 4. PREPARE CHART DATA FOR SELECTED METRIC
-        let tKeys = Object.keys(dataMap).sort((a,b) => {
-            if (viewType === 'daily') return new Date(a) - new Date(b);
-            return a > b ? 1 : -1;
-        });
-        
-        let categories = tKeys.map(k => dataMap[k].label);
-        
-        let actVals = tKeys.map(k => {
-            if (masterMetric === 'productivity') return dataMap[k].qty > 0 ? parseFloat((dataMap[k].actSum / dataMap[k].qty).toFixed(1)) : 0;
-            else return dataMap[k].qty;
-        });
-        
-        let tgtVals = tKeys.map(k => {
-            if (masterMetric === 'productivity') return dataMap[k].qty > 0 ? parseFloat((dataMap[k].tgtSum / dataMap[k].qty).toFixed(1)) : 0;
-            else return Math.round(dataMap[k].tgtQtySum);
-        });
-
-        // 5. CALCULATE DYNAMIC Y-AXIS MIN/MAX
-        let allValidVals = [...actVals, ...tgtVals].filter(v => v > 0);
-        let maxVal = Math.max(...allValidVals);
-        let minVal = Math.min(...allValidVals);
-        
-        if (maxVal === -Infinity) maxVal = 100;
-        if (minVal === Infinity) minVal = 0;
-        
-        let chartMin = minVal > 0 ? Math.floor(minVal * 0.85) : 0; 
-        let chartMax = maxVal > 0 ? Math.ceil(maxVal * 1.05) : 100;
-
-        // 6. CONFIGURE AREA/LINE CHART FOR BOTH VIEWS
-        let series = [
-          { name: masterMetric === 'productivity' ? 'Actual Productivity' : 'Actual Production', data: actVals },
-          { name: masterMetric === 'productivity' ? 'Target Productivity' : 'Target Production', type: 'line', data: tgtVals }
-        ];
-
-        let options = {
-          chart: { 
-             type: 'area', // Forces Area chart universally
-             height: 350, 
-             fontFamily: font,
-             animations: { enabled: false },
-             toolbar: { 
-                 show: true, 
-                 tools: { download: false, selection: false, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true },
-                 autoSelected: 'pan'
-             },
-             zoom: { enabled: false }
-          },
-          series: series,
-          stroke: { width: [3, 3], curve: 'smooth', dashArray: [0, 4] },
-          markers: { size: 5, hover: { size: 7 } },
-          colors: ['#0D5C58', '#EF4444'],
-          grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } }, 
-          xaxis: { categories: categories, labels: { style: { colors: '#6B7280' } } },
-          yaxis: { 
-             min: chartMin, 
-             max: chartMax, 
-             labels: { style: { colors: '#6B7280' } } 
-          },
-          fill: { 
-             type: ['gradient', 'solid'], 
-             gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } 
-          },
-          dataLabels: { enabled: false }
-        };
-
-        if (window.masterTrendChart) window.masterTrendChart.destroy();
-        window.masterTrendChart = new ApexCharts(document.querySelector("#chart-master-trend"), options);
-        window.masterTrendChart.render();
       }
       // ==========================================
       // TAB 3: SUMMARY (Single Day Snapshot)
