@@ -798,7 +798,7 @@
           <div class="flex items-center gap-3 shrink-0">
               <select id="quality-date-preset" onchange="renderQualityDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm">
                  <option value="today" data-i18n="today">Today</option>
-                 <option value="yesterday" data-i18n="yesterday">Yesterday</option>
+                 <option value="yesterday" selected data-i18n="yesterday">Yesterday</option>
                  <option value="7" data-i18n="last_7_days">Last 7 Days</option>
                  <option value="30" data-i18n="last_30_days">Last 30 Days</option>
                  <option value="all" data-i18n="all_time">All Time</option>
@@ -865,8 +865,15 @@
                 <div id="quality-gauge-row-mobile" class="sm:hidden flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
 
                 <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 min-h-[200px] sm:min-h-[250px]">
-                   <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-1">FPY Trend</h3>
-                   <div id="quality-trend-chart" class="w-full flex-1 min-h-[180px]"></div>
+                   <div class="flex items-center justify-between pl-3 pr-2 pt-2 mb-1">
+                      <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Defect Pareto</h3>
+                      <div class="flex gap-1">
+                         <button id="pareto-item-btn" onclick="setQualityParetoDim('item')" class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-enovar text-white shadow-sm">Item</button>
+                         <button id="pareto-line-btn" onclick="setQualityParetoDim('line')" class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200">Line</button>
+                      </div>
+                   </div>
+                   <div id="quality-pareto-chart" class="w-full flex-1 min-h-[180px]"></div>
+                   <div id="quality-pareto-insight" class="text-[10px] font-semibold text-slate-500 px-3 pb-2 pt-1"></div>
                 </div>
              </div>
           </div>
@@ -922,6 +929,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     let fpQuality = null; 
     let fpyEntryRows = []; 
     let qualityWatchChart = null;
+    let qualityParetoDim = 'item';   // 'item' | 'line' — Pareto dimension
+    let qualityFpyRows = [];          // cached FPY rows for the Quality tab (used by the Pareto toggle)
 
     window.onload = function() {
       applyTheme(localStorage.getItem('alel_theme') || 'light');
@@ -3204,6 +3213,7 @@ let gaugeOptions = {
       
       callAPI(payload, function(data) {
         var fpyRows = (data && data.rows) ? data.rows : [];
+        qualityFpyRows = fpyRows;
         
         if (fpyRows.length === 0) {
           document.getElementById('quality-kpi-avg').innerText = '—';
@@ -3214,6 +3224,11 @@ let gaugeOptions = {
           document.getElementById('quality-cards-mobile').innerHTML = '<div class="text-gray-400 text-xs text-center py-6">No quality data for this period.</div>';
           document.getElementById('quality-gauge-row').innerHTML = '<div class="text-gray-400 text-xs py-6 text-center">No data recorded.</div>';
           document.getElementById('quality-gauge-row-mobile').innerHTML = '<div class="text-gray-400 text-xs py-4 text-center w-full">No data recorded.</div>';
+          var paretoEl = document.getElementById('quality-pareto-chart');
+          if (paretoEl) paretoEl.innerHTML = '';
+          var insightEl = document.getElementById('quality-pareto-insight');
+          if (insightEl) insightEl.innerText = '';
+          if (window.qualityParetoChart) { window.qualityParetoChart.destroy(); window.qualityParetoChart = null; }
           return;
         }
 
@@ -3281,41 +3296,94 @@ let gaugeOptions = {
             '<div class="flex gap-3 text-[9px] text-slate-500 mt-1"><span>' + r.line + '</span><span>Prod: ' + r.produced + '</span><span>Def: ' + r.defective + '</span></div></div>';
         });
 
-        // Trend chart
-        var chartEl = document.getElementById('quality-trend-chart');
-        var dateMap = {};
-        fpyRows.forEach(function(r) {
-          var d = r.date || '';
-          if (!dateMap[d]) dateMap[d] = { produced: 0, defective: 0 };
-          dateMap[d].produced += r.produced;
-          dateMap[d].defective += r.defective;
-        });
-        var dates = Object.keys(dateMap).sort();
-        var fpyVals = dates.map(function(d) {
-          var dm = dateMap[d];
-        return (dm.produced + dm.defective) > 0 ? ((dm.produced / (dm.produced + dm.defective)) * 100) : null;
-        });
-
-        if (window.qualityTrendChart) window.qualityTrendChart.destroy();
-        window.qualityTrendChart = new ApexCharts(chartEl, {
-          series: [{ name: 'FPY %', data: fpyVals }],
-          chart: { type: 'line', height: 230, toolbar: { show: false }, animations: { enabled: false } },
-          stroke: { width: 3, curve: 'smooth' },
-          markers: { size: 3 },
-          colors: ['#8B5CF6'],
-          grid: { borderColor: '#f1f5f9' },
-          xaxis: { categories: dates, labels: { style: { fontSize: '9px' } } },
-          yaxis: { min: 0, max: 100, tickAmount: 4, labels: { formatter: function(v) { return v + '%'; }, style: { fontSize: '9px' } } },
-          annotations: {
-            yaxis: [
-              { y: 90, borderColor: '#F59E0B', strokeDashArray: 4, label: { text: '90%', style: { fontSize: '8px', color: '#F59E0B' } } },
-              { y: 95, borderColor: '#10B981', strokeDashArray: 4, label: { text: '95%', style: { fontSize: '8px', color: '#10B981' } } }
-            ]
-          },
-          tooltip: { y: { formatter: function(v) { return v ? v.toFixed(1) + '%' : 'N/A'; } } }
-        });
-        window.qualityTrendChart.render();
+        // Pareto chart (defectives by item/line + cumulative %)
+        renderQualityPareto();
       });
+    }
+
+    function setQualityParetoDim(dim) {
+      qualityParetoDim = dim === 'line' ? 'line' : 'item';
+      var itemBtn = document.getElementById('pareto-item-btn');
+      var lineBtn = document.getElementById('pareto-line-btn');
+      if (itemBtn && lineBtn) {
+        var on = 'text-[10px] font-bold px-2.5 py-1 rounded-md bg-enovar text-white shadow-sm';
+        var off = 'text-[10px] font-bold px-2.5 py-1 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200';
+        itemBtn.className = qualityParetoDim === 'item' ? on : off;
+        lineBtn.className = qualityParetoDim === 'line' ? on : off;
+      }
+      renderQualityPareto();
+    }
+
+    function renderQualityPareto() {
+      var chartEl = document.getElementById('quality-pareto-chart');
+      if (!chartEl || !qualityFpyRows || qualityFpyRows.length === 0) return;
+
+      // Aggregate defective count by the selected dimension
+      var map = {};
+      qualityFpyRows.forEach(function(r) {
+        var key = qualityParetoDim === 'item' ? (r.itemCode || r.item) : (r.line || 'Unknown');
+        var label = qualityParetoDim === 'item' ? (r.item || r.itemCode || '?') : (r.line || 'Unknown');
+        if (!map[key]) map[key] = { label: label, defective: 0 };
+        map[key].defective += r.defective;
+      });
+
+      var arr = Object.keys(map).map(function(k) { return map[k]; }).sort(function(a, b) { return b.defective - a.defective; });
+      var total = arr.reduce(function(s, x) { return s + x.defective; }, 0);
+
+      // Top N for readability (bars), cumulative computed over the full set
+      var top = arr.slice(0, 12);
+      var counts = top.map(function(x) { return x.defective; });
+      var categories = top.map(function(x) { return x.label; });
+      var cum = 0;
+      var cumulative = top.map(function(x) {
+        cum += x.defective;
+        return total > 0 ? Math.round(cum / total * 1000) / 10 : 0;
+      });
+
+      // "Vital few" insight
+      var n80 = 0, cumAll = 0;
+      for (var i = 0; i < arr.length; i++) {
+        cumAll += arr[i].defective;
+        if (total > 0 && (cumAll / total) >= 0.80) { n80 = i + 1; break; }
+      }
+      var top2Share = total > 0 ? Math.round(((arr[0] ? arr[0].defective : 0) + (arr[1] ? arr[1].defective : 0)) / total * 100) : 0;
+      var dimWord = qualityParetoDim === 'item' ? 'items' : 'lines';
+      var insightEl = document.getElementById('quality-pareto-insight');
+      if (insightEl) {
+        insightEl.innerText = 'Top 2 ' + dimWord + ' = ' + top2Share + '% of defects · ' + n80 + ' ' + dimWord + ' reach 80%';
+      }
+
+      var xLabelMax = qualityParetoDim === 'item' ? 14 : 20;
+
+      if (window.qualityParetoChart) window.qualityParetoChart.destroy();
+      window.qualityParetoChart = new ApexCharts(chartEl, {
+        series: [
+          { name: 'Defectives', type: 'bar', data: counts },
+          { name: 'Cumulative %', type: 'line', data: cumulative }
+        ],
+        chart: { type: 'bar', height: 230, toolbar: { show: false }, animations: { enabled: false } },
+        colors: ['#EF4444', '#0D5C58'],
+        stroke: { width: [0, 3], curve: 'smooth' },
+        dataLabels: { enabled: false },
+        xaxis: {
+          categories: categories,
+          labels: {
+            style: { fontSize: '9px' },
+            rotate: -35,
+            hideOverlappingLabels: true,
+            formatter: function(v) { return v.length > xLabelMax ? v.substring(0, xLabelMax) + '…' : v; }
+          },
+          tooltip: { enabled: false }
+        },
+        yaxis: [
+          { labels: { style: { fontSize: '9px' } } },
+          { opposite: true, min: 0, max: 100, labels: { formatter: function(v) { return v + '%'; }, style: { fontSize: '9px' } } }
+        ],
+        grid: { borderColor: '#f1f5f9' },
+        tooltip: { y: { formatter: function(v, opts) { return opts.seriesIndex === 1 ? v + '%' : v + ' defective'; } } },
+        legend: { show: false }
+      });
+      window.qualityParetoChart.render();
     }
 
     // ===================== END FPY FUNCTIONS =====================
