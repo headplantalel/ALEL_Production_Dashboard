@@ -124,6 +124,7 @@
     [data-theme="dark"] #modal-overlay .modal-card h3 { color: #e2e8f0; }
     [data-theme="dark"] #modal-overlay .modal-card label { color: #94a3b8; }
     [data-theme="dark"] #modal-overlay .modal-card input { background: #0b1220; border-color: #334155; color: #e2e8f0; }
+    [data-theme="dark"] #modal-overlay .modal-card #modal-message { color: #94a3b8; }
 
     [data-theme="sepia"] body { background: linear-gradient(135deg, #f7f0e3 0%, #efe4cf 100%); color: #4a3b28; }
     [data-theme="sepia"] #bg-elements { background-color: #efe4cf; }
@@ -151,6 +152,7 @@
     [data-theme="sepia"] .toast { background: #fdf7ea; border-color: #e2d4b8; color: #4a3b28; }
     [data-theme="sepia"] #modal-overlay .modal-card { background: #fdf7ea; }
     [data-theme="sepia"] #modal-overlay .modal-card h3 { color: #4a3b28; }
+    [data-theme="sepia"] #modal-overlay .modal-card #modal-message { color: #6b5a3e; }
     /* Skeleton loading shimmer */
     .skeleton { background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%); background-size: 200% 100%; animation: skeletonShimmer 1.4s ease infinite; }
     @keyframes skeletonShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
@@ -881,10 +883,11 @@
 
   <!-- Toast notifications -->
   <div id="toast-container" aria-live="polite"></div>
-  <!-- Modal overlay (for edit prompts) -->
+  <!-- Modal overlay (for edit prompts + confirmations) -->
   <div id="modal-overlay" class="hidden">
     <div class="modal-card">
       <h3 id="modal-title">Edit</h3>
+      <p id="modal-message" class="hidden text-sm text-gray-600 font-medium"></p>
       <div id="modal-body"></div>
       <div class="flex gap-2 mt-3">
         <button id="modal-cancel" data-i18n="cancel" class="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-600 font-semibold text-sm hover:bg-gray-50">Cancel</button>
@@ -1129,14 +1132,19 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
 
     function openModal(title, fields, onConfirm) {
       document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').classList.add('hidden');
       var body = document.getElementById('modal-body');
+      body.classList.remove('hidden');
       body.innerHTML = '';
       fields.forEach(function(f) {
         body.innerHTML += '<label for="modal-input-' + f.key + '">' + f.label + '</label>' +
           '<input type="number" id="modal-input-' + f.key + '" value="' + (f.value != null ? f.value : '') + '" ' + (f.step ? 'step="' + f.step + '"' : '') + '>';
       });
+      var ok = document.getElementById('modal-confirm');
+      ok.innerText = t('save');
+      ok.className = 'flex-1 px-4 py-2 rounded-lg bg-enovar text-white font-semibold text-sm hover:bg-enovar-dark';
       document.getElementById('modal-overlay').classList.remove('hidden');
-      document.getElementById('modal-confirm').onclick = function() {
+      ok.onclick = function() {
         var values = {};
         fields.forEach(function(f) {
           values[f.key] = document.getElementById('modal-input-' + f.key).value;
@@ -1144,6 +1152,22 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         closeModal();
         onConfirm(values);
       };
+      document.getElementById('modal-cancel').onclick = closeModal;
+    }
+
+    function openConfirm(title, message, onConfirm, okLabel, danger) {
+      document.getElementById('modal-title').innerText = title;
+      var msg = document.getElementById('modal-message');
+      msg.innerText = message;
+      msg.classList.remove('hidden');
+      var body = document.getElementById('modal-body');
+      body.innerHTML = '';
+      body.classList.add('hidden');
+      var ok = document.getElementById('modal-confirm');
+      ok.innerText = okLabel || t('confirm');
+      ok.className = 'flex-1 px-4 py-2 rounded-lg text-white font-semibold text-sm ' + (danger ? 'bg-red-500 hover:bg-red-600' : 'bg-enovar hover:bg-enovar-dark');
+      document.getElementById('modal-overlay').classList.remove('hidden');
+      ok.onclick = function() { closeModal(); if (onConfirm) onConfirm(); };
       document.getElementById('modal-cancel').onclick = closeModal;
     }
     function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
@@ -1201,6 +1225,10 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         submit_confirm: "Submit this production data?", complete_dropdowns: "Please complete all dropdown selections.",
         submission_failed: "Submission failed", edit_entry: "Edit Entry", edit_qty: "Production Quantity", edit_mp: "Manpower", cancel: "Cancel", save: "Save",
         entry_not_found: "Entry not found — please reopen history and try again",
+        confirm: "Confirm", delete: "Delete",
+        delete_confirm_title: "Delete Entry", delete_confirm_msg: "Are you sure you want to delete this entry? This cannot be undone.",
+        delete_failed: "Delete failed",
+        save_fpy_confirm_title: "Save FPY", save_fpy_confirm_msg: "Save all First Pass Yield entries?",
         avg_daily_manpower: "Avg. Daily Manpower", average_fpy: "Average FPY", worst_fpy: "Worst FPY", total_defectives: "Total Defectives", items_tracked: "Items Tracked", below_threshold: "Below Threshold",
         all_sections: "All Sections", view_productivity: "View: Productivity", view_production_qty: "View: Production Qty", filter_charts: "Filter Charts",
         daily_view: "Daily View", monthly_view: "Monthly View", view_production: "View: Production", view_quality_fpy: "View: Quality / FPY", all_pgs: "All PGs",
@@ -1231,6 +1259,10 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         submit_confirm: "এই প্রোডাকশন ডেটা জমা দেবেন?", complete_dropdowns: "অনুগ্রহ করে সব ড্রপডাউন নির্বাচন সম্পূর্ণ করুন।",
         submission_failed: "জমা দেওয়া ব্যর্থ হয়েছে", edit_entry: "এন্ট্রি সম্পাদনা", edit_qty: "উৎপাদনের পরিমাণ", edit_mp: "ম্যানপাওয়ার", cancel: "বাতিল", save: "সংরক্ষণ",
         entry_not_found: "এন্ট্রি পাওয়া যায়নি — অনুগ্রহ করে ইতিহাস পুনরায় খুলে আবার চেষ্টা করুন",
+        confirm: "নিশ্চিত করুন", delete: "মুছুন",
+        delete_confirm_title: "এন্ট্রি মুছুন", delete_confirm_msg: "আপনি কি নিশ্চিতভাবে এই এন্ট্রিটি মুছতে চান? এটি ফেরত আনা যাবে না।",
+        delete_failed: "মুছতে ব্যর্থ হয়েছে",
+        save_fpy_confirm_title: "FPY সংরক্ষণ করুন", save_fpy_confirm_msg: "সব FPY এন্ট্রি সংরক্ষণ করবেন?",
         avg_daily_manpower: "গড় দৈনিক ম্যানপাওয়ার", average_fpy: "গড় FPY", worst_fpy: "সর্বনিম্ন FPY", total_defectives: "মোট ত্রুটিপূর্ণ", items_tracked: "ট্র্যাক করা আইটেম", below_threshold: "থ্রেশহোল্ডের নিচে",
         all_sections: "সব সেকশন", view_productivity: "দেখুন: উৎপাদনশীলতা", view_production_qty: "দেখুন: উৎপাদনের পরিমাণ", filter_charts: "চার্ট ফিল্টার করুন",
         daily_view: "দৈনিক ভিউ", monthly_view: "মাসিক ভিউ", view_production: "দেখুন: উৎপাদন", view_quality_fpy: "দেখুন: কোয়ালিটি / FPY", all_pgs: "সব PG",
@@ -1363,19 +1395,21 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       
       if (!itemVal || !lineVal || !timeVal) { showToast(t('complete_dropdowns'), "error"); return; }
       
-      const btn = document.getElementById('submitBtn'); btn.innerText = t('loading') + '…';
       const remarksVal = document.getElementById('remarks').value;
       const formData = { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal, minutes: minutesVal || 60, remarks: remarksVal };
       
-      callAPI({ action: "submit", email: currentUser.email, formData: formData }, function(data) {
-        btn.innerText = t('submit_entry');
-        if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
-          document.getElementById('manpower').value = ''; document.getElementById('production').value = ''; document.getElementById('remarks').value = ''; document.getElementById('minutes').value = '60';
-          tsItem.clear(); tsLine.clear(); tsTime.clear();
-          document.getElementById('successMsg').classList.remove('hidden');
-          setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3000);
-          showToast(t('data_logged'), "success");
-        } else { showToast(t('submission_failed') + ": " + (data.error || "Check backend setup."), "error"); }
+      openConfirm(t('submit_entry'), t('submit_confirm'), function() {
+        const btn = document.getElementById('submitBtn'); btn.innerText = t('loading') + '…';
+        callAPI({ action: "submit", email: currentUser.email, formData: formData }, function(data) {
+          btn.innerText = t('submit_entry');
+          if (data && (data.status === "Success" || (data.status && data.status.status === "Success"))) {
+            document.getElementById('manpower').value = ''; document.getElementById('production').value = ''; document.getElementById('remarks').value = ''; document.getElementById('minutes').value = '60';
+            tsItem.clear(); tsLine.clear(); tsTime.clear();
+            document.getElementById('successMsg').classList.remove('hidden');
+            setTimeout(() => document.getElementById('successMsg').classList.add('hidden'), 3000);
+            showToast(t('data_logged'), "success");
+          } else { showToast(t('submission_failed') + ": " + (data.error || "Check backend setup."), "error"); }
+        });
       });
     }
 
@@ -2813,25 +2847,21 @@ let gaugeOptions = {
     function handleDelete(rowIndex, cacheIndex, dateStr) {
       var removed = historyCache[dateStr][cacheIndex];
       var card = document.getElementById(`entry-card-${rowIndex}`);
-      if (card) card.style.opacity = '0.4';
-      historyCache[dateStr].splice(cacheIndex, 1);
-      var timer = setTimeout(function() {
+      openConfirm(t('delete_confirm_title'), t('delete_confirm_msg'), function() {
+        if (card) card.style.opacity = '0.4';
+        historyCache[dateStr].splice(cacheIndex, 1);
         callAPI({ action: "deleteEntry", rowIndex: rowIndex }, function(data) {
           if (data.status === "Success") {
             if (card) card.remove();
             refreshHistoryAfterDelete(dateStr);
+            showToast(t('entry_deleted'), "success");
+          } else {
+            historyCache[dateStr].splice(cacheIndex, 0, removed);
+            renderEntriesFromCache();
+            showToast(t('delete_failed'), "error");
           }
         });
-      }, 5000);
-      showToast(t('entry_deleted'), "info", {
-        actionLabel: t('undo'),
-        duration: 5000,
-        onAction: function() {
-          clearTimeout(timer);
-          historyCache[dateStr].splice(cacheIndex, 0, removed);
-          renderEntriesFromCache();
-        }
-      });
+      }, t('delete'), true);
     }
 
     function refreshHistoryAfterDelete(selectedDate) {
@@ -3013,37 +3043,41 @@ let gaugeOptions = {
     }
 
     function saveFPY() {
-      var btn = document.getElementById('fpy-save-btn');
-      var statusEl = document.getElementById('fpy-save-status');
-      btn.disabled = true;
-      btn.innerText = 'Saving…';
-      statusEl.textContent = 'Saving…';
+      openConfirm(t('save_fpy_confirm_title'), t('save_fpy_confirm_msg'), function() {
+        var btn = document.getElementById('fpy-save-btn');
+        var statusEl = document.getElementById('fpy-save-status');
+        btn.disabled = true;
+        btn.innerText = 'Saving…';
+        statusEl.textContent = 'Saving…';
 
-      var dateVal = document.getElementById('fpy-date-picker').value;
-      var entries = fpyEntryRows.map(function(r) {
-        return {
-          date: dateVal,
-          itemCode: r.itemCode,
-          item: r.item,
-          line: r.line,
-          produced: r.produced,
-          defective: parseFloat(r.defective) || 0
-        };
-      });
+        var dateVal = document.getElementById('fpy-date-picker').value;
+        var entries = fpyEntryRows.map(function(r) {
+          return {
+            date: dateVal,
+            itemCode: r.itemCode,
+            item: r.item,
+            line: r.line,
+            produced: r.produced,
+            defective: parseFloat(r.defective) || 0
+          };
+        });
 
-      callAPI({ action: "submitFPYBatch", entries: entries, email: currentUser.email }, function(res) {
-        btn.disabled = false;
-        btn.innerText = 'Save All FPY';
-        if (res.status === 'Success') {
-          statusEl.textContent = 'Last saved: ' + new Date().toLocaleTimeString();
-          fpyEntryRows.forEach(function(r) { r.saved = true; });
-          renderFpyEntryGrid();
-          fetchFPYData(function() { renderDashboard(); });
-          fpyDataCache = [];
-          fetchFPYData(renderFpyHistory);
-        } else {
-          statusEl.textContent = 'Error: ' + (res.error || 'Unknown');
-        }
+        callAPI({ action: "submitFPYBatch", entries: entries, email: currentUser.email }, function(res) {
+          btn.disabled = false;
+          btn.innerText = 'Save All FPY';
+          if (res.status === 'Success') {
+            statusEl.textContent = 'Last saved: ' + new Date().toLocaleTimeString();
+            fpyEntryRows.forEach(function(r) { r.saved = true; });
+            renderFpyEntryGrid();
+            fetchFPYData(function() { renderDashboard(); });
+            fpyDataCache = [];
+            fetchFPYData(renderFpyHistory);
+            showToast(t('data_logged'), "success");
+          } else {
+            statusEl.textContent = 'Error: ' + (res.error || 'Unknown');
+            showToast(t('submission_failed') + ": " + (res.error || 'Unknown'), "error");
+          }
+        });
       });
     }
 
