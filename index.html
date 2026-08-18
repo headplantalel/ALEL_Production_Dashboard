@@ -368,6 +368,10 @@
         <img src="res.png" alt="RES" class="w-[70px] md:w-[90px] h-auto object-contain opacity-50 mix-blend-multiply">
       </div>
     </div>
+    <!-- Version badge (diagnostic) -->
+    <div class="w-full flex justify-center pb-4 -mt-1 shrink-0 pointer-events-none">
+      <span class="text-[9px] font-semibold text-slate-400 tracking-widest select-none">v2026.08.18c</span>
+    </div>
   </div>
 
   <div id="login-screen" class="hidden bg-white/80 backdrop-blur-xl p-8 sm:p-10 rounded-2xl shadow-xl text-center max-w-md w-full border border-white flex flex-col items-center relative z-20">
@@ -1131,8 +1135,18 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     }
 
     function openModal(title, fields, onConfirm) {
+      var overlay = document.getElementById('modal-overlay');
+      var msgEl = document.getElementById('modal-message');
+      var okBtn = document.getElementById('modal-confirm');
+      var cancelBtn = document.getElementById('modal-cancel');
+      if (!overlay || !msgEl || !okBtn || !cancelBtn) {
+        // Styled modal unavailable — fall back to native prompt
+        var q = (fields && fields[0]) ? prompt(fields[0].label + ':', (fields[0].value != null ? fields[0].value : '')) : null;
+        if (q !== null) { var v = {}; v[fields[0].key] = q; if (onConfirm) onConfirm(v); }
+        return;
+      }
       document.getElementById('modal-title').innerText = title;
-      document.getElementById('modal-message').classList.add('hidden');
+      msgEl.classList.add('hidden');
       var body = document.getElementById('modal-body');
       body.classList.remove('hidden');
       body.innerHTML = '';
@@ -1140,11 +1154,10 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         body.innerHTML += '<label for="modal-input-' + f.key + '">' + f.label + '</label>' +
           '<input type="number" id="modal-input-' + f.key + '" value="' + (f.value != null ? f.value : '') + '" ' + (f.step ? 'step="' + f.step + '"' : '') + '>';
       });
-      var ok = document.getElementById('modal-confirm');
-      ok.innerText = t('save');
-      ok.className = 'flex-1 px-4 py-2 rounded-lg bg-enovar text-white font-semibold text-sm hover:bg-enovar-dark';
-      document.getElementById('modal-overlay').classList.remove('hidden');
-      ok.onclick = function() {
+      okBtn.innerText = t('save');
+      okBtn.className = 'flex-1 px-4 py-2 rounded-lg bg-enovar text-white font-semibold text-sm hover:bg-enovar-dark';
+      overlay.classList.remove('hidden');
+      okBtn.onclick = function() {
         var values = {};
         fields.forEach(function(f) {
           values[f.key] = document.getElementById('modal-input-' + f.key).value;
@@ -1152,23 +1165,30 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         closeModal();
         onConfirm(values);
       };
-      document.getElementById('modal-cancel').onclick = closeModal;
+      cancelBtn.onclick = closeModal;
     }
 
     function openConfirm(title, message, onConfirm, okLabel, danger) {
+      var overlay = document.getElementById('modal-overlay');
+      var msgEl = document.getElementById('modal-message');
+      var okBtn = document.getElementById('modal-confirm');
+      var cancelBtn = document.getElementById('modal-cancel');
+      if (!overlay || !msgEl || !okBtn || !cancelBtn) {
+        // Styled modal unavailable — fall back to native confirm
+        if (window.confirm(message)) { if (onConfirm) onConfirm(); }
+        return;
+      }
       document.getElementById('modal-title').innerText = title;
-      var msg = document.getElementById('modal-message');
-      msg.innerText = message;
-      msg.classList.remove('hidden');
+      msgEl.innerText = message;
+      msgEl.classList.remove('hidden');
       var body = document.getElementById('modal-body');
       body.innerHTML = '';
       body.classList.add('hidden');
-      var ok = document.getElementById('modal-confirm');
-      ok.innerText = okLabel || t('confirm');
-      ok.className = 'flex-1 px-4 py-2 rounded-lg text-white font-semibold text-sm ' + (danger ? 'bg-red-500 hover:bg-red-600' : 'bg-enovar hover:bg-enovar-dark');
-      document.getElementById('modal-overlay').classList.remove('hidden');
-      ok.onclick = function() { closeModal(); if (onConfirm) onConfirm(); };
-      document.getElementById('modal-cancel').onclick = closeModal;
+      okBtn.innerText = okLabel || t('confirm');
+      okBtn.className = 'flex-1 px-4 py-2 rounded-lg text-white font-semibold text-sm ' + (danger ? 'bg-red-500 hover:bg-red-600' : 'bg-enovar hover:bg-enovar-dark');
+      overlay.classList.remove('hidden');
+      okBtn.onclick = function() { closeModal(); if (onConfirm) onConfirm(); };
+      cancelBtn.onclick = closeModal;
     }
     function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
 
