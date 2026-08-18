@@ -624,7 +624,7 @@
       </div>
       
       <div id="view-section" class="w-full space-y-4">
-        <div id="section-charts-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-2 items-start">
+        <div id="section-charts-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-1.5 items-start">
           </div>
         <div id="section-empty-msg" class="hidden text-center text-gray-500 py-10 font-medium">No data found for this selection.</div>
       </div>
@@ -1200,6 +1200,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         entry_updated: "Entry updated", update_failed: "Update failed", conversation_cleared: "Conversation cleared",
         submit_confirm: "Submit this production data?", complete_dropdowns: "Please complete all dropdown selections.",
         submission_failed: "Submission failed", edit_entry: "Edit Entry", edit_qty: "Production Quantity", edit_mp: "Manpower", cancel: "Cancel", save: "Save",
+        entry_not_found: "Entry not found — please reopen history and try again",
         avg_daily_manpower: "Avg. Daily Manpower", average_fpy: "Average FPY", worst_fpy: "Worst FPY", total_defectives: "Total Defectives", items_tracked: "Items Tracked", below_threshold: "Below Threshold",
         all_sections: "All Sections", view_productivity: "View: Productivity", view_production_qty: "View: Production Qty", filter_charts: "Filter Charts",
         daily_view: "Daily View", monthly_view: "Monthly View", view_production: "View: Production", view_quality_fpy: "View: Quality / FPY", all_pgs: "All PGs",
@@ -1229,6 +1230,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         entry_updated: "এন্ট্রি আপডেট হয়েছে", update_failed: "আপডেট ব্যর্থ হয়েছে", conversation_cleared: "কথোপকথন মুছে ফেলা হয়েছে",
         submit_confirm: "এই প্রোডাকশন ডেটা জমা দেবেন?", complete_dropdowns: "অনুগ্রহ করে সব ড্রপডাউন নির্বাচন সম্পূর্ণ করুন।",
         submission_failed: "জমা দেওয়া ব্যর্থ হয়েছে", edit_entry: "এন্ট্রি সম্পাদনা", edit_qty: "উৎপাদনের পরিমাণ", edit_mp: "ম্যানপাওয়ার", cancel: "বাতিল", save: "সংরক্ষণ",
+        entry_not_found: "এন্ট্রি পাওয়া যায়নি — অনুগ্রহ করে ইতিহাস পুনরায় খুলে আবার চেষ্টা করুন",
         avg_daily_manpower: "গড় দৈনিক ম্যানপাওয়ার", average_fpy: "গড় FPY", worst_fpy: "সর্বনিম্ন FPY", total_defectives: "মোট ত্রুটিপূর্ণ", items_tracked: "ট্র্যাক করা আইটেম", below_threshold: "থ্রেশহোল্ডের নিচে",
         all_sections: "সব সেকশন", view_productivity: "দেখুন: উৎপাদনশীলতা", view_production_qty: "দেখুন: উৎপাদনের পরিমাণ", filter_charts: "চার্ট ফিল্টার করুন",
         daily_view: "দৈনিক ভিউ", monthly_view: "মাসিক ভিউ", view_production: "দেখুন: উৎপাদন", view_quality_fpy: "দেখুন: কোয়ালিটি / FPY", all_pgs: "সব PG",
@@ -2070,10 +2072,10 @@ if(fpSummary) fpSummary.destroy();
 
           let chartId = 'sec-chart-' + idx;
           let wrapper = document.createElement('div');
-          wrapper.className = "sec-chart-wrapper bg-white/60 backdrop-blur-xl px-5 pt-5 pb-2 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col min-w-0 flex-1 h-full transition-transform hover:-translate-y-1";
+          wrapper.className = "sec-chart-wrapper bg-white/60 backdrop-blur-xl px-3 pt-3 pb-1.5 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col min-w-0 flex-1 h-full transition-transform hover:-translate-y-1";
           wrapper.dataset.key = key;
           
-          let chartHeight = Math.max(250, sortedTimes.length * 30); 
+          let chartHeight = Math.max(160, sortedTimes.length * 26); 
 
           let tooltipText = '';
           if (lastValidTime !== "N/A") {
@@ -2083,14 +2085,19 @@ if(fpSummary) fpSummary.destroy();
 
           // Added flex-col and sm:flex-row to make it wrap properly on mobile phones
           let tipAttr = tooltipText ? ' tooltip-holder" data-tip="' + tooltipText + '"' : '';
+          let totalQty = qtyArr.reduce(function(a, b) { return a + b; }, 0);
           wrapper.innerHTML = `
-            <div class="border-b border-gray-100 pb-2 mb-0 shrink-0 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+            <div class="border-b border-gray-100 pb-1.5 mb-0 shrink-0 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
               <div class="min-w-0 flex-1${tipAttr}">
                 <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
                 <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
               </div>
+              <div class="shrink-0 text-right">
+                <div class="text-base font-black text-enovar leading-none">${totalQty.toLocaleString()}</div>
+                <div class="text-[8px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">${t('total_production')}</div>
+              </div>
             </div>
-            <div id="${chartId}" class="w-full mt-1" style="height: ${chartHeight}px"></div>
+            <div id="${chartId}" class="w-full mt-0.5" style="height: ${chartHeight}px"></div>
           `;
           grid.appendChild(wrapper);
 
@@ -2806,11 +2813,14 @@ let gaugeOptions = {
     function handleDelete(rowIndex, cacheIndex, dateStr) {
       var removed = historyCache[dateStr][cacheIndex];
       var card = document.getElementById(`entry-card-${rowIndex}`);
-      card.style.opacity = '0.4';
+      if (card) card.style.opacity = '0.4';
       historyCache[dateStr].splice(cacheIndex, 1);
       var timer = setTimeout(function() {
         callAPI({ action: "deleteEntry", rowIndex: rowIndex }, function(data) {
-          if (data.status === "Success") { card.remove(); if(historyCache[dateStr].length === 0) renderEntriesFromCache(); }
+          if (data.status === "Success") {
+            if (card) card.remove();
+            refreshHistoryAfterDelete(dateStr);
+          }
         });
       }, 5000);
       showToast(t('entry_deleted'), "info", {
@@ -2824,13 +2834,31 @@ let gaugeOptions = {
       });
     }
 
+    function refreshHistoryAfterDelete(selectedDate) {
+      callAPI({ action: "getHistory", email: currentUser.email }, function(data) {
+        historyCache = data.entriesByDate || {};
+        var dateSelect = document.getElementById('date-selector');
+        var prev = (dateSelect && dateSelect.value) || selectedDate;
+        dateSelect.innerHTML = '';
+        (data.dates || []).forEach(function(d) { dateSelect.add(new Option(d, d)); });
+        if (prev && dateSelect.querySelector('option[value="' + prev + '"]')) dateSelect.value = prev;
+        renderEntriesFromCache();
+      });
+    }
+
     function handleEdit(rowIndex, cacheIndex, dateStr) {
-      const entry = historyCache[dateStr][cacheIndex];
+      let entry = null;
+      try { entry = (historyCache[dateStr] && historyCache[dateStr][cacheIndex]) || null; } catch (e) { entry = null; }
+      if (!entry) { showToast(t('entry_not_found'), "error"); return; }
       openModal(t('edit_entry'), [
         { key: 'qty', label: t('edit_qty'), value: entry.qty },
         { key: 'manpower', label: t('edit_mp'), value: entry.manpower }
       ], function(values) {
-        const newQty = values.qty, newManpower = values.manpower;
+        const newQtyNum = parseFloat(values.qty);
+        const newMpNum = parseFloat(values.manpower);
+        if (isNaN(newQtyNum) && isNaN(newMpNum)) return;
+        const newQty = isNaN(newQtyNum) ? entry.qty : newQtyNum;
+        const newManpower = isNaN(newMpNum) ? entry.manpower : newMpNum;
         if (newQty == entry.qty && newManpower == entry.manpower) return;
         document.getElementById(`qty-val-${rowIndex}`).innerText = newQty; document.getElementById(`mp-val-${rowIndex}`).innerText = newManpower;
         document.getElementById(`entry-card-${rowIndex}`).classList.add('ring-1', 'ring-enovar', 'bg-white');
