@@ -3478,7 +3478,17 @@ let gaugeOptions = {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/sw.js').then(function(reg) {
-          console.log('SW registered:', reg.scope);
+          console.log('ALEL Pulse build 2026-08-18-c — SW registered:', reg.scope);
+          reg.update();
+          reg.addEventListener('updatefound', function() {
+            var nw = reg.installing;
+            if (!nw) return;
+            nw.addEventListener('statechange', function() {
+              if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                window.location.reload();
+              }
+            });
+          });
         }).catch(function(err) {
           console.log('SW failed:', err);
         });
