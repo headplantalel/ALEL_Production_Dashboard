@@ -965,7 +965,10 @@
     let productionMetadata = null; // {pgs, items, dates, sections} — cached, for Analytics dropdowns
     let activeDashTab = localStorage.getItem('activeDashTab') || 'section';
     const CACHE_WINDOW_DAYS = 60;           // client-side rolling window (days)
+    const INITIAL_WINDOW_DAYS = 7;          // small window fetched first for a fast first paint (then backfilled)
     const FULL_REFRESH_MS = 10 * 60 * 1000; // periodic full window re-fetch (10 min)
+    const SNAPSHOT_KEY = 'alel_dash_snapshot';   // localStorage key for the cached window snapshot
+    const SNAPSHOT_VERSION = 'v3';               // bump when raw data shape changes (old snapshots auto-discarded)
     let windowStartDate = null;             // Date — start of cached window
     let windowEndDate = null;               // Date — end of cached window (today)
     let fullRefreshTimer = null;
@@ -996,6 +999,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     let defectCache = [];             // all recent defect entries (date, line, itemCode, item, time, problemType, defectiveQty)
 
     window.onload = function() {
+      // Pre-warm the Apps Script instance so sign-in → dashboard has no cold-start latency.
+      try { callAPI({ action: "getProductionMetadata" }, function() {}); } catch (e) {}
       applyTheme(localStorage.getItem('alel_theme') || 'light');
       applyLanguage(localStorage.getItem('alel_lang') || 'en');
       const savedToken = localStorage.getItem('google_token');
@@ -1615,33 +1620,83 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
 
     // --- DASHBOARD LOGIC ---
     function setupDashboardUI(data) {
-      // document.getElementById('bg-elements').classList.add('hidden'); // REMOVED so ambient orbs stay visible
       document.getElementById('dashboard-app').classList.remove('hidden');
       var gotoEntry = document.getElementById('btn-goto-entry');
       var gotoFpy = document.getElementById('btn-goto-fpy-dash');
       if (gotoEntry) { if (data && data.authorizedEntry) gotoEntry.classList.remove('hidden'); else gotoEntry.classList.add('hidden'); }
       if (gotoFpy) { if (data && data.authorizedFPY) gotoFpy.classList.remove('hidden'); else gotoFpy.classList.add('hidden'); }
-      
-      // NEW: Load saved chat history based on the user's email
+
       const savedHistory = localStorage.getItem('alel_ai_chat_' + currentUser.email);
       if (savedHistory) { aiChatHistory = JSON.parse(savedHistory); renderAIChatHistory(); }
-      
+
       document.getElementById('loader-text').innerText = "Loading Analytics…";
       document.getElementById('loader').classList.remove('hidden');
       document.getElementById('dashboard-skeleton').classList.remove('hidden');
-      // Fetch lightweight dropdown metadata first (Analytics tab no longer needs full raw data)
-      callAPI({ action: "getProductionMetadata" }, function(meta) {
-        if (meta && !meta.error) productionMetadata = meta;
-        fetchDashboardData('initial');
-        syncTimer = setInterval(() => { fetchDashboardData('sync'); }, 60000);
-        fullRefreshTimer = setInterval(() => { fetchDashboardData('full'); }, FULL_REFRESH_MS);
-      });
+
+      // Timers start immediately regardless of snapshot path.
+      syncTimer = setInterval(() => { fetchDashboardData('sync'); }, 60000);
+      fullRefreshTimer = setInterval(() => { fetchDashboardData('full'); }, FULL_REFRESH_MS);
+
+      if (loadSnapshot()) {
+        // Repeat open: render instantly from the cached snapshot, refresh in background.
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('dashboard-skeleton').classList.add('hidden');
+        switchDashTab(activeDashTab);
+        callAPI({ action: "getProductionMetadata" }, function(meta) {
+          if (meta && !meta.error) { productionMetadata = meta; buildDashboardFilters(); renderDashboard(); }
+        });
+        fetchDashboardData('full');
+      } else {
+        // First open: fetch metadata + small initial window + defects in parallel, render when ready, then backfill.
+        var metaDone = false, rawDone = false;
+        function maybeRender() {
+          if (!(metaDone && rawDone)) return;
+          document.getElementById('loader').classList.add('hidden');
+          document.getElementById('dashboard-skeleton').classList.add('hidden');
+          switchDashTab(activeDashTab);
+          fetchDashboardData('full');
+        }
+        callAPI({ action: "getProductionMetadata" }, function(meta) {
+          if (meta && !meta.error) productionMetadata = meta;
+          metaDone = true;
+          maybeRender();
+        });
+        fetchDashboardData('initial', function() { rawDone = true; maybeRender(); });
+      }
     }
 
     function computeFingerprint(rows) {
       var qtySum = 0, mpSum = 0;
       for (var i = 0; i < rows.length; i++) { qtySum += rows[i].qty || 0; mpSum += rows[i].mp || 0; }
       return rows.length + '|' + qtySum + '|' + mpSum;
+    }
+
+    // Persist the cached window to localStorage so repeat opens render instantly.
+    function saveSnapshot() {
+      try {
+        localStorage.setItem(SNAPSHOT_KEY, JSON.stringify({
+          version: SNAPSHOT_VERSION,
+          windowStartDate: windowStartDate ? windowStartDate.getTime() : null,
+          windowEndDate: windowEndDate ? windowEndDate.getTime() : null,
+          lastRawFingerprint: lastRawFingerprint,
+          raw: rawDashboardData,
+          defects: defectCache
+        }));
+      } catch (e) { /* quota / serialization — ignore, snapshot is best-effort */ }
+    }
+
+    function loadSnapshot() {
+      try {
+        var s = JSON.parse(localStorage.getItem(SNAPSHOT_KEY));
+        if (!s || s.version !== SNAPSHOT_VERSION) return false;
+        if (!Array.isArray(s.raw) || !Array.isArray(s.defects)) return false;
+        rawDashboardData = s.raw;
+        defectCache = s.defects;
+        lastRawFingerprint = s.lastRawFingerprint || '';
+        windowStartDate = s.windowStartDate ? new Date(s.windowStartDate) : null;
+        windowEndDate = s.windowEndDate ? new Date(s.windowEndDate) : null;
+        return true;
+      } catch (e) { return false; }
     }
 
     // True when the requested range fits entirely inside the cached window
@@ -1671,30 +1726,26 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       });
     }
 
-    function fetchDashboardData(mode) {
-      // mode: 'initial' (full window + loader + switch), 'sync' (today merge), 'full' (full window silent)
+    function fetchDashboardData(mode, callback) {
+      // mode: 'initial' (small window, fast first paint), 'full' (full 60-day + snapshot), 'sync' (today merge)
       if (mode === 'initial' || mode === 'full') {
-        const start = new Date(); start.setHours(0,0,0,0); start.setDate(start.getDate() - (CACHE_WINDOW_DAYS - 1));
+        var windowDays = (mode === 'initial') ? INITIAL_WINDOW_DAYS : CACHE_WINDOW_DAYS;
+        const start = new Date(); start.setHours(0,0,0,0); start.setDate(start.getDate() - (windowDays - 1));
         const end = new Date(); end.setHours(23,59,59,999);
-        windowStartDate = start; windowEndDate = end;
+        if (mode === 'full') { windowStartDate = start; windowEndDate = end; }
         var payload = { action: "getDashboardRawData", startDate: Utilities_formatDateClient(start), endDate: Utilities_formatDateClient(end) };
         callAPI(payload, function(data) {
-          if (mode === 'initial') {
-            document.getElementById('loader').classList.add('hidden');
-            document.getElementById('dashboard-skeleton').classList.add('hidden');
-          }
-          if (data.error) return;
+          if (data.error) { if (callback) callback(); return; }
           var newRaw = data.raw || [];
           var fp = computeFingerprint(newRaw);
           var changed = (fp !== lastRawFingerprint);
           rawDashboardData = newRaw;
           lastRawFingerprint = fp;
-          fetchDefects();
-          if (mode === 'initial') {
-            switchDashTab(activeDashTab);
-          } else if (changed) {
-            renderDashboard();
-          }
+          fetchDefects(function() {
+            if (mode === 'full') saveSnapshot();
+            if (callback) callback();
+            if (mode === 'full' && changed) renderDashboard();
+          });
         });
         return;
       }
