@@ -993,6 +993,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     let qualityFpyRows = [];          // cached FPY rows for the Quality tab (used by the Pareto toggle)
     let qualityDefectRows = [];       // cached defect rows for the Quality tab (problem-type Pareto)
     let sectionFpyRows = [];          // hourly FPY rows for Daily Status FPY metric
+    let defectCache = [];             // all recent defect entries (date, line, itemCode, item, time, problemType, defectiveQty)
 
     window.onload = function() {
       applyTheme(localStorage.getItem('alel_theme') || 'light');
@@ -1512,6 +1513,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
             document.getElementById('def-remarks').value = '';
             showToast(t('data_logged'), "success");
             loadQualityDefects();
+            fetchDefects();
           } else {
             showToast(t('submission_failed') + ": " + ((res && res.error) ? res.error : 'unknown'), "error");
           }
@@ -1569,7 +1571,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         if (isNaN(newQty)) return;
         if (newQty === Number(entry.defectiveQty)) return;
         callAPI({ action: "editDefectEntry", rowIndex: rowIndex, newQty: newQty }, function(res) {
-          if (res && res.status === "Success") { showToast(t('entry_updated'), "success"); loadQualityDefects(); }
+          if (res && res.status === "Success") { showToast(t('entry_updated'), "success"); loadQualityDefects(); fetchDefects(); }
           else showToast(t('update_failed'), "error");
         });
       });
@@ -1578,7 +1580,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     function handleDefectDelete(rowIndex) {
       openConfirm(t('delete_confirm_title'), t('delete_confirm_msg'), function() {
         callAPI({ action: "deleteDefectEntry", rowIndex: rowIndex }, function(res) {
-          if (res && res.status === "Success") { showToast(t('entry_deleted'), "success"); loadQualityDefects(); }
+          if (res && res.status === "Success") { showToast(t('entry_deleted'), "success"); loadQualityDefects(); fetchDefects(); }
           else showToast(t('delete_failed'), "error");
         });
       }, t('delete'), true);
@@ -1687,6 +1689,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           var changed = (fp !== lastRawFingerprint);
           rawDashboardData = newRaw;
           lastRawFingerprint = fp;
+          fetchDefects();
           if (mode === 'initial') {
             switchDashTab(activeDashTab);
           } else if (changed) {
@@ -1703,6 +1706,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         var todayRows = data.raw || [];
         rawDashboardData = rawDashboardData.filter(function(r) { return r.date !== todayStr; }).concat(todayRows);
         var fp = computeFingerprint(rawDashboardData);
+        fetchDefects();
         if (fp !== lastRawFingerprint) {
           lastRawFingerprint = fp;
           renderDashboard();
@@ -2162,10 +2166,15 @@ if(fpSummary) fpSummary.destroy();
         // FPY metric: hourly first-pass-yield per line/item per hour
         if (currentMetric === 'fpy') {
           var fpyDateStr = formatEntryDate(new Date(fdEl.value));
-          callAPI({ action: "getHourlyFPY", date: fpyDateStr }, function(res) {
-            sectionFpyRows = (res && res.rows) ? res.rows : [];
+          if (isDateInWindow(fdEl.value)) {
+            sectionFpyRows = computeHourlyFPY(fpyDateStr);
             renderSectionFPY(secVal);
-          });
+          } else {
+            callAPI({ action: "getHourlyFPY", date: fpyDateStr }, function(res) {
+              sectionFpyRows = (res && res.rows) ? res.rows : [];
+              renderSectionFPY(secVal);
+            });
+          }
           return;
         }
         
@@ -2635,37 +2644,13 @@ if(fpSummary) fpSummary.destroy();
           var fpStartStr = fpStart.getTime() === 0 ? null : fpStart.toISOString().split('T')[0];
           var fpEndStr = fpEnd.getTime() >= 8640000000000000 ? null : fpEnd.toISOString().split('T')[0];
 
-          callAPI({ action: "getDailyFPY", startDate: fpStartStr, endDate: fpEndStr }, function(data) {
-            var fpyRows = (data && data.rows) ? data.rows : [];
-            setMasterKpiLabels('quality');
-            if (fpyRows.length === 0) {
-              document.getElementById('master-kpi-prod').innerText = '—';
-              document.getElementById('master-kpi-target').innerText = '—';
-              document.getElementById('master-kpi-output').innerText = '0';
-              document.getElementById('master-kpi-mp').innerText = '0';
-              document.getElementById('chart-master-title').innerText = 'No FPY Data Available';
-              if (window.masterTrendChart) { window.masterTrendChart.destroy(); window.masterTrendChart = null; }
-              return;
-            }
-
-            var totalProd = 0, totalDef = 0, worstFpy = 100;
-            fpyRows.forEach(function(r) {
-              totalProd += r.produced;
-              totalDef += r.defective;
-              if (r.fpy !== null && r.fpy < worstFpy) worstFpy = r.fpy;
+          if (isRangeInWindow(fpStart, fpEnd)) {
+            renderMasterFPY(computeDailyFPY(fpStart, fpEnd));
+          } else {
+            callAPI({ action: "getDailyFPY", startDate: fpStartStr, endDate: fpEndStr }, function(data) {
+              renderMasterFPY((data && data.rows) ? data.rows : []);
             });
-            var avgFPY = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
-            var belowThreshold = fpyRows.filter(function(r) { return r.fpy !== null && r.fpy < 90; }).length;
-
-            document.getElementById('master-kpi-prod').innerText = avgFPY.toFixed(1) + '%';
-            document.getElementById('master-kpi-prod').className = 'text-3xl font-black ' + (avgFPY >= 95 ? 'text-emerald-600' : avgFPY >= 90 ? 'text-amber-600' : 'text-red-500');
-            document.getElementById('master-kpi-target').innerText = (fpyRows.some(function(r){return r.fpy !== null;})) ? worstFpy.toFixed(1) + '%' : '—';
-            document.getElementById('master-kpi-target').className = 'text-3xl font-black ' + (worstFpy >= 95 ? 'text-emerald-600' : worstFpy >= 90 ? 'text-amber-600' : 'text-red-500');
-            document.getElementById('master-kpi-output').innerText = totalDef.toLocaleString();
-            document.getElementById('master-kpi-mp').innerText = belowThreshold;
-
-            renderDailyFPYTrend(fpyRows);
-          });
+          }
           return;
         }
         let startDate = new Date(0), endDate = new Date(8640000000000000);
@@ -3515,6 +3500,37 @@ let gaugeOptions = {
       });
     }
 
+    function renderMasterFPY(fpyRows) {
+      setMasterKpiLabels('quality');
+      if (fpyRows.length === 0) {
+        document.getElementById('master-kpi-prod').innerText = '—';
+        document.getElementById('master-kpi-target').innerText = '—';
+        document.getElementById('master-kpi-output').innerText = '0';
+        document.getElementById('master-kpi-mp').innerText = '0';
+        document.getElementById('chart-master-title').innerText = 'No FPY Data Available';
+        if (window.masterTrendChart) { window.masterTrendChart.destroy(); window.masterTrendChart = null; }
+        return;
+      }
+
+      var totalProd = 0, totalDef = 0, worstFpy = 100;
+      fpyRows.forEach(function(r) {
+        totalProd += r.produced;
+        totalDef += r.defective;
+        if (r.fpy !== null && r.fpy < worstFpy) worstFpy = r.fpy;
+      });
+      var avgFPY = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
+      var belowThreshold = fpyRows.filter(function(r) { return r.fpy !== null && r.fpy < 90; }).length;
+
+      document.getElementById('master-kpi-prod').innerText = avgFPY.toFixed(1) + '%';
+      document.getElementById('master-kpi-prod').className = 'text-3xl font-black ' + (avgFPY >= 95 ? 'text-emerald-600' : avgFPY >= 90 ? 'text-amber-600' : 'text-red-500');
+      document.getElementById('master-kpi-target').innerText = (fpyRows.some(function(r){return r.fpy !== null;})) ? worstFpy.toFixed(1) + '%' : '—';
+      document.getElementById('master-kpi-target').className = 'text-3xl font-black ' + (worstFpy >= 95 ? 'text-emerald-600' : worstFpy >= 90 ? 'text-amber-600' : 'text-red-500');
+      document.getElementById('master-kpi-output').innerText = totalDef.toLocaleString();
+      document.getElementById('master-kpi-mp').innerText = belowThreshold;
+
+      renderDailyFPYTrend(fpyRows);
+    }
+
     function renderDailyFPYTrend(fpyRows) {
       var chartEl = document.querySelector("#chart-master-trend");
       if (!chartEl) return;
@@ -3610,6 +3626,84 @@ let gaugeOptions = {
       return ('0' + d.getDate()).slice(-2) + '-' + months[d.getMonth()] + '-' + d.getFullYear();
     }
 
+    // Convert "MMM dd, yyyy" (production) -> "dd-MMM-yyyy" (entry key)
+    function toEntryDateStr(dateStr) {
+      var d = new Date(dateStr);
+      if (isNaN(d.getTime())) return String(dateStr);
+      return formatEntryDate(d);
+    }
+
+    // "dd-MMM-yyyy" or ISO -> epoch ms (for range comparisons)
+    function entryDateTs(ds) {
+      ds = String(ds).trim();
+      var months = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+      var m = ds.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
+      if (m) return new Date(Number(m[3]), months[m[2]] || 0, Number(m[1])).getTime();
+      var t = new Date(ds).getTime();
+      return isNaN(t) ? 0 : t;
+    }
+
+    function fetchDefects(callback) {
+      callAPI({ action: "getDefectData" }, function(data) {
+        defectCache = (data && data.rows) ? data.rows : [];
+        if (callback) callback();
+      });
+    }
+
+    // Hourly FPY computed locally from cached production + defect data.
+    function computeHourlyFPY(dateStr) {
+      var prodRows = rawDashboardData.filter(function(r) { return toEntryDateStr(r.date) === dateStr; });
+      var defRows = defectCache.filter(function(d) { return d.date === dateStr; });
+      var map = {};
+      prodRows.forEach(function(p) {
+        var key = p.line + '::' + p.itemCode + '::' + p.time;
+        if (!map[key]) map[key] = { line: p.line, item: p.item, itemCode: p.itemCode, time: p.time, produced: 0, defective: 0 };
+        map[key].produced += p.qty;
+      });
+      defRows.forEach(function(d) {
+        var key = d.line + '::' + d.itemCode + '::' + d.time;
+        if (!map[key]) map[key] = { line: d.line, item: d.item, itemCode: d.itemCode, time: d.time, produced: 0, defective: 0 };
+        map[key].defective += Number(d.defectiveQty) || 0;
+      });
+      var rows = Object.keys(map).map(function(k) {
+        var r = map[k];
+        var t = r.produced + r.defective;
+        r.fpy = t > 0 ? Math.round((r.produced / t) * 1000) / 10 : null;
+        return r;
+      });
+      rows.sort(function(a, b) { return (a.time < b.time ? -1 : a.time > b.time ? 1 : 0) || (a.line < b.line ? -1 : 1); });
+      return rows;
+    }
+
+    // Daily FPY computed locally for a range (Date objects).
+    function computeDailyFPY(startDateObj, endDateObj) {
+      var sTs = startDateObj ? startDateObj.getTime() : -Infinity;
+      var eTs = endDateObj ? endDateObj.getTime() : Infinity;
+      var prodByDate = {}, defByDate = {};
+      rawDashboardData.forEach(function(r) {
+        var ts = new Date(r.date).getTime();
+        if (isNaN(ts) || ts < sTs || ts > eTs) return;
+        var key = formatEntryDate(new Date(r.date));
+        prodByDate[key] = (prodByDate[key] || 0) + r.qty;
+      });
+      defectCache.forEach(function(d) {
+        var ts = entryDateTs(d.date);
+        if (ts < sTs || ts > eTs) return;
+        defByDate[d.date] = (defByDate[d.date] || 0) + (Number(d.defectiveQty) || 0);
+      });
+      var map = {};
+      Object.keys(prodByDate).forEach(function(d) { if (!map[d]) map[d] = { date: d, produced: 0, defective: 0 }; map[d].produced += prodByDate[d]; });
+      Object.keys(defByDate).forEach(function(d) { if (!map[d]) map[d] = { date: d, produced: 0, defective: 0 }; map[d].defective += defByDate[d]; });
+      var rows = Object.keys(map).map(function(k) {
+        var r = map[k];
+        var t = r.produced + r.defective;
+        r.fpy = t > 0 ? Math.round((r.produced / t) * 1000) / 10 : null;
+        return r;
+      });
+      rows.sort(function(a, b) { return entryDateTs(b.date) - entryDateTs(a.date); });
+      return rows;
+    }
+
     function renderSummaryFPY() {
       var kpiEl = document.getElementById('summary-kpi-fpy');
       var trendEl = document.getElementById('trend-fpy');
@@ -3622,8 +3716,7 @@ let gaugeOptions = {
       var y = new Date(d); y.setDate(y.getDate() - 1);
       var yStr = formatEntryDate(y);
 
-      callAPI({ action: "getHourlyFPY", date: dateStr }, function(res) {
-        var rows = (res && res.rows) ? res.rows : [];
+      function applyFPY(rows, yrows) {
         var totalProd = 0, totalDef = 0;
         rows.forEach(function(r) { totalProd += r.produced; totalDef += r.defective; });
         if (rows.length === 0) {
@@ -3637,30 +3730,37 @@ let gaugeOptions = {
         kpiEl.innerText = fpy.toFixed(1) + '%';
         kpiEl.className = 'text-2xl sm:text-3xl font-black ' + color + ' leading-none';
 
-        callAPI({ action: "getHourlyFPY", date: yStr }, function(yres) {
-          var yrows = (yres && yres.rows) ? yres.rows : [];
-          if (yrows.length === 0) { if (trendEl) trendEl.innerHTML = '<span class="text-gray-400">No prior data</span>'; return; }
-          var yProd = 0, yDef = 0;
-          yrows.forEach(function(r) { yProd += r.produced; yDef += r.defective; });
-          var yFPY = (yProd + yDef) > 0 ? ((yProd / (yProd + yDef)) * 100) : 0;
-          var delta = fpy - yFPY;
-          var deltaColor = delta >= 0 ? 'text-emerald-500' : 'text-red-500';
-          var arrow = delta >= 0 ? '↑' : '↓';
-          if (trendEl) trendEl.innerHTML = '<span class="' + deltaColor + '">' + arrow + ' ' + Math.abs(delta).toFixed(1) + '% vs yesterday</span>';
+        if (yrows.length === 0) { if (trendEl) trendEl.innerHTML = '<span class="text-gray-400">No prior data</span>'; return; }
+        var yProd = 0, yDef = 0;
+        yrows.forEach(function(r) { yProd += r.produced; yDef += r.defective; });
+        var yFPY = (yProd + yDef) > 0 ? ((yProd / (yProd + yDef)) * 100) : 0;
+        var delta = fpy - yFPY;
+        var deltaColor = delta >= 0 ? 'text-emerald-500' : 'text-red-500';
+        var arrow = delta >= 0 ? '↑' : '↓';
+        if (trendEl) trendEl.innerHTML = '<span class="' + deltaColor + '">' + arrow + ' ' + Math.abs(delta).toFixed(1) + '% vs yesterday</span>';
+      }
+
+      if (isDateInWindow(dateVal.value)) {
+        applyFPY(computeHourlyFPY(dateStr), computeHourlyFPY(yStr));
+      } else {
+        callAPI({ action: "getHourlyFPY", date: dateStr }, function(res) {
+          var rows = (res && res.rows) ? res.rows : [];
+          callAPI({ action: "getHourlyFPY", date: yStr }, function(yres) {
+            applyFPY(rows, (yres && yres.rows) ? yres.rows : []);
+          });
         });
-      });
+      }
     }
 
     function renderQualityDashboard() {
       var preset = document.getElementById('quality-date-preset') ? document.getElementById('quality-date-preset').value : 'today';
       var dateStr = qualityDateStr(preset === 'yesterday' ? -1 : 0);
 
-      callAPI({ action: "getHourlyFPY", date: dateStr }, function(fpyRes) {
-        var fpyRows = (fpyRes && fpyRes.rows) ? fpyRes.rows : [];
-        callAPI({ action: "getDefectData", date: dateStr }, function(defRes) {
-          var defectRows = (defRes && defRes.rows) ? defRes.rows : [];
-          qualityFpyRows = fpyRows;
-          qualityDefectRows = defectRows;
+      // today/yesterday are always within the cached window — compute FPY locally (instant)
+      var fpyRows = computeHourlyFPY(dateStr);
+      var defectRows = defectCache.filter(function(d) { return d.date === dateStr; });
+      qualityFpyRows = fpyRows;
+      qualityDefectRows = defectRows;
 
           var totalProd = 0, totalDef = 0, itemsSet = {};
           var lineData = {};
@@ -3749,8 +3849,6 @@ let gaugeOptions = {
           renderQualityPareto();
           // Hourly FPY trend by line
           renderQualityHourlyTrend();
-        });
-      });
     }
 
     function renderQualityPareto() {
