@@ -2135,7 +2135,8 @@ if(fpSummary) fpSummary.destroy();
 
     function renderDashboard() {
       // Analytics tab is server-aggregated, so it must render even without raw rows.
-      if((!rawDashboardData || rawDashboardData.length === 0) && activeDashTab !== 'master') return;
+      // FPY metrics are also server-computed, so they render without raw rows too.
+      if((!rawDashboardData || rawDashboardData.length === 0) && activeDashTab !== 'master' && !(activeDashTab === 'section' && currentMetric === 'fpy')) return;
       const font = 'Inter, sans-serif';
       // SAVE STATE TO MEMORY
       if(document.getElementById('filter-section')) dashFilters['sec_zone'] = document.getElementById('filter-section').value;
