@@ -321,15 +321,15 @@
       </div>
 
       <!-- Glassmorphism Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl px-2">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl px-2">
         
-        <!-- Data Entry Card -->
-        <button onclick="openLogin('entry')" class="group text-left relative bg-white/60 backdrop-blur-2xl rounded-[2rem] p-8 sm:p-10 border border-white hover:border-enovar/30 hover:bg-white/60 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(13,92,88,0.08)] hover:-translate-y-2 animate-fade-up opacity-0 delay-200">
+        <!-- Entry Card -->
+        <button onclick="openEntryChooser()" class="group text-left relative bg-white/60 backdrop-blur-2xl rounded-[2rem] p-8 sm:p-10 border border-white hover:border-enovar/30 hover:bg-white/60 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(13,92,88,0.08)] hover:-translate-y-2 animate-fade-up opacity-0 delay-200">
           <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-enovar/10 group-hover:border-enovar/20 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
             <svg class="w-6 h-6 text-slate-400 group-hover:text-enovar transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
           </div>
-          <h3 data-i18n="data_entry" class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Data Entry</h3>
-          <p data-i18n="data_entry_desc" class="text-sm text-slate-500 font-medium leading-relaxed">Log real-time shift metrics, manpower deployments, and production yields with precision.</p>
+          <h3 data-i18n="entry" class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Entry</h3>
+          <p data-i18n="entry_desc" class="text-sm text-slate-500 font-medium leading-relaxed">Record production and quality data in real time.</p>
         </button>
 
         <!-- Dashboard Card -->
@@ -339,15 +339,6 @@
           </div>
           <h3 data-i18n="dashboard" class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Dashboard</h3>
           <p data-i18n="dashboard_desc" class="text-sm text-slate-500 font-medium leading-relaxed">Access live operational analytics, AI-driven insights, and master data overviews.</p>
-        </button>
-
-        <!-- Quality Entry Card -->
-        <button onclick="openLogin('quality')" class="group text-left relative bg-white/60 backdrop-blur-2xl rounded-[2rem] p-8 sm:p-10 border border-white hover:border-purple-500/30 hover:bg-purple-50/60 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(139,92,246,0.08)] hover:-translate-y-2 animate-fade-up opacity-0 delay-400">
-          <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-purple-100/50 group-hover:border-purple-300/30 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
-            <svg class="w-6 h-6 text-slate-400 group-hover:text-purple-600 transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          </div>
-          <h3 data-i18n="quality_entry" class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Quality Entry</h3>
-          <p data-i18n="quality_entry_desc" class="text-sm text-slate-500 font-medium leading-relaxed">Record daily defect quantities per item and line. First pass yield tracking for QA.</p>
         </button>
 
       </div>
@@ -371,6 +362,36 @@
     <!-- Version badge (diagnostic) -->
     <div class="w-full flex justify-center pb-4 -mt-1 shrink-0 pointer-events-none">
       <span class="text-[9px] font-semibold text-slate-400 tracking-widest select-none">v2026.08.18c</span>
+    </div>
+  </div>
+
+  <!-- Entry Chooser -->
+  <div id="entry-chooser" class="hidden w-full min-h-[100dvh] flex flex-col items-center justify-center z-10 relative overflow-x-hidden py-8">
+    <div class="w-full max-w-3xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center">
+      <div class="inline-flex items-center justify-center bg-white/50 border border-white/80 backdrop-blur-xl rounded-full px-6 py-2.5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] mb-10">
+        <span class="w-1.5 h-1.5 rounded-full bg-enovar mr-3 animate-pulse"></span>
+        <p data-i18n="choose_entry" class="text-[11px] sm:text-xs text-slate-600 font-bold tracking-widest uppercase">Choose Entry Type</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl px-2">
+        <button onclick="openLogin('entry')" class="group text-left relative bg-white/60 backdrop-blur-2xl rounded-[2rem] p-8 sm:p-10 border border-white hover:border-enovar/30 hover:bg-white/60 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(13,92,88,0.08)] hover:-translate-y-2">
+          <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-enovar/10 group-hover:border-enovar/20 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
+            <svg class="w-6 h-6 text-slate-400 group-hover:text-enovar transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+          </div>
+          <h3 data-i18n="data_entry" class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Production Entry</h3>
+          <p data-i18n="data_entry_desc" class="text-sm text-slate-500 font-medium leading-relaxed">Log hourly production, manpower and yield per line.</p>
+        </button>
+        <button onclick="openLogin('quality')" class="group text-left relative bg-white/60 backdrop-blur-2xl rounded-[2rem] p-8 sm:p-10 border border-white hover:border-purple-500/30 hover:bg-purple-50/60 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(139,92,246,0.08)] hover:-translate-y-2">
+          <div class="w-14 h-14 bg-white shadow-sm border border-gray-100 group-hover:bg-purple-100/50 group-hover:border-purple-300/30 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110">
+            <svg class="w-6 h-6 text-slate-400 group-hover:text-purple-600 transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <h3 data-i18n="quality_entry" class="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Quality Entry</h3>
+          <p data-i18n="quality_entry_desc" class="text-sm text-slate-500 font-medium leading-relaxed">Record hourly defect quantity by problem type per line.</p>
+        </button>
+      </div>
+      <button onclick="closeEntryChooser()" class="mt-10 text-sm font-bold text-gray-500 hover:text-enovar transition-colors flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        <span data-i18n="back_home">Back to Home</span>
+      </button>
     </div>
   </div>
 
@@ -447,6 +468,15 @@
           <input type="number" id="minutes" name="minutes" inputmode="numeric" min="1" max="60" value="60" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
         </div>
       </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="prod-date-toggle" data-i18n="entry_date" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Date</label>
+          <select id="prod-date-toggle" class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
+            <option value="today" selected data-i18n="today">Today</option>
+            <option value="yesterday" data-i18n="yesterday">Yesterday</option>
+          </select>
+        </div>
+      </div>
       <div>
         <label for="remarks" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide"><span data-i18n="remarks">Remarks</span> <span data-i18n="optional" class="text-gray-400 font-normal lowercase">(optional)</span></label>
         <input type="text" id="remarks" name="remarks" placeholder="e.g. Machine breakdown, material shortage…" class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-enovar focus:ring-2 focus:ring-enovar/20 outline-none transition-all bg-white/80 focus:bg-white text-sm">
@@ -482,7 +512,7 @@
     <div class="flex flex-wrap justify-between items-center gap-2 mb-4 pb-4 border-b border-gray-200/50">
       <div class="flex items-center gap-2 sm:gap-3 shrink-0">
         <img src="pulse.png" alt="ALEL Pulse" class="h-5 sm:h-8 object-contain shrink-0">
-        <span class="hidden sm:block text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] border-l border-gray-300 pl-3">Daily Quality Entry</span>
+        <span class="hidden sm:block text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em] border-l border-gray-300 pl-3">Hourly Quality Entry</span>
       </div>
       <div class="flex items-center gap-1.5 sm:gap-2">
         <button id="fpy-goto-dash" onclick="switchPortal('dashboard')" data-i18n="dashboard" class="hidden text-[10px] sm:text-xs font-bold text-gray-600 bg-white/80 hover:bg-enovar/10 hover:text-enovar px-2 py-1 sm:px-3 sm:py-1.5 rounded-md uppercase tracking-wider transition-colors border border-gray-200 shadow-sm shrink-0">Dashboard</button>
@@ -495,35 +525,51 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3">
       <div>
         <h2 data-i18n="quality_entry" class="text-lg sm:text-xl font-bold text-slate-800">Quality Entry</h2>
-        <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 font-medium">Enter daily defective quantities.</p>
+        <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 font-medium">Record hourly defect quantity by problem type.</p>
       </div>
-      <input type="text" id="fpy-date-picker" placeholder="Select date" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm w-32 sm:w-36 cursor-pointer shrink-0" readonly>
+      <select id="quality-date-toggle" onchange="loadQualityDefects()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm shrink-0">
+        <option value="today" selected data-i18n="today">Today</option>
+        <option value="yesterday" data-i18n="yesterday">Yesterday</option>
+      </select>
     </div>
 
-    <div id="fpy-entry-loader" class="text-center py-10 text-gray-400 text-xs font-medium hidden">Loading production data…</div>
-    <div id="fpy-entry-empty" class="text-center py-10 text-gray-400 text-xs font-medium hidden">No production recorded for this date.</div>
+    <!-- Defect entry form -->
+    <form id="defectForm" onsubmit="submitDefectForm(event)" class="space-y-3 mb-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label for="def-item" data-i18n="select_item" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Select Item</label>
+          <select id="def-item" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm"></select>
+        </div>
+        <div>
+          <label for="def-line" data-i18n="line_name" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Line Name</label>
+          <select id="def-line" onchange="updateDefectTypes()" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm"></select>
+        </div>
+        <div>
+          <label for="def-time" data-i18n="time_slot" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Time Slot</label>
+          <select id="def-time" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm"></select>
+        </div>
+        <div>
+          <label for="def-type" data-i18n="problem_type" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Problem Type</label>
+          <select id="def-type" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm"></select>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label for="def-qty" data-i18n="defective_qty" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Defective Qty</label>
+          <input type="number" id="def-qty" min="1" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm">
+        </div>
+        <div>
+          <label for="def-remarks" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide"><span data-i18n="remarks">Remarks</span> <span data-i18n="optional" class="text-gray-400 font-normal lowercase">(optional)</span></label>
+          <input type="text" id="def-remarks" placeholder="e.g. tooling issue…" class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm">
+        </div>
+      </div>
+      <button type="submit" id="def-submit-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm py-3 rounded-xl transition-all shadow-md hover:shadow-lg">Submit Defect</button>
+    </form>
 
-    <div id="fpy-entry-table-wrap" class="hidden sm:block overflow-hidden rounded-xl border border-white/60">
-      <table class="w-full text-left text-[11px] sm:text-xs">
-        <thead class="bg-slate-100/80">
-          <tr class="text-slate-500 uppercase tracking-wider">
-            <th class="p-3 pl-4 font-extrabold">Item</th>
-            <th class="p-3 font-extrabold">Line</th>
-            <th class="p-3 font-extrabold text-center">Produced</th>
-            <th class="p-3 font-extrabold text-center">Defective</th>
-            <th class="p-3 font-extrabold text-center">FPY %</th>
-            <th class="p-3 pr-4 font-extrabold text-center">Status</th>
-          </tr>
-        </thead>
-        <tbody id="fpy-entry-table" class="divide-y divide-white/40"></tbody>
-      </table>
-    </div>
-
-    <div id="fpy-entry-cards" class="sm:hidden space-y-2.5"></div>
-
-    <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-200/50">
-      <span id="fpy-save-status" class="text-[10px] text-gray-400 font-medium"></span>
-      <button onclick="saveFPY()" id="fpy-save-btn" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl text-xs font-bold shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed">Save All FPY</button>
+    <!-- Today's defect entries -->
+    <div class="border-t border-gray-200/50 pt-3">
+      <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-2">Defect Entries (this date)</h3>
+      <div id="defect-list" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
     </div>
 
     <!-- User profile footer -->
@@ -803,11 +849,8 @@
           <!-- Date Filter Row -->
           <div class="flex items-center gap-3 shrink-0">
               <select id="quality-date-preset" onchange="renderQualityDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm">
-                 <option value="today" data-i18n="today">Today</option>
-                 <option value="yesterday" selected data-i18n="yesterday">Yesterday</option>
-                 <option value="7" data-i18n="last_7_days">Last 7 Days</option>
-                 <option value="30" data-i18n="last_30_days">Last 30 Days</option>
-                 <option value="all" data-i18n="all_time">All Time</option>
+                 <option value="today" selected data-i18n="today">Today</option>
+                 <option value="yesterday" data-i18n="yesterday">Yesterday</option>
               </select>
           </div>
 
@@ -846,6 +889,7 @@
                             <tr class="text-slate-500 uppercase tracking-wider">
                                <th class="p-2 sm:p-3 pl-3 sm:pl-5 font-extrabold">Item</th>
                                <th class="p-2 sm:p-3 font-extrabold">Line</th>
+                               <th class="p-2 sm:p-3 font-extrabold">Time</th>
                                <th class="p-2 sm:p-3 font-extrabold text-center">Prod</th>
                                <th class="p-2 sm:p-3 font-extrabold text-center">Def</th>
                                <th class="p-2 sm:p-3 font-extrabold text-right">FPY%</th>
@@ -872,11 +916,7 @@
 
                 <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 min-h-[200px] sm:min-h-[250px]">
                    <div class="flex items-center justify-between pl-3 pr-2 pt-2 mb-1">
-                      <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Defect Pareto</h3>
-                      <div class="flex gap-1">
-                         <button id="pareto-item-btn" onclick="setQualityParetoDim('item')" class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-enovar text-white shadow-sm">Item</button>
-                         <button id="pareto-line-btn" onclick="setQualityParetoDim('line')" class="text-[10px] font-bold px-2.5 py-1 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200">Line</button>
-                      </div>
+                      <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Defect Pareto by Problem Type</h3>
                    </div>
                    <div id="quality-pareto-chart" class="w-full flex-1 min-h-[180px]"></div>
                    <div id="quality-pareto-insight" class="text-[10px] font-semibold text-slate-500 px-3 pb-2 pt-1"></div>
@@ -937,9 +977,12 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     let fpyDataCache = []; 
     let fpQuality = null; 
     let fpyEntryRows = []; 
+    let defectTypesCache = {};   // {section: [problem types]}
+    let defectRowsCache = [];    // today's/yesterday's defect entries
     let qualityWatchChart = null;
     let qualityParetoDim = 'item';   // 'item' | 'line' — Pareto dimension
     let qualityFpyRows = [];          // cached FPY rows for the Quality tab (used by the Pareto toggle)
+    let qualityDefectRows = [];       // cached defect rows for the Quality tab (problem-type Pareto)
 
     window.onload = function() {
       applyTheme(localStorage.getItem('alel_theme') || 'light');
@@ -1006,12 +1049,24 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       localStorage.setItem('active_portal', portalType);
       updatePortalUI();
       document.getElementById('landing-view').classList.add('hidden');
+      document.getElementById('entry-chooser').classList.add('hidden');
       if (currentUser.email) verifyAndRoute();
       else document.getElementById('login-screen').classList.remove('hidden');
     }
 
+    function openEntryChooser() {
+      document.getElementById('landing-view').classList.add('hidden');
+      document.getElementById('entry-chooser').classList.remove('hidden');
+    }
+
+    function closeEntryChooser() {
+      document.getElementById('entry-chooser').classList.add('hidden');
+      document.getElementById('landing-view').classList.remove('hidden');
+    }
+
     function returnToLanding() {
       document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('entry-chooser').classList.add('hidden');
       document.getElementById('denied').classList.add('hidden');
       document.getElementById('app').classList.add('hidden');
       document.getElementById('quality-app').classList.add('hidden');
@@ -1231,7 +1286,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     var I18N = {
       en: {
         select_workspace: "Select Workspace",
-        data_entry: "Data Entry", dashboard: "Dashboard", quality_entry: "Quality Entry",
+        entry: "Entry", entry_desc: "Record production and quality data in real time.", choose_entry: "Choose Entry Type",
+        data_entry: "Production Entry", dashboard: "Dashboard", quality_entry: "Quality Entry",
         data_entry_desc: "Log real-time shift metrics, manpower deployments, and production yields with precision.",
         dashboard_desc: "Access live operational analytics, AI-driven insights, and master data overviews.",
         quality_entry_desc: "Record daily defect quantities per item and line. First pass yield tracking for QA.",
@@ -1255,17 +1311,19 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         delete_confirm_title: "Delete Entry", delete_confirm_msg: "Are you sure you want to delete this entry? This cannot be undone.",
         delete_failed: "Delete failed",
         save_fpy_confirm_title: "Save FPY", save_fpy_confirm_msg: "Save all First Pass Yield entries?",
+        confirm_defect_submit: "Submit this defect entry?", submit_defect: "Submit Defect",
         avg_daily_manpower: "Avg. Daily Manpower", average_fpy: "Average FPY", worst_fpy: "Worst FPY", total_defectives: "Total Defectives", items_tracked: "Items Tracked", below_threshold: "Below Threshold",
         all_sections: "All Sections", view_productivity: "View: Productivity", view_production_qty: "View: Production Qty", filter_charts: "Filter Charts",
         daily_view: "Daily View", monthly_view: "Monthly View", view_production: "View: Production", view_quality_fpy: "View: Quality / FPY", all_pgs: "All PGs",
         today: "Today", yesterday: "Yesterday", last_7_days: "Last 7 Days", last_30_days: "Last 30 Days", all_time: "All Time", date_range: "Date Range",
         last_6_months: "Last 6 Months", last_1_year: "Last 1 Year", month_range: "Month Range", to: "to", search_item: "Search Item…", last_hour: "Last Hour",
         select_line: "Select Line…", select_time: "Select Time…",
-        operating_minutes: "Operating Minutes", full_hour_hint: "60 = full hour"
+        operating_minutes: "Operating Minutes", full_hour_hint: "60 = full hour", entry_date: "Date", problem_type: "Problem Type", defective_qty: "Defective Qty"
       },
       bn: {
         select_workspace: "ওয়ার্কস্পেস নির্বাচন করুন",
-        data_entry: "ডেটা এন্ট্রি", dashboard: "ড্যাশবোর্ড", quality_entry: "কোয়ালিটি এন্ট্রি",
+        entry: "এন্ট্রি", entry_desc: "রিয়েল-টাইমে প্রোডাকশন ও কোয়ালিটি ডেটা রেকর্ড করুন।", choose_entry: "এন্ট্রির ধরন নির্বাচন করুন",
+        data_entry: "প্রোডাকশন এন্ট্রি", dashboard: "ড্যাশবোর্ড", quality_entry: "কোয়ালিটি এন্ট্রি",
         data_entry_desc: "রিয়েল-টাইম শিফট মেট্রিক্স, ম্যানপাওয়ার এবং উৎপাদন ফলাফল সঠিকভাবে লগ করুন।",
         dashboard_desc: "লাইভ অপারেশনাল অ্যানালিটিক্স, এআই-চালিত ইনসাইট এবং মাস্টার ডেটা দেখুন।",
         quality_entry_desc: "প্রতিটি আইটেম ও লাইনের দৈনিক ত্রুটিপূর্ণ পরিমাণ রেকর্ড করুন।",
@@ -1289,13 +1347,14 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         delete_confirm_title: "এন্ট্রি মুছুন", delete_confirm_msg: "আপনি কি নিশ্চিতভাবে এই এন্ট্রিটি মুছতে চান? এটি ফেরত আনা যাবে না।",
         delete_failed: "মুছতে ব্যর্থ হয়েছে",
         save_fpy_confirm_title: "FPY সংরক্ষণ করুন", save_fpy_confirm_msg: "সব FPY এন্ট্রি সংরক্ষণ করবেন?",
+        confirm_defect_submit: "এই ত্রুটি এন্ট্রি জমা দেবেন?", submit_defect: "ত্রুটি জমা দিন",
         avg_daily_manpower: "গড় দৈনিক ম্যানপাওয়ার", average_fpy: "গড় FPY", worst_fpy: "সর্বনিম্ন FPY", total_defectives: "মোট ত্রুটিপূর্ণ", items_tracked: "ট্র্যাক করা আইটেম", below_threshold: "থ্রেশহোল্ডের নিচে",
         all_sections: "সব সেকশন", view_productivity: "দেখুন: উৎপাদনশীলতা", view_production_qty: "দেখুন: উৎপাদনের পরিমাণ", filter_charts: "চার্ট ফিল্টার করুন",
         daily_view: "দৈনিক ভিউ", monthly_view: "মাসিক ভিউ", view_production: "দেখুন: উৎপাদন", view_quality_fpy: "দেখুন: কোয়ালিটি / FPY", all_pgs: "সব PG",
         today: "আজ", yesterday: "গতকাল", last_7_days: "শেষ ৭ দিন", last_30_days: "শেষ ৩০ দিন", all_time: "সব সময়", date_range: "তারিখের পরিসীমা",
         last_6_months: "শেষ ৬ মাস", last_1_year: "শেষ ১ বছর", month_range: "মাসের পরিসীমা", to: "থেকে", search_item: "আইটেম খুঁজুন…", last_hour: "শেষ ঘণ্টা",
         select_line: "লাইন নির্বাচন করুন…", select_time: "সময় নির্বাচন করুন…",
-        operating_minutes: "অপারেটিং মিনিট", full_hour_hint: "৬০ = পূর্ণ ঘণ্টা"
+        operating_minutes: "অপারেটিং মিনিট", full_hour_hint: "৬০ = পূর্ণ ঘণ্টা", entry_date: "তারিখ", problem_type: "ত্রুটির ধরন", defective_qty: "ত্রুটিপূর্ণ পরিমাণ"
       }
     };
     var currentLang = 'en';
@@ -1384,33 +1443,135 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       if (data && data.authorizedEntry) document.getElementById('fpy-goto-entry').classList.remove('hidden');
       else document.getElementById('fpy-goto-entry').classList.add('hidden');
 
-      // Fetch available production dates for smart date picker
-      callAPI({ action: "getProductionDates" }, function(dateData) {
-        var availableDates = (dateData && dateData.dates) ? dateData.dates : [];
-        
-        var yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        var defaultDate = yesterday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        
-        // If yesterday has no production data, find the most recent date with data
-        if (availableDates.length > 0 && availableDates.indexOf(defaultDate) === -1) {
-          defaultDate = availableDates[0];
-        }
+      // Populate item / line / time dropdowns (same master data as production)
+      var itemSelect = document.getElementById('def-item'); itemSelect.innerHTML = '<option value="">' + t('search_item') + '</option>';
+      (data.items || []).forEach(function(i) { itemSelect.add(new Option(i, i)); });
+      var lineSelect = document.getElementById('def-line'); lineSelect.innerHTML = '<option value="">' + t('select_line') + '</option>';
+      (data.lines || []).forEach(function(l) { lineSelect.add(new Option(l, l)); });
+      var timeSelect = document.getElementById('def-time'); timeSelect.innerHTML = '<option value="">' + t('select_time') + '</option>';
+      (data.times || []).forEach(function(t) { timeSelect.add(new Option(t, t)); });
 
-        if (fpQuality) fpQuality.destroy();
-        fpQuality = flatpickr("#fpy-date-picker", {
-          defaultDate: defaultDate,
-          altInput: true,
-          altFormat: "F j, Y",
-          dateFormat: "M d, Y",
-          enable: availableDates.length > 0 ? availableDates.map(function(d) { return new Date(d); }) : undefined,
-          onChange: function(selectedDates, dateStr) { loadQualityEntry(dateStr); }
-        });
-
-        document.getElementById('fpy-date-picker').value = defaultDate;
-        loadQualityEntry(defaultDate);
-        fetchFPYData(renderFpyHistory);
+      callAPI({ action: "getDefectTypes" }, function(dt) {
+        defectTypesCache = (dt && dt.bySection) ? dt.bySection : {};
+        updateDefectTypes();
       });
+
+      loadQualityDefects();
+    }
+
+    function currentQualityDate() {
+      var toggle = document.getElementById('quality-date-toggle');
+      return (toggle && toggle.value === 'yesterday') ? 'yesterday' : 'today';
+    }
+
+    function currentQualityDateStr() {
+      var d = new Date();
+      if (currentQualityDate() === 'yesterday') d.setDate(d.getDate() - 1);
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return ('0' + d.getDate()).slice(-2) + '-' + months[d.getMonth()] + '-' + d.getFullYear();
+    }
+
+    function updateDefectTypes() {
+      var lineSelect = document.getElementById('def-line');
+      var typeSelect = document.getElementById('def-type');
+      typeSelect.innerHTML = '<option value="">' + t('problem_type') + '</option>';
+      var line = lineSelect ? lineSelect.value : '';
+      var section = (line && masterAuthData && masterAuthData.lineSections) ? masterAuthData.lineSections[line] : '';
+      var types = section ? (defectTypesCache[section] || []) : [];
+      types.forEach(function(tp) { typeSelect.add(new Option(tp, tp)); });
+    }
+
+    function submitDefectForm(e) {
+      e.preventDefault();
+      var itemVal = document.getElementById('def-item').value;
+      var lineVal = document.getElementById('def-line').value;
+      var timeVal = document.getElementById('def-time').value;
+      var typeVal = document.getElementById('def-type').value;
+      var qtyVal = document.getElementById('def-qty').value;
+      var remarksVal = document.getElementById('def-remarks').value;
+      if (!itemVal || !lineVal || !timeVal || !typeVal) { showToast(t('complete_dropdowns'), "error"); return; }
+      if (!qtyVal || Number(qtyVal) <= 0) { showToast(t('complete_dropdowns'), "error"); return; }
+      var section = (masterAuthData && masterAuthData.lineSections) ? (masterAuthData.lineSections[lineVal] || '') : '';
+      var formData = { item: itemVal, line: lineVal, time: timeVal, problemType: typeVal, defectiveQty: Number(qtyVal), remarks: remarksVal, section: section, date: currentQualityDate() };
+      openConfirm(t('quality_entry'), t('confirm_defect_submit'), function() {
+        var btn = document.getElementById('def-submit-btn'); btn.disabled = true; btn.innerText = t('loading') + '…';
+        callAPI({ action: "submitDefectEntry", formData: formData, email: currentUser.email }, function(res) {
+          btn.disabled = false; btn.innerText = t('submit_defect');
+          if (res && res.status === "Success") {
+            document.getElementById('def-qty').value = '';
+            document.getElementById('def-remarks').value = '';
+            showToast(t('data_logged'), "success");
+            loadQualityDefects();
+          } else {
+            showToast(t('submission_failed') + ": " + ((res && res.error) ? res.error : 'unknown'), "error");
+          }
+        });
+      });
+    }
+
+    function loadQualityDefects() {
+      callAPI({ action: "getDefectData", date: currentQualityDateStr() }, function(data) {
+        defectRowsCache = (data && data.rows) ? data.rows : [];
+        renderDefectList();
+      });
+    }
+
+    function renderDefectList() {
+      var list = document.getElementById('defect-list');
+      if (!list) return;
+      list.innerHTML = '';
+      if (defectRowsCache.length === 0) {
+        list.innerHTML = '<p class="text-gray-400 text-xs text-center py-4">No defect entries for this date.</p>';
+        return;
+      }
+      defectRowsCache.forEach(function(r) {
+        var card = document.createElement('div');
+        card.id = 'defect-card-' + r.rowIndex;
+        card.className = 'p-3 border border-gray-100 rounded-xl bg-gray-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-sm';
+        card.innerHTML = `
+          <div class="flex-1 min-w-0">
+            <p class="font-bold text-gray-800 text-[11px] leading-tight truncate">${r.item}</p>
+            <div class="text-[10px] text-gray-500 mt-0.5 flex flex-wrap gap-1.5">
+              <span class="bg-white px-2 py-0.5 rounded border border-gray-200 font-semibold">${r.line}</span>
+              <span class="bg-white px-2 py-0.5 rounded border border-gray-200 font-semibold">${r.time}</span>
+              <span class="bg-purple-50 text-purple-700 px-2 py-0.5 rounded border border-purple-200 font-semibold">${r.problemType}</span>
+            </div>
+            ${r.remarks ? '<div class="text-[10px] text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100 italic mt-1">' + r.remarks + '</div>' : ''}
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="text-sm font-black text-red-500" id="def-qty-val-${r.rowIndex}">${r.defectiveQty}</span>
+            <button onclick="handleDefectEdit(${r.rowIndex})" class="bg-white border border-gray-200 text-gray-600 text-[10px] font-bold py-1.5 px-3 rounded-lg shadow-sm">Edit</button>
+            <button onclick="handleDefectDelete(${r.rowIndex})" class="bg-white border border-gray-200 text-red-500 text-[10px] font-bold py-1.5 px-3 rounded-lg shadow-sm">Delete</button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function handleDefectEdit(rowIndex) {
+      var entry = null;
+      defectRowsCache.forEach(function(r) { if (r.rowIndex === rowIndex) entry = r; });
+      if (!entry) { showToast(t('entry_not_found'), "error"); return; }
+      openModal(t('edit_entry'), [
+        { key: 'qty', label: t('defective_qty'), value: entry.defectiveQty }
+      ], function(values) {
+        var newQty = parseFloat(values.qty);
+        if (isNaN(newQty)) return;
+        if (newQty === Number(entry.defectiveQty)) return;
+        callAPI({ action: "editDefectEntry", rowIndex: rowIndex, newQty: newQty }, function(res) {
+          if (res && res.status === "Success") { showToast(t('entry_updated'), "success"); loadQualityDefects(); }
+          else showToast(t('update_failed'), "error");
+        });
+      });
+    }
+
+    function handleDefectDelete(rowIndex) {
+      openConfirm(t('delete_confirm_title'), t('delete_confirm_msg'), function() {
+        callAPI({ action: "deleteDefectEntry", rowIndex: rowIndex }, function(res) {
+          if (res && res.status === "Success") { showToast(t('entry_deleted'), "success"); loadQualityDefects(); }
+          else showToast(t('delete_failed'), "error");
+        });
+      }, t('delete'), true);
     }
 
     async function submitForm(e) {
@@ -1422,7 +1583,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       if (!itemVal || !lineVal || !timeVal) { showToast(t('complete_dropdowns'), "error"); return; }
       
       const remarksVal = document.getElementById('remarks').value;
-      const formData = { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal, minutes: minutesVal || 60, remarks: remarksVal };
+      const dateVal = document.getElementById('prod-date-toggle') ? document.getElementById('prod-date-toggle').value : 'today';
+      const formData = { item: itemVal, line: lineVal, time: timeVal, manpower: manpowerVal, production: productionVal, minutes: minutesVal || 60, remarks: remarksVal, date: dateVal };
       
       openConfirm(t('submit_entry'), t('submit_confirm'), function() {
         const btn = document.getElementById('submitBtn'); btn.innerText = t('loading') + '…';
@@ -3286,139 +3448,127 @@ let gaugeOptions = {
       window.masterTrendChart.render();
     }
 
-    function renderQualityDashboard() {
-      var preset = document.getElementById('quality-date-preset') ? document.getElementById('quality-date-preset').value : 'today';
-      var today = new Date(); today.setHours(0,0,0,0);
-      var startDate = null, endDate = null;
-      
-      if (preset === 'today') { startDate = today; endDate = new Date(today.getTime() + 86399999); }
-      else if (preset === 'yesterday') { var y = new Date(today); y.setDate(y.getDate()-1); startDate = y; endDate = new Date(y.getTime() + 86399999); }
-      else if (preset === '7') { startDate = new Date(today); startDate.setDate(startDate.getDate()-7); endDate = today; }
-      else if (preset === '30') { startDate = new Date(today); startDate.setDate(startDate.getDate()-30); endDate = today; }
-      
-      var payload = { action: "getFPYData" };
-      if (startDate) { payload.startDate = startDate.toISOString().split('T')[0]; payload.endDate = endDate ? endDate.toISOString().split('T')[0] : null; }
-      
-      callAPI(payload, function(data) {
-        var fpyRows = (data && data.rows) ? data.rows : [];
-        qualityFpyRows = fpyRows;
-        
-        if (fpyRows.length === 0) {
-          document.getElementById('quality-kpi-avg').innerText = '—';
-          document.getElementById('quality-kpi-worst').innerText = '—';
-          document.getElementById('quality-kpi-def').innerText = '0';
-          document.getElementById('quality-kpi-items').innerText = '0';
-          document.getElementById('quality-table').innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">No quality data for this period.</td></tr>';
-          document.getElementById('quality-cards-mobile').innerHTML = '<div class="text-gray-400 text-xs text-center py-6">No quality data for this period.</div>';
-          document.getElementById('quality-gauge-row').innerHTML = '<div class="text-gray-400 text-xs py-6 text-center">No data recorded.</div>';
-          document.getElementById('quality-gauge-row-mobile').innerHTML = '<div class="text-gray-400 text-xs py-4 text-center w-full">No data recorded.</div>';
-          var paretoEl = document.getElementById('quality-pareto-chart');
-          if (paretoEl) paretoEl.innerHTML = '';
-          var insightEl = document.getElementById('quality-pareto-insight');
-          if (insightEl) insightEl.innerText = '';
-          if (window.qualityParetoChart) { window.qualityParetoChart.destroy(); window.qualityParetoChart = null; }
-          return;
-        }
-
-        var totalProd = 0, totalDef = 0, itemsSet = {};
-        var lineData = {};
-        fpyRows.forEach(function(r) {
-          totalProd += r.produced;
-          totalDef += r.defective;
-          itemsSet[r.itemCode + '|' + r.line] = true;
-          if (!lineData[r.line]) lineData[r.line] = { produced: 0, defective: 0 };
-          lineData[r.line].produced += r.produced;
-          lineData[r.line].defective += r.defective;
-        });
-
-        var avgFPY = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
-        var worstLine = '', worstFPY = 100;
-        Object.keys(lineData).forEach(function(l) {
-          var f = (lineData[l].produced + lineData[l].defective) > 0 ? ((lineData[l].produced / (lineData[l].produced + lineData[l].defective)) * 100) : 100;
-          if (f < worstFPY) { worstFPY = f; worstLine = l; }
-        });
-
-        document.getElementById('quality-kpi-avg').innerText = avgFPY.toFixed(1) + '%';
-        document.getElementById('quality-kpi-avg').className = 'text-lg sm:text-3xl font-black leading-none ' + (avgFPY >= 95 ? 'text-emerald-600' : avgFPY >= 90 ? 'text-amber-600' : 'text-red-500');
-        document.getElementById('quality-kpi-worst').innerText = worstLine ? worstFPY.toFixed(1) + '%' : '—';
-        document.getElementById('quality-kpi-worst').className = 'text-lg sm:text-3xl font-black leading-none ' + (worstFPY >= 95 ? 'text-emerald-600' : worstFPY >= 90 ? 'text-amber-600' : 'text-red-500');
-        document.getElementById('quality-kpi-def').innerText = totalDef.toLocaleString();
-        document.getElementById('quality-kpi-items').innerText = Object.keys(itemsSet).length;
-
-        // Per-line gauges (desktop: vertical)
-        var gaugeRow = document.getElementById('quality-gauge-row');
-        gaugeRow.innerHTML = '';
-        var gaugeRowMobile = document.getElementById('quality-gauge-row-mobile');
-        gaugeRowMobile.innerHTML = '';
-        Object.keys(lineData).forEach(function(l) {
-          var d = lineData[l];
-          var fpy = (d.produced + d.defective) > 0 ? ((d.produced / (d.produced + d.defective)) * 100) : 0;
-          var color = fpy >= 95 ? '#10B981' : fpy >= 90 ? '#F59E0B' : '#EF4444';
-          var circ = 2 * Math.PI * 15.5;
-          var off = circ - (Math.min(fpy, 100) / 100) * circ;
-          // Desktop
-          gaugeRow.innerHTML += '<div class="flex items-center gap-3 bg-white/30 rounded-lg p-2.5">' +
-            '<svg viewBox="0 0 36 36" class="w-12 h-12 shrink-0"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circ + '" stroke-dashoffset="' + off + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[10px]" font-weight="800" fill="#374151">' + fpy.toFixed(0) + '%</text></svg>' +
-            '<div><div class="font-extrabold text-[10px] text-slate-700">' + l + '</div><div class="text-[9px] font-medium ' + (fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500') + '">' + d.defective + ' defective</div></div></div>';
-          // Mobile (horizontal cards)
-          gaugeRowMobile.innerHTML += '<div class="flex-shrink-0 bg-white/40 rounded-xl p-2.5 border border-white/60 flex flex-col items-center gap-1 min-w-[95px]">' +
-            '<svg viewBox="0 0 36 36" class="w-10 h-10"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circ + '" stroke-dashoffset="' + off + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[9px]" font-weight="800" fill="#374151">' + fpy.toFixed(0) + '%</text></svg>' +
-            '<div class="font-extrabold text-[9px] text-slate-700 text-center leading-tight">' + l + '</div></div>';
-        });
-
-        // Scorecard table (desktop)
-        var tb = document.getElementById('quality-table');
-        tb.innerHTML = '';
-        // Mobile cards
-        var mc = document.getElementById('quality-cards-mobile');
-        mc.innerHTML = '';
-        var sorted = fpyRows.slice().sort(function(a, b) { return a.fpy - b.fpy; });
-        sorted.forEach(function(r) {
-          var tc = r.fpy >= 95 ? 'text-emerald-600' : r.fpy >= 90 ? 'text-amber-600' : 'text-red-500';
-          var bg = r.fpy >= 90 ? 'bg-white/40' : 'bg-red-50/40';
-          tb.innerHTML += '<tr class="hover:bg-white/60 transition-colors border-b border-white/50 ' + bg + '"><td class="py-1.5 pl-3 sm:pl-5 font-medium text-slate-700 text-[10px]">' + r.item + '</td><td class="py-1.5 text-slate-500 text-[10px]">' + r.line + '</td><td class="py-1.5 text-center font-bold text-slate-700 text-[10px]">' + r.produced.toLocaleString() + '</td><td class="py-1.5 text-center font-bold ' + (r.defective > 0 ? 'text-red-600' : 'text-slate-400') + ' text-[10px]">' + r.defective + '</td><td class="py-1.5 text-right font-extrabold ' + tc + ' text-[10px]">' + r.fpy.toFixed(1) + '%</td><td class="py-1.5 pr-3 sm:pr-5 text-right text-[9px] text-slate-400">' + (r.fpy >= 95 ? 'Good' : r.fpy >= 90 ? 'OK' : 'Poor') + '</td></tr>';
-          // Mobile card
-          var bc = r.fpy >= 95 ? 'border-l-emerald-500' : r.fpy >= 90 ? 'border-l-amber-500' : 'border-l-red-500';
-          mc.innerHTML += '<div class="border-l-4 ' + bc + ' bg-white/40 backdrop-blur-sm rounded-lg p-2.5">' +
-            '<div class="flex justify-between items-start"><span class="font-bold text-slate-700 text-[11px]">' + r.item + '</span><span class="font-extrabold ' + tc + ' text-xs ml-1">' + r.fpy.toFixed(1) + '%</span></div>' +
-            '<div class="flex gap-3 text-[9px] text-slate-500 mt-1"><span>' + r.line + '</span><span>Prod: ' + r.produced + '</span><span>Def: ' + r.defective + '</span></div></div>';
-        });
-
-        // Pareto chart (defectives by item/line + cumulative %)
-        renderQualityPareto();
-      });
+    function qualityDateStr(dayOffset) {
+      var d = new Date();
+      d.setDate(d.getDate() + (dayOffset || 0));
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return ('0' + d.getDate()).slice(-2) + '-' + months[d.getMonth()] + '-' + d.getFullYear();
     }
 
-    function setQualityParetoDim(dim) {
-      qualityParetoDim = dim === 'line' ? 'line' : 'item';
-      var itemBtn = document.getElementById('pareto-item-btn');
-      var lineBtn = document.getElementById('pareto-line-btn');
-      if (itemBtn && lineBtn) {
-        var on = 'text-[10px] font-bold px-2.5 py-1 rounded-md bg-enovar text-white shadow-sm';
-        var off = 'text-[10px] font-bold px-2.5 py-1 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200';
-        itemBtn.className = qualityParetoDim === 'item' ? on : off;
-        lineBtn.className = qualityParetoDim === 'line' ? on : off;
-      }
-      renderQualityPareto();
+    function renderQualityDashboard() {
+      var preset = document.getElementById('quality-date-preset') ? document.getElementById('quality-date-preset').value : 'today';
+      var dateStr = qualityDateStr(preset === 'yesterday' ? -1 : 0);
+
+      callAPI({ action: "getHourlyFPY", date: dateStr }, function(fpyRes) {
+        var fpyRows = (fpyRes && fpyRes.rows) ? fpyRes.rows : [];
+        callAPI({ action: "getDefectData", date: dateStr }, function(defRes) {
+          var defectRows = (defRes && defRes.rows) ? defRes.rows : [];
+          qualityFpyRows = fpyRows;
+          qualityDefectRows = defectRows;
+
+          var totalProd = 0, totalDef = 0, itemsSet = {};
+          var lineData = {};
+          fpyRows.forEach(function(r) {
+            totalProd += r.produced;
+            totalDef += r.defective;
+            itemsSet[r.itemCode + '|' + r.line] = true;
+            if (!lineData[r.line]) lineData[r.line] = { produced: 0, defective: 0 };
+            lineData[r.line].produced += r.produced;
+            lineData[r.line].defective += r.defective;
+          });
+
+          var kpiAvg = document.getElementById('quality-kpi-avg');
+          var kpiWorst = document.getElementById('quality-kpi-worst');
+
+          if (fpyRows.length === 0 && defectRows.length === 0) {
+            kpiAvg.innerText = '—';
+            kpiWorst.innerText = '—';
+            document.getElementById('quality-kpi-def').innerText = '0';
+            document.getElementById('quality-kpi-items').innerText = '0';
+            document.getElementById('quality-table').innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-500">No quality data for this date.</td></tr>';
+            document.getElementById('quality-cards-mobile').innerHTML = '<div class="text-gray-400 text-xs text-center py-6">No quality data for this date.</div>';
+            document.getElementById('quality-gauge-row').innerHTML = '<div class="text-gray-400 text-xs py-6 text-center">No data recorded.</div>';
+            document.getElementById('quality-gauge-row-mobile').innerHTML = '<div class="text-gray-400 text-xs py-4 text-center w-full">No data recorded.</div>';
+            var paretoEl = document.getElementById('quality-pareto-chart');
+            if (paretoEl) paretoEl.innerHTML = '';
+            var insightEl = document.getElementById('quality-pareto-insight');
+            if (insightEl) insightEl.innerText = '';
+            if (window.qualityParetoChart) { window.qualityParetoChart.destroy(); window.qualityParetoChart = null; }
+            return;
+          }
+
+          var avgFPY = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
+          var worstLine = '', worstFPY = 100;
+          Object.keys(lineData).forEach(function(l) {
+            var f = (lineData[l].produced + lineData[l].defective) > 0 ? ((lineData[l].produced / (lineData[l].produced + lineData[l].defective)) * 100) : 100;
+            if (f < worstFPY) { worstFPY = f; worstLine = l; }
+          });
+
+          kpiAvg.innerText = avgFPY.toFixed(1) + '%';
+          kpiAvg.className = 'text-lg sm:text-3xl font-black leading-none ' + (avgFPY >= 95 ? 'text-emerald-600' : avgFPY >= 90 ? 'text-amber-600' : 'text-red-500');
+          kpiWorst.innerText = worstLine ? worstFPY.toFixed(1) + '%' : '—';
+          kpiWorst.className = 'text-lg sm:text-3xl font-black leading-none ' + (worstFPY >= 95 ? 'text-emerald-600' : worstFPY >= 90 ? 'text-amber-600' : 'text-red-500');
+          document.getElementById('quality-kpi-def').innerText = totalDef.toLocaleString();
+          document.getElementById('quality-kpi-items').innerText = Object.keys(itemsSet).length;
+
+          // Per-line gauges
+          var gaugeRow = document.getElementById('quality-gauge-row');
+          gaugeRow.innerHTML = '';
+          var gaugeRowMobile = document.getElementById('quality-gauge-row-mobile');
+          gaugeRowMobile.innerHTML = '';
+          Object.keys(lineData).forEach(function(l) {
+            var d = lineData[l];
+            var fpy = (d.produced + d.defective) > 0 ? ((d.produced / (d.produced + d.defective)) * 100) : 0;
+            var color = fpy >= 95 ? '#10B981' : fpy >= 90 ? '#F59E0B' : '#EF4444';
+            var circ = 2 * Math.PI * 15.5;
+            var off = circ - (Math.min(fpy, 100) / 100) * circ;
+            gaugeRow.innerHTML += '<div class="flex items-center gap-3 bg-white/30 rounded-lg p-2.5">' +
+              '<svg viewBox="0 0 36 36" class="w-12 h-12 shrink-0"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circ + '" stroke-dashoffset="' + off + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[10px]" font-weight="800" fill="#374151">' + fpy.toFixed(0) + '%</text></svg>' +
+              '<div><div class="font-extrabold text-[10px] text-slate-700">' + l + '</div><div class="text-[9px] font-medium ' + (fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500') + '">' + d.defective + ' defective</div></div></div>';
+            gaugeRowMobile.innerHTML += '<div class="flex-shrink-0 bg-white/40 rounded-xl p-2.5 border border-white/60 flex flex-col items-center gap-1 min-w-[95px]">' +
+              '<svg viewBox="0 0 36 36" class="w-10 h-10"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circ + '" stroke-dashoffset="' + off + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[9px]" font-weight="800" fill="#374151">' + fpy.toFixed(0) + '%</text></svg>' +
+              '<div class="font-extrabold text-[9px] text-slate-700 text-center leading-tight">' + l + '</div></div>';
+          });
+
+          // Scorecard table (hourly rows)
+          var tb = document.getElementById('quality-table');
+          tb.innerHTML = '';
+          var mc = document.getElementById('quality-cards-mobile');
+          mc.innerHTML = '';
+          var sorted = fpyRows.slice().sort(function(a, b) { var af = (a.fpy === null || a.fpy === undefined) ? 101 : a.fpy; var bf = (b.fpy === null || b.fpy === undefined) ? 101 : b.fpy; return af - bf; });
+          sorted.forEach(function(r) {
+            var fpyVal = (r.fpy === null || r.fpy === undefined) ? null : r.fpy;
+            var tc = fpyVal === null ? 'text-slate-400' : fpyVal >= 95 ? 'text-emerald-600' : fpyVal >= 90 ? 'text-amber-600' : 'text-red-500';
+            var fpyTxt = fpyVal === null ? '—' : fpyVal.toFixed(1) + '%';
+            var statusTxt = fpyVal === null ? 'No prod' : fpyVal >= 95 ? 'Good' : fpyVal >= 90 ? 'OK' : 'Poor';
+            var bg = (fpyVal === null || fpyVal >= 90) ? 'bg-white/40' : 'bg-red-50/40';
+            tb.innerHTML += '<tr class="hover:bg-white/60 transition-colors border-b border-white/50 ' + bg + '"><td class="py-1.5 pl-3 sm:pl-5 font-medium text-slate-700 text-[10px]">' + r.item + '</td><td class="py-1.5 text-slate-500 text-[10px]">' + r.line + '</td><td class="py-1.5 text-slate-500 text-[10px]">' + (r.time || '') + '</td><td class="py-1.5 text-center font-bold text-slate-700 text-[10px]">' + r.produced.toLocaleString() + '</td><td class="py-1.5 text-center font-bold ' + (r.defective > 0 ? 'text-red-600' : 'text-slate-400') + ' text-[10px]">' + r.defective + '</td><td class="py-1.5 text-right font-extrabold ' + tc + ' text-[10px]">' + fpyTxt + '</td><td class="py-1.5 pr-3 sm:pr-5 text-right text-[9px] text-slate-400">' + statusTxt + '</td></tr>';
+            var bc = fpyVal === null ? 'border-l-slate-300' : fpyVal >= 95 ? 'border-l-emerald-500' : fpyVal >= 90 ? 'border-l-amber-500' : 'border-l-red-500';
+            mc.innerHTML += '<div class="border-l-4 ' + bc + ' bg-white/40 backdrop-blur-sm rounded-lg p-2.5">' +
+              '<div class="flex justify-between items-start"><span class="font-bold text-slate-700 text-[11px]">' + r.item + '</span><span class="font-extrabold ' + tc + ' text-xs ml-1">' + fpyTxt + '</span></div>' +
+              '<div class="flex gap-3 text-[9px] text-slate-500 mt-1"><span>' + r.line + '</span><span>' + (r.time || '') + '</span><span>Prod: ' + r.produced + '</span><span>Def: ' + r.defective + '</span></div></div>';
+          });
+
+          // Problem-type Pareto
+          renderQualityPareto();
+        });
+      });
     }
 
     function renderQualityPareto() {
       var chartEl = document.getElementById('quality-pareto-chart');
-      if (!chartEl || !qualityFpyRows || qualityFpyRows.length === 0) return;
+      if (!chartEl || !qualityDefectRows || qualityDefectRows.length === 0) return;
 
-      // Aggregate defective count by the selected dimension
       var map = {};
-      qualityFpyRows.forEach(function(r) {
-        var key = qualityParetoDim === 'item' ? (r.itemCode || r.item) : (r.line || 'Unknown');
-        var label = qualityParetoDim === 'item' ? (r.item || r.itemCode || '?') : (r.line || 'Unknown');
-        if (!map[key]) map[key] = { label: label, defective: 0 };
-        map[key].defective += r.defective;
+      qualityDefectRows.forEach(function(r) {
+        var key = r.problemType || 'Others';
+        if (!map[key]) map[key] = { label: key, defective: 0 };
+        map[key].defective += Number(r.defectiveQty) || 0;
       });
 
       var arr = Object.keys(map).map(function(k) { return map[k]; }).sort(function(a, b) { return b.defective - a.defective; });
       var total = arr.reduce(function(s, x) { return s + x.defective; }, 0);
 
-      // Top N for readability (bars), cumulative computed over the full set
       var top = arr.slice(0, 12);
       var counts = top.map(function(x) { return x.defective; });
       var categories = top.map(function(x) { return x.label; });
@@ -3428,20 +3578,14 @@ let gaugeOptions = {
         return total > 0 ? Math.round(cum / total * 1000) / 10 : 0;
       });
 
-      // "Vital few" insight
       var n80 = 0, cumAll = 0;
       for (var i = 0; i < arr.length; i++) {
         cumAll += arr[i].defective;
         if (total > 0 && (cumAll / total) >= 0.80) { n80 = i + 1; break; }
       }
       var top2Share = total > 0 ? Math.round(((arr[0] ? arr[0].defective : 0) + (arr[1] ? arr[1].defective : 0)) / total * 100) : 0;
-      var dimWord = qualityParetoDim === 'item' ? 'items' : 'lines';
       var insightEl = document.getElementById('quality-pareto-insight');
-      if (insightEl) {
-        insightEl.innerText = 'Top 2 ' + dimWord + ' = ' + top2Share + '% of defects · ' + n80 + ' ' + dimWord + ' reach 80%';
-      }
-
-      var xLabelMax = qualityParetoDim === 'item' ? 14 : 20;
+      if (insightEl) insightEl.innerText = 'Top 2 problem types = ' + top2Share + '% of defects · ' + n80 + ' types reach 80%';
 
       if (window.qualityParetoChart) window.qualityParetoChart.destroy();
       window.qualityParetoChart = new ApexCharts(chartEl, {
@@ -3455,12 +3599,7 @@ let gaugeOptions = {
         dataLabels: { enabled: false },
         xaxis: {
           categories: categories,
-          labels: {
-            style: { fontSize: '9px' },
-            rotate: -35,
-            hideOverlappingLabels: true,
-            formatter: function(v) { return v.length > xLabelMax ? v.substring(0, xLabelMax) + '…' : v; }
-          },
+          labels: { style: { fontSize: '9px' }, rotate: -35, hideOverlappingLabels: true, formatter: function(v) { return v.length > 20 ? v.substring(0, 20) + '…' : v; } },
           tooltip: { enabled: false }
         },
         yaxis: [
