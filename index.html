@@ -868,11 +868,20 @@
                 <span data-i18n="total_defectives" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Total Defectives</span>
                 <span id="quality-kpi-def" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">0</span>
              </div>
-             <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
-                <span data-i18n="items_tracked" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Items Tracked</span>
-                <span id="quality-kpi-items" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">0</span>
-             </div>
-          </div>
+              <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
+                 <span data-i18n="items_tracked" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Items Tracked</span>
+                 <span id="quality-kpi-items" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">0</span>
+              </div>
+           </div>
+
+           <!-- Hourly FPY Trend (per line over hours) -->
+           <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white shrink-0">
+              <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md flex items-center justify-between">
+                 <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Hourly FPY Trend by Line</h3>
+              </div>
+              <div id="quality-hourly-trend" class="w-full p-2 sm:p-3" style="height: 280px"></div>
+           </div>
+
 
           <!-- Main Grid -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 flex-1 min-h-0 pb-1">
@@ -983,6 +992,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     let qualityParetoDim = 'item';   // 'item' | 'line' — Pareto dimension
     let qualityFpyRows = [];          // cached FPY rows for the Quality tab (used by the Pareto toggle)
     let qualityDefectRows = [];       // cached defect rows for the Quality tab (problem-type Pareto)
+    let sectionFpyRows = [];          // hourly FPY rows for Daily Status FPY metric
 
     window.onload = function() {
       applyTheme(localStorage.getItem('alel_theme') || 'light');
@@ -1313,7 +1323,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         save_fpy_confirm_title: "Save FPY", save_fpy_confirm_msg: "Save all First Pass Yield entries?",
         confirm_defect_submit: "Submit this defect entry?", submit_defect: "Submit Defect",
         avg_daily_manpower: "Avg. Daily Manpower", average_fpy: "Average FPY", worst_fpy: "Worst FPY", total_defectives: "Total Defectives", items_tracked: "Items Tracked", below_threshold: "Below Threshold",
-        all_sections: "All Sections", view_productivity: "View: Productivity", view_production_qty: "View: Production Qty", filter_charts: "Filter Charts",
+        all_sections: "All Sections", view_productivity: "View: Productivity", view_production_qty: "View: Production Qty", view_fpy: "View: FPY %", filter_charts: "Filter Charts",
         daily_view: "Daily View", monthly_view: "Monthly View", view_production: "View: Production", view_quality_fpy: "View: Quality / FPY", all_pgs: "All PGs",
         today: "Today", yesterday: "Yesterday", last_7_days: "Last 7 Days", last_30_days: "Last 30 Days", all_time: "All Time", date_range: "Date Range",
         last_6_months: "Last 6 Months", last_1_year: "Last 1 Year", month_range: "Month Range", to: "to", search_item: "Search Item…", last_hour: "Last Hour",
@@ -1349,7 +1359,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         save_fpy_confirm_title: "FPY সংরক্ষণ করুন", save_fpy_confirm_msg: "সব FPY এন্ট্রি সংরক্ষণ করবেন?",
         confirm_defect_submit: "এই ত্রুটি এন্ট্রি জমা দেবেন?", submit_defect: "ত্রুটি জমা দিন",
         avg_daily_manpower: "গড় দৈনিক ম্যানপাওয়ার", average_fpy: "গড় FPY", worst_fpy: "সর্বনিম্ন FPY", total_defectives: "মোট ত্রুটিপূর্ণ", items_tracked: "ট্র্যাক করা আইটেম", below_threshold: "থ্রেশহোল্ডের নিচে",
-        all_sections: "সব সেকশন", view_productivity: "দেখুন: উৎপাদনশীলতা", view_production_qty: "দেখুন: উৎপাদনের পরিমাণ", filter_charts: "চার্ট ফিল্টার করুন",
+        all_sections: "সব সেকশন", view_productivity: "দেখুন: উৎপাদনশীলতা", view_production_qty: "দেখুন: উৎপাদনের পরিমাণ", view_fpy: "দেখুন: FPY %", filter_charts: "চার্ট ফিল্টার করুন",
         daily_view: "দৈনিক ভিউ", monthly_view: "মাসিক ভিউ", view_production: "দেখুন: উৎপাদন", view_quality_fpy: "দেখুন: কোয়ালিটি / FPY", all_pgs: "সব PG",
         today: "আজ", yesterday: "গতকাল", last_7_days: "শেষ ৭ দিন", last_30_days: "শেষ ৩০ দিন", all_time: "সব সময়", date_range: "তারিখের পরিসীমা",
         last_6_months: "শেষ ৬ মাস", last_1_year: "শেষ ১ বছর", month_range: "মাসের পরিসীমা", to: "থেকে", search_item: "আইটেম খুঁজুন…", last_hour: "শেষ ঘণ্টা",
@@ -1823,6 +1833,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
            <select id="metric-toggle" onchange="currentMetric = this.value; renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
             <option value="productivity" ${currentMetric === 'productivity' ? 'selected' : ''}>${t('view_productivity')}</option>
             <option value="quantity" ${currentMetric === 'quantity' ? 'selected' : ''}>${t('view_production_qty')}</option>
+            <option value="fpy" ${currentMetric === 'fpy' ? 'selected' : ''}>${t('view_fpy')}</option>
           </select>
           
           <div class="relative inline-block text-left">
@@ -1851,6 +1862,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           <select id="master-metric-toggle" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
             <option value="productivity">${t('view_productivity')}</option>
             <option value="quantity">${t('view_production')}</option>
+            <option value="fpy">${t('view_quality_fpy')}</option>
           </select>
           <select id="filter-pg-master" onchange="this.classList.toggle('text-enovar', this.value !== 'all'); this.classList.toggle('border-enovar', this.value !== 'all'); updateMasterDropdowns();" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm transition-colors">
             <option value="all">${t('all_pgs')}</option>
@@ -2140,6 +2152,16 @@ if(fpSummary) fpSummary.destroy();
         // Normalize to "MMM dd, yyyy" (Flatpickr uses "M d, Y" without leading zeros)
         const dateVal = Utilities_formatDateClient(new Date(document.getElementById('filter-date').value));
         const secVal = document.getElementById('filter-section').value;
+
+        // FPY metric: hourly first-pass-yield per line/item per hour
+        if (currentMetric === 'fpy') {
+          var fpyDateStr = formatEntryDate(new Date(document.getElementById('filter-date').value));
+          callAPI({ action: "getHourlyFPY", date: fpyDateStr }, function(res) {
+            sectionFpyRows = (res && res.rows) ? res.rows : [];
+            renderSectionFPY(secVal);
+          });
+          return;
+        }
         
         let fData = rawDashboardData.filter(row => {
           if (secVal !== 'all' && row.section !== secVal) return false;
@@ -2498,6 +2520,90 @@ if(fpSummary) fpSummary.destroy();
         let listEl = document.getElementById('chart-vis-list');
         if(listEl) listEl.innerHTML = visListHtml;
       }
+
+      function renderSectionFPY(secVal) {
+        const getOrdinal = (n) => { const s = ["th","st","nd","rd"]; const v = n % 100; return n + (s[(v-20)%10] || s[v] || s[0]); };
+        var grid = document.getElementById('section-charts-grid');
+        var emptyMsg = document.getElementById('section-empty-msg');
+        Object.values(sectionChartInstances).forEach(function(c) { c.destroy(); });
+        sectionChartInstances = {}; grid.innerHTML = '';
+
+        var rows = sectionFpyRows.slice();
+        if (secVal !== 'all') {
+          rows = rows.filter(function(r) {
+            return (masterAuthData && masterAuthData.lineSections && masterAuthData.lineSections[r.line]) === secVal;
+          });
+        }
+
+        if (rows.length === 0) { emptyMsg.classList.remove('hidden'); return; }
+        emptyMsg.classList.add('hidden');
+
+        var masterTimes = (masterAuthData && masterAuthData.times) ? masterAuthData.times.map(function(t){ return t.trim(); }) : [];
+        var timesSet = {};
+        rows.forEach(function(r) { if (r.time) timesSet[r.time.trim()] = true; });
+        var sortedTimes = masterTimes.length > 0 ? masterTimes : Object.keys(timesSet).sort();
+
+        var groups = {};
+        rows.forEach(function(r) {
+          var key = r.line + '::' + r.itemCode + '::' + r.item;
+          if (!groups[key]) groups[key] = { line: r.line, item: r.item, itemCode: r.itemCode, times: {}, produced: 0, defective: 0 };
+          groups[key].times[r.time.trim()] = r.fpy;
+          groups[key].produced += r.produced;
+          groups[key].defective += r.defective;
+        });
+
+        Object.keys(groups).sort().forEach(function(key, idx) {
+          var g = groups[key];
+          var fpyVals = sortedTimes.map(function(t) { var v = g.times[t]; return (v === undefined || v === null) ? null : v; });
+          if (!fpyVals.some(function(v) { return v !== null; })) return;
+
+          var colors = fpyVals.map(function(f) { return f === null ? '#e2e8f0' : f >= 95 ? '#10B981' : f >= 90 ? '#F59E0B' : '#EF4444'; });
+          var seriesData = sortedTimes.map(function(t, i) { return { x: getOrdinal(i + 1), y: fpyVals[i] === null ? 0 : fpyVals[i], realTime: t, fpy: fpyVals[i] }; });
+          var dayFpy = (g.produced + g.defective) > 0 ? Math.round((g.produced / (g.produced + g.defective)) * 1000) / 10 : null;
+
+          var chartId = 'sec-fpy-' + idx;
+          var wrapper = document.createElement('div');
+          wrapper.className = "sec-chart-wrapper bg-white/60 backdrop-blur-xl px-3 pt-3 pb-1.5 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col min-w-0 flex-1 h-full transition-transform hover:-translate-y-1";
+          var chartHeight = Math.max(160, sortedTimes.length * 26);
+          wrapper.innerHTML = `
+            <div class="border-b border-gray-100 pb-1.5 mb-0 shrink-0 flex items-start justify-between gap-2">
+              <div class="min-w-0 flex-1">
+                <h3 class="text-sm font-black text-gray-800 truncate">${g.line}</h3>
+                <p class="text-[10px] font-bold text-enovar uppercase tracking-wider leading-tight">[${g.itemCode}] - ${g.item}</p>
+              </div>
+              <div class="shrink-0 text-right flex flex-col items-end">
+                <span class="text-[8px] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap leading-none">${t('first_pass_yield')}</span>
+                <span class="text-sm font-black leading-none mt-0.5 whitespace-nowrap ${dayFpy === null ? 'text-slate-400' : dayFpy >= 95 ? 'text-emerald-600' : dayFpy >= 90 ? 'text-amber-600' : 'text-red-500'}">${dayFpy === null ? '—' : dayFpy + '%'}</span>
+              </div>
+            </div>
+            <div id="${chartId}" class="w-full mt-0.5" style="height: ${chartHeight}px"></div>
+          `;
+          grid.appendChild(wrapper);
+
+          var chart = new ApexCharts(document.getElementById(chartId), {
+            chart: { type: 'bar', height: chartHeight, toolbar: { show: false }, animations: { enabled: false }, parentHeightOffset: 0 },
+            series: [{ name: 'FPY %', data: seriesData }],
+            colors: colors,
+            plotOptions: { bar: { horizontal: true, distributed: true, borderRadius: 2, dataLabels: { position: 'bottom' } } },
+            legend: { show: false },
+            fill: { opacity: 0.85 },
+            stroke: { show: true, width: 1, colors: ['#fff'] },
+            grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: false } }, padding: { top: 0, right: 25, bottom: 0, left: 10 } },
+            dataLabels: { enabled: true, textAnchor: 'start', offsetX: 16, background: { enabled: false }, style: { fontSize: '10px', colors: [barLabelColor()], fontWeight: 700 }, formatter: function(val) { return (val === 0 || val === null || val === undefined) ? '' : val + '%'; } },
+            xaxis: { min: 0, max: 100, tickAmount: 4, labels: { formatter: function(v) { return v + '%'; }, style: { fontSize: '9px' } } },
+            yaxis: { labels: { style: { colors: '#6B7280', fontSize: '11px', fontWeight: 600 } } },
+            tooltip: {
+              custom: function(obj) {
+                var d = obj.w.globals.initialSeries[obj.seriesIndex].data[obj.dataPointIndex];
+                if (d.fpy === null || d.fpy === undefined) return '<div style="padding:8px 12px;font-size:12px;font-weight:600;background:#1F2937;color:#fff;border-radius:6px;">' + d.realTime + ': No production</div>';
+                return '<div style="padding:8px 12px;font-size:12px;font-weight:600;background:#1F2937;color:#fff;border-radius:6px;">' + d.realTime + ': <b>' + d.fpy + '%</b> FPY</div>';
+              }
+            }
+          });
+          chart.render();
+          sectionChartInstances[chartId] = chart;
+        });
+      }
       // ==========================================
       // TAB 2: MASTER ANALYTICS (Date Range & Filters)
       // ==========================================
@@ -2506,49 +2612,53 @@ if(fpSummary) fpSummary.destroy();
         const preset = document.getElementById('master-date-preset') ? document.getElementById('master-date-preset').value : '7';
         const masterMetric = document.getElementById('master-metric-toggle') ? document.getElementById('master-metric-toggle').value : 'productivity';
         
-        // --- QUALITY / FPY MODE ---
-        if (masterMetric === 'quality') {
-          callAPI({ action: "getFPYData" }, function(data) {
+        // --- FPY MODE (daily first-pass-yield trend) ---
+        if (masterMetric === 'fpy') {
+          var fpStart = new Date(0), fpEnd = new Date(8640000000000000);
+          var fpToday = new Date(); fpToday.setHours(0,0,0,0);
+          if (preset === 'today') { fpStart = fpToday; fpEnd = new Date(fpToday.getTime() + 86399999); }
+          else if (preset === '7') { fpStart = new Date(fpToday); fpStart.setDate(fpStart.getDate() - 6); fpEnd = new Date(fpToday.getTime() + 86399999); }
+          else if (preset === '30') { fpStart = new Date(fpToday); fpStart.setDate(fpStart.getDate() - 29); fpEnd = new Date(fpToday.getTime() + 86399999); }
+          else if (preset === '6m') { fpStart = new Date(fpToday); fpStart.setMonth(fpStart.getMonth() - 6); fpEnd = new Date(fpToday.getTime() + 86399999); }
+          else if (preset === '1y') { fpStart = new Date(fpToday); fpStart.setFullYear(fpStart.getFullYear() - 1); fpEnd = new Date(fpToday.getTime() + 86399999); }
+          else if (preset === 'custom') {
+            if (document.getElementById('filter-start') && document.getElementById('filter-start').value) { fpStart = new Date(document.getElementById('filter-start').value); fpStart.setHours(0,0,0,0); }
+            if (document.getElementById('filter-end') && document.getElementById('filter-end').value) { fpEnd = new Date(document.getElementById('filter-end').value); fpEnd.setHours(23,59,59,999); }
+          }
+
+          var fpStartStr = fpStart.getTime() === 0 ? null : fpStart.toISOString().split('T')[0];
+          var fpEndStr = fpEnd.getTime() >= 8640000000000000 ? null : fpEnd.toISOString().split('T')[0];
+
+          callAPI({ action: "getDailyFPY", startDate: fpStartStr, endDate: fpEndStr }, function(data) {
             var fpyRows = (data && data.rows) ? data.rows : [];
-            fpyDataCache = fpyRows;
-            
+            setMasterKpiLabels('quality');
             if (fpyRows.length === 0) {
               document.getElementById('master-kpi-prod').innerText = '—';
               document.getElementById('master-kpi-target').innerText = '—';
               document.getElementById('master-kpi-output').innerText = '0';
               document.getElementById('master-kpi-mp').innerText = '0';
               document.getElementById('chart-master-title').innerText = 'No FPY Data Available';
+              if (window.masterTrendChart) { window.masterTrendChart.destroy(); window.masterTrendChart = null; }
               return;
             }
-            
-            // Update KPI labels for Quality mode
-            setMasterKpiLabels('quality');
-            
-            var totalProd = 0, totalDef = 0;
-            var lineFPY = {}, worstFPY = 100, worstLine = '';
+
+            var totalProd = 0, totalDef = 0, worstFpy = 100;
             fpyRows.forEach(function(r) {
               totalProd += r.produced;
               totalDef += r.defective;
-              if (!lineFPY[r.line]) lineFPY[r.line] = { produced: 0, defective: 0 };
-              lineFPY[r.line].produced += r.produced;
-              lineFPY[r.line].defective += r.defective;
-            });
-            Object.keys(lineFPY).forEach(function(l) {
-              var f = (lineFPY[l].produced + lineFPY[l].defective) > 0 ? ((lineFPY[l].produced / (lineFPY[l].produced + lineFPY[l].defective)) * 100) : 100;
-              if (f < worstFPY) { worstFPY = f; worstLine = l; }
+              if (r.fpy !== null && r.fpy < worstFpy) worstFpy = r.fpy;
             });
             var avgFPY = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
-            var belowThreshold = fpyRows.filter(function(r) { return r.fpy < 90; }).length;
+            var belowThreshold = fpyRows.filter(function(r) { return r.fpy !== null && r.fpy < 90; }).length;
 
             document.getElementById('master-kpi-prod').innerText = avgFPY.toFixed(1) + '%';
-            document.getElementById('master-kpi-target').innerText = worstFPY.toFixed(1) + '%';
+            document.getElementById('master-kpi-prod').className = 'text-3xl font-black ' + (avgFPY >= 95 ? 'text-emerald-600' : avgFPY >= 90 ? 'text-amber-600' : 'text-red-500');
+            document.getElementById('master-kpi-target').innerText = (fpyRows.some(function(r){return r.fpy !== null;})) ? worstFpy.toFixed(1) + '%' : '—';
+            document.getElementById('master-kpi-target').className = 'text-3xl font-black ' + (worstFpy >= 95 ? 'text-emerald-600' : worstFpy >= 90 ? 'text-amber-600' : 'text-red-500');
             document.getElementById('master-kpi-output').innerText = totalDef.toLocaleString();
             document.getElementById('master-kpi-mp').innerText = belowThreshold;
-            
-            document.getElementById('master-kpi-prod').className = 'text-3xl font-black ' + (avgFPY >= 95 ? 'text-emerald-600' : avgFPY >= 90 ? 'text-amber-600' : 'text-red-500');
-            document.getElementById('master-kpi-target').className = 'text-3xl font-black ' + (worstFPY >= 95 ? 'text-emerald-600' : worstFPY >= 90 ? 'text-amber-600' : 'text-red-500');
-            
-            renderFPYTrend(fpyRows);
+
+            renderDailyFPYTrend(fpyRows);
           });
           return;
         }
@@ -3399,6 +3509,41 @@ let gaugeOptions = {
       });
     }
 
+    function renderDailyFPYTrend(fpyRows) {
+      var chartEl = document.querySelector("#chart-master-trend");
+      if (!chartEl) return;
+      var chartTitle = document.getElementById('chart-master-title');
+      if (chartTitle) chartTitle.innerText = 'Daily First Pass Yield Trend';
+
+      var rows = fpyRows.slice().sort(function(a, b) { return (a.date < b.date) ? -1 : (a.date > b.date ? 1 : 0); });
+      var categories = rows.map(function(r) { return r.date; });
+      var fpyVals = rows.map(function(r) { return r.fpy; });
+      var defVals = rows.map(function(r) { return r.defective; });
+
+      if (window.masterTrendChart) window.masterTrendChart.destroy();
+      window.masterTrendChart = new ApexCharts(chartEl, {
+        series: [
+          { name: 'FPY %', type: 'line', data: fpyVals }
+        ],
+        chart: { type: 'line', height: 350, toolbar: { show: false }, animations: { enabled: false } },
+        stroke: { width: 3, curve: 'smooth' },
+        markers: { size: 5, hover: { size: 7 } },
+        colors: ['#0D5C58'],
+        grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } }, borderColor: '#f1f5f9' },
+        xaxis: { categories: categories, labels: { style: { colors: '#6B7280', fontSize: '10px' } } },
+        yaxis: { min: 0, max: 100, tickAmount: 5, labels: { formatter: function(v) { return v + '%'; }, style: { colors: '#6B7280' } } },
+        annotations: {
+          yaxis: [
+            { y: 90, borderColor: '#F59E0B', strokeDashArray: 4, label: { text: '90%', style: { color: '#F59E0B', background: 'transparent' } } },
+            { y: 95, borderColor: '#10B981', strokeDashArray: 4, label: { text: '95%', style: { color: '#10B981', background: 'transparent' } } }
+          ]
+        },
+        dataLabels: { enabled: true, formatter: function(v) { return v === null || v === undefined ? '' : v + '%'; }, style: { fontSize: '9px', colors: ['#475569'] } },
+        tooltip: { y: { formatter: function(v) { return v === null || v === undefined ? 'No data' : v + '%'; } } }
+      });
+      window.masterTrendChart.render();
+    }
+
     function renderFPYTrend(fpyRows) {
       var chartEl = document.querySelector("#chart-master-trend");
       if (!chartEl) return;
@@ -3596,6 +3741,8 @@ let gaugeOptions = {
 
           // Problem-type Pareto
           renderQualityPareto();
+          // Hourly FPY trend by line
+          renderQualityHourlyTrend();
         });
       });
     }
@@ -3656,6 +3803,59 @@ let gaugeOptions = {
         legend: { show: false }
       });
       window.qualityParetoChart.render();
+    }
+
+    function renderQualityHourlyTrend() {
+      var chartEl = document.getElementById('quality-hourly-trend');
+      if (!chartEl) return;
+      if (!qualityFpyRows || qualityFpyRows.length === 0) {
+        if (window.qualityHourlyChart) { window.qualityHourlyChart.destroy(); window.qualityHourlyChart = null; }
+        return;
+      }
+      var timesSet = {};
+      var lineHours = {};
+      qualityFpyRows.forEach(function(r) {
+        if (!r.time) return;
+        var t = r.time.trim();
+        timesSet[t] = true;
+        if (!lineHours[r.line]) lineHours[r.line] = {};
+        if (!lineHours[r.line][t]) lineHours[r.line][t] = { produced: 0, defective: 0 };
+        lineHours[r.line][t].produced += r.produced;
+        lineHours[r.line][t].defective += r.defective;
+      });
+      var sortedTimes = Object.keys(timesSet).sort(function(a, b) { return a < b ? -1 : 1; });
+
+      var series = Object.keys(lineHours).map(function(line) {
+        var data = sortedTimes.map(function(t) {
+          var c = lineHours[line][t];
+          if (!c || (c.produced + c.defective) === 0) return null;
+          return Math.round((c.produced / (c.produced + c.defective)) * 1000) / 10;
+        });
+        return { name: line, data: data };
+      });
+
+      var colors = ['#0D5C58', '#8B5CF6', '#F59E0B', '#10B981', '#EF4444', '#3B82F6', '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16', '#06B6D4'];
+
+      if (window.qualityHourlyChart) window.qualityHourlyChart.destroy();
+      window.qualityHourlyChart = new ApexCharts(chartEl, {
+        series: series,
+        chart: { type: 'line', height: 280, toolbar: { show: false }, animations: { enabled: false } },
+        stroke: { width: 2.5, curve: 'smooth' },
+        markers: { size: 4 },
+        colors: colors,
+        grid: { borderColor: '#f1f5f9' },
+        xaxis: { categories: sortedTimes, labels: { style: { fontSize: '9px' } } },
+        yaxis: { min: 0, max: 100, tickAmount: 5, labels: { formatter: function(v) { return v + '%'; }, style: { fontSize: '9px' } } },
+        annotations: {
+          yaxis: [
+            { y: 90, borderColor: '#F59E0B', strokeDashArray: 4, label: { text: '90%', style: { color: '#F59E0B', background: 'transparent' } } },
+            { y: 95, borderColor: '#10B981', strokeDashArray: 4, label: { text: '95%', style: { color: '#10B981', background: 'transparent' } } }
+          ]
+        },
+        tooltip: { y: { formatter: function(v) { return v === null ? 'No data' : v + '%'; } } },
+        legend: { position: 'bottom', fontSize: '10px' }
+      });
+      window.qualityHourlyChart.render();
     }
 
     // ===================== END FPY FUNCTIONS =====================
