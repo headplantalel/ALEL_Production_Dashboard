@@ -2308,14 +2308,14 @@ if(fpSummary) fpSummary.destroy();
           let tipAttr = tooltipText ? ' tooltip-holder" data-tip="' + tooltipText + '"' : '';
           let totalQty = qtyArr.reduce(function(a, b) { return a + b; }, 0);
           wrapper.innerHTML = `
-            <div class="border-b border-gray-100 pb-1.5 mb-0 shrink-0 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+            <div class="border-b border-gray-100 pb-1.5 mb-0 shrink-0 flex items-start justify-between gap-2">
               <div class="min-w-0 flex-1${tipAttr}">
                 <h3 class="text-sm font-black text-gray-800 truncate">${lineItemData[key].line}</h3>
-                <p class="text-[10px] font-bold text-enovar uppercase tracking-wider truncate">${lineItemData[key].itemStr}</p>
+                <p class="text-[10px] font-bold text-enovar uppercase tracking-wider leading-tight">${lineItemData[key].itemStr}</p>
               </div>
-              <div class="shrink-0 text-right">
-                <div class="text-base font-black text-enovar leading-none">${totalQty.toLocaleString()}</div>
-                <div class="text-[8px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">${t('total_production')}</div>
+              <div class="shrink-0 text-right flex flex-col items-end">
+                <span class="text-[8px] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap leading-none">${t('total_production')}</span>
+                <span class="text-sm font-black text-enovar leading-none mt-0.5 whitespace-nowrap">${totalQty.toLocaleString()}</span>
               </div>
             </div>
             <div id="${chartId}" class="w-full mt-0.5" style="height: ${chartHeight}px"></div>
