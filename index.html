@@ -2150,13 +2150,18 @@ if(fpSummary) fpSummary.destroy();
       // TAB 1: LINE GRID (Horizontal Hollow Bars)
       // ==========================================
       if (activeDashTab === 'section') {
+        // Filters not built yet (initial load) — skip until setupDashboardUI runs.
+        var fdEl = document.getElementById('filter-date');
+        var fsEl = document.getElementById('filter-section');
+        if (!fdEl || !fsEl) return;
+
         // Normalize to "MMM dd, yyyy" (Flatpickr uses "M d, Y" without leading zeros)
-        const dateVal = Utilities_formatDateClient(new Date(document.getElementById('filter-date').value));
-        const secVal = document.getElementById('filter-section').value;
+        const dateVal = Utilities_formatDateClient(new Date(fdEl.value));
+        const secVal = fsEl.value;
 
         // FPY metric: hourly first-pass-yield per line/item per hour
         if (currentMetric === 'fpy') {
-          var fpyDateStr = formatEntryDate(new Date(document.getElementById('filter-date').value));
+          var fpyDateStr = formatEntryDate(new Date(fdEl.value));
           callAPI({ action: "getHourlyFPY", date: fpyDateStr }, function(res) {
             sectionFpyRows = (res && res.rows) ? res.rows : [];
             renderSectionFPY(secVal);
