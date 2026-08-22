@@ -1851,7 +1851,6 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           <select id="master-metric-toggle" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
             <option value="productivity">${t('view_productivity')}</option>
             <option value="quantity">${t('view_production')}</option>
-            <option value="quality">${t('view_quality_fpy')}</option>
           </select>
           <select id="filter-pg-master" onchange="this.classList.toggle('text-enovar', this.value !== 'all'); this.classList.toggle('border-enovar', this.value !== 'all'); updateMasterDropdowns();" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm transition-colors">
             <option value="all">${t('all_pgs')}</option>
@@ -2844,8 +2843,8 @@ let gaugeOptions = {
         window.summaryDonutChart = new ApexCharts(document.querySelector("#chart-summary-donut"), donutOptions);
         window.summaryDonutChart.render();
 
-        // --- 7. UPDATE FPY KPI CARD ON SUMMARY ---
-        fetchFPYData(function(fpyRows) { renderFPYKPI(fpyRows); });
+        // --- 7. UPDATE FPY KPI CARD ON SUMMARY (hourly FPY) ---
+        renderSummaryFPY();
       }
 
     }
@@ -3453,6 +3452,52 @@ let gaugeOptions = {
       d.setDate(d.getDate() + (dayOffset || 0));
       var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       return ('0' + d.getDate()).slice(-2) + '-' + months[d.getMonth()] + '-' + d.getFullYear();
+    }
+
+    function formatEntryDate(d) {
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return ('0' + d.getDate()).slice(-2) + '-' + months[d.getMonth()] + '-' + d.getFullYear();
+    }
+
+    function renderSummaryFPY() {
+      var kpiEl = document.getElementById('summary-kpi-fpy');
+      var trendEl = document.getElementById('trend-fpy');
+      if (!kpiEl) return;
+      var dateVal = document.getElementById('filter-date-summary');
+      if (!dateVal || !dateVal.value) { kpiEl.innerText = '—'; if (trendEl) trendEl.innerHTML = ''; return; }
+      var d = new Date(dateVal.value);
+      if (isNaN(d.getTime())) { kpiEl.innerText = '—'; if (trendEl) trendEl.innerHTML = ''; return; }
+      var dateStr = formatEntryDate(d);
+      var y = new Date(d); y.setDate(y.getDate() - 1);
+      var yStr = formatEntryDate(y);
+
+      callAPI({ action: "getHourlyFPY", date: dateStr }, function(res) {
+        var rows = (res && res.rows) ? res.rows : [];
+        var totalProd = 0, totalDef = 0;
+        rows.forEach(function(r) { totalProd += r.produced; totalDef += r.defective; });
+        if (rows.length === 0) {
+          kpiEl.innerText = '—';
+          kpiEl.className = 'text-2xl sm:text-3xl font-black text-slate-400 leading-none';
+          if (trendEl) trendEl.innerHTML = '';
+          return;
+        }
+        var fpy = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
+        var color = fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500';
+        kpiEl.innerText = fpy.toFixed(1) + '%';
+        kpiEl.className = 'text-2xl sm:text-3xl font-black ' + color + ' leading-none';
+
+        callAPI({ action: "getHourlyFPY", date: yStr }, function(yres) {
+          var yrows = (yres && yres.rows) ? yres.rows : [];
+          if (yrows.length === 0) { if (trendEl) trendEl.innerHTML = '<span class="text-gray-400">No prior data</span>'; return; }
+          var yProd = 0, yDef = 0;
+          yrows.forEach(function(r) { yProd += r.produced; yDef += r.defective; });
+          var yFPY = (yProd + yDef) > 0 ? ((yProd / (yProd + yDef)) * 100) : 0;
+          var delta = fpy - yFPY;
+          var deltaColor = delta >= 0 ? 'text-emerald-500' : 'text-red-500';
+          var arrow = delta >= 0 ? '↑' : '↓';
+          if (trendEl) trendEl.innerHTML = '<span class="' + deltaColor + '">' + arrow + ' ' + Math.abs(delta).toFixed(1) + '% vs yesterday</span>';
+        });
+      });
     }
 
     function renderQualityDashboard() {
