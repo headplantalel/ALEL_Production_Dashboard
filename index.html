@@ -874,12 +874,12 @@
               </div>
            </div>
 
-           <!-- Hourly FPY Trend (per line over hours) -->
+           <!-- Defect RCA — Top Issues (item + top problem type) -->
            <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white shrink-0">
               <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md flex items-center justify-between">
-                 <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Hourly FPY Trend by Line</h3>
+                 <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Defect RCA — Top Issues</h3>
               </div>
-              <div id="quality-hourly-trend" class="w-full p-2 sm:p-3" style="height: 280px"></div>
+              <div id="quality-rca-list" class="p-2 sm:p-3 space-y-2 max-h-[280px] overflow-y-auto"></div>
            </div>
 
 
@@ -3847,8 +3847,8 @@ let gaugeOptions = {
 
           // Problem-type Pareto
           renderQualityPareto();
-          // Hourly FPY trend by line
-          renderQualityHourlyTrend();
+          // RCA — top defect items with their top problem type
+          renderQualityRCA();
     }
 
     function renderQualityPareto() {
@@ -3909,57 +3909,58 @@ let gaugeOptions = {
       window.qualityParetoChart.render();
     }
 
-    function renderQualityHourlyTrend() {
-      var chartEl = document.getElementById('quality-hourly-trend');
-      if (!chartEl) return;
-      if (!qualityFpyRows || qualityFpyRows.length === 0) {
-        if (window.qualityHourlyChart) { window.qualityHourlyChart.destroy(); window.qualityHourlyChart = null; }
+    function renderQualityRCA() {
+      var list = document.getElementById('quality-rca-list');
+      if (!list) return;
+      list.innerHTML = '';
+      if (!qualityDefectRows || qualityDefectRows.length === 0) {
+        list.innerHTML = '<p class="text-gray-400 text-xs text-center py-6">No defects recorded for this date — nothing to analyse yet.</p>';
         return;
       }
-      var timesSet = {};
-      var lineHours = {};
-      qualityFpyRows.forEach(function(r) {
-        if (!r.time) return;
-        var t = r.time.trim();
-        timesSet[t] = true;
-        if (!lineHours[r.line]) lineHours[r.line] = {};
-        if (!lineHours[r.line][t]) lineHours[r.line][t] = { produced: 0, defective: 0 };
-        lineHours[r.line][t].produced += r.produced;
-        lineHours[r.line][t].defective += r.defective;
-      });
-      var sortedTimes = Object.keys(timesSet).sort(function(a, b) { return a < b ? -1 : 1; });
 
-      var series = Object.keys(lineHours).map(function(line) {
-        var data = sortedTimes.map(function(t) {
-          var c = lineHours[line][t];
-          if (!c || (c.produced + c.defective) === 0) return null;
-          return Math.round((c.produced / (c.produced + c.defective)) * 1000) / 10;
-        });
-        return { name: line, data: data };
+      // Group defects by item + line, track problem types
+      var groups = {};
+      qualityDefectRows.forEach(function(d) {
+        var key = d.item + '::' + d.line;
+        if (!groups[key]) groups[key] = { item: d.item, line: d.line, defective: 0, types: {} };
+        groups[key].defective += Number(d.defectiveQty) || 0;
+        var t = d.problemType || 'Others';
+        groups[key].types[t] = (groups[key].types[t] || 0) + (Number(d.defectiveQty) || 0);
       });
 
-      var colors = ['#0D5C58', '#8B5CF6', '#F59E0B', '#10B981', '#EF4444', '#3B82F6', '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16', '#06B6D4'];
-
-      if (window.qualityHourlyChart) window.qualityHourlyChart.destroy();
-      window.qualityHourlyChart = new ApexCharts(chartEl, {
-        series: series,
-        chart: { type: 'line', height: 280, toolbar: { show: false }, animations: { enabled: false } },
-        stroke: { width: 2.5, curve: 'smooth' },
-        markers: { size: 4 },
-        colors: colors,
-        grid: { borderColor: '#f1f5f9' },
-        xaxis: { categories: sortedTimes, labels: { style: { fontSize: '9px' } } },
-        yaxis: { min: 0, max: 100, tickAmount: 5, labels: { formatter: function(v) { return v + '%'; }, style: { fontSize: '9px' } } },
-        annotations: {
-          yaxis: [
-            { y: 90, borderColor: '#F59E0B', strokeDashArray: 4, label: { text: '90%', style: { color: '#F59E0B', background: 'transparent' } } },
-            { y: 95, borderColor: '#10B981', strokeDashArray: 4, label: { text: '95%', style: { color: '#10B981', background: 'transparent' } } }
-          ]
-        },
-        tooltip: { y: { formatter: function(v) { return v === null ? 'No data' : v + '%'; } } },
-        legend: { position: 'bottom', fontSize: '10px' }
+      // Produced per item+line (for FPY context)
+      var prodMap = {};
+      (qualityFpyRows || []).forEach(function(r) {
+        var key = r.item + '::' + r.line;
+        prodMap[key] = (prodMap[key] || 0) + r.produced;
       });
-      window.qualityHourlyChart.render();
+
+      var arr = Object.keys(groups).map(function(k) {
+        var g = groups[k];
+        var produced = prodMap[k] || 0;
+        var topType = '', topQty = 0;
+        Object.keys(g.types).forEach(function(t) { if (g.types[t] > topQty) { topQty = g.types[t]; topType = t; } });
+        var fpy = (produced + g.defective) > 0 ? Math.round((produced / (produced + g.defective)) * 1000) / 10 : null;
+        return { item: g.item, line: g.line, defective: g.defective, topType: topType, topQty: topQty, fpy: fpy };
+      });
+      arr.sort(function(a, b) { return b.defective - a.defective; });
+
+      arr.slice(0, 6).forEach(function(r, i) {
+        var fpyTxt = r.fpy === null ? '—' : r.fpy + '%';
+        var fpyColor = r.fpy === null ? 'text-slate-400' : r.fpy >= 95 ? 'text-emerald-600' : r.fpy >= 90 ? 'text-amber-600' : 'text-red-500';
+        list.innerHTML += '<div class="flex items-center gap-2.5 bg-white/40 rounded-xl p-2.5 border border-white/60">' +
+          '<span class="text-[11px] font-black text-slate-300 w-4 text-center shrink-0">' + (i + 1) + '</span>' +
+          '<div class="flex-1 min-w-0">' +
+            '<div class="font-bold text-slate-700 text-[11px] truncate">' + r.item + '</div>' +
+            '<div class="text-[9px] text-slate-500 truncate">' + r.line + '</div>' +
+            '<div class="text-[10px] text-purple-700 font-semibold mt-0.5 truncate">' + r.topType + ' · ' + r.topQty + ' pcs</div>' +
+          '</div>' +
+          '<div class="text-right shrink-0">' +
+            '<div class="text-sm font-black text-red-500 leading-none">' + r.defective + '</div>' +
+            '<div class="text-[9px] font-bold ' + fpyColor + ' mt-0.5">' + fpyTxt + '</div>' +
+          '</div>' +
+        '</div>';
+      });
     }
 
     // ===================== END FPY FUNCTIONS =====================
