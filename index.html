@@ -1323,6 +1323,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         save_fpy_confirm_title: "Save FPY", save_fpy_confirm_msg: "Save all First Pass Yield entries?",
         confirm_defect_submit: "Submit this defect entry?", submit_defect: "Submit Defect",
         defect_types: "Defect Types (qty per type)", add_defect_type: "+ Add defect type",
+        defect_qty_required: "Please enter a quantity for every selected problem type.",
         avg_daily_manpower: "Avg. Daily Manpower", average_fpy: "Average FPY", worst_fpy: "Worst FPY", total_defectives: "Total Defectives", items_tracked: "Items Tracked", below_threshold: "Below Threshold",
         all_sections: "All Sections", view_productivity: "View: Productivity", view_production_qty: "View: Production Qty", view_fpy: "View: FPY %", filter_charts: "Filter Charts",
         daily_view: "Daily View", monthly_view: "Monthly View", view_production: "View: Production", view_quality_fpy: "View: Quality / FPY", all_pgs: "All PGs",
@@ -1360,6 +1361,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         save_fpy_confirm_title: "FPY সংরক্ষণ করুন", save_fpy_confirm_msg: "সব FPY এন্ট্রি সংরক্ষণ করবেন?",
         confirm_defect_submit: "এই ত্রুটি এন্ট্রি জমা দেবেন?", submit_defect: "ত্রুটি জমা দিন",
         defect_types: "ত্রুটির ধরন (প্রতি ধরনের পরিমাণ)", add_defect_type: "+ ত্রুটির ধরন যোগ করুন",
+        defect_qty_required: "প্রতিটি নির্বাচিত ত্রুটির ধরনের জন্য পরিমাণ দিন।",
         avg_daily_manpower: "গড় দৈনিক ম্যানপাওয়ার", average_fpy: "গড় FPY", worst_fpy: "সর্বনিম্ন FPY", total_defectives: "মোট ত্রুটিপূর্ণ", items_tracked: "ট্র্যাক করা আইটেম", below_threshold: "থ্রেশহোল্ডের নিচে",
         all_sections: "সব সেকশন", view_productivity: "দেখুন: উৎপাদনশীলতা", view_production_qty: "দেখুন: উৎপাদনের পরিমাণ", view_fpy: "দেখুন: FPY %", filter_charts: "চার্ট ফিল্টার করুন",
         daily_view: "দৈনিক ভিউ", monthly_view: "মাসিক ভিউ", view_production: "দেখুন: উৎপাদন", view_quality_fpy: "দেখুন: কোয়ালিটি / FPY", all_pgs: "সব PG",
@@ -1572,11 +1574,19 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
 
       var defects = [];
       var qtyInputs = document.querySelectorAll('#defect-type-rows .def-qty-input');
+      var missingQty = false;
       defTypeSelects.forEach(function(ts, i) {
         var type = ts.getValue();
         var qty = parseFloat(qtyInputs[i] ? qtyInputs[i].value : '');
-        if (type && qty > 0) defects.push({ problemType: type, defectiveQty: qty });
+        if (type && !(qty > 0)) {
+          missingQty = true;
+          if (qtyInputs[i]) qtyInputs[i].classList.add('ring-2', 'ring-red-400');
+        } else {
+          if (qtyInputs[i]) qtyInputs[i].classList.remove('ring-2', 'ring-red-400');
+          if (type && qty > 0) defects.push({ problemType: type, defectiveQty: qty });
+        }
       });
+      if (missingQty) { showToast(t('defect_qty_required'), "error"); return; }
       if (defects.length === 0) { showToast(t('complete_dropdowns'), "error"); return; }
 
       var pg = currentDefectPg();
