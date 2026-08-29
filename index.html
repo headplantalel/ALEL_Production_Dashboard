@@ -555,6 +555,7 @@
         <div id="defect-type-rows" class="space-y-2"></div>
         <button type="button" onclick="addDefectRow()" data-i18n="add_defect_type" class="mt-2 text-[11px] font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg border border-purple-200 transition-colors">+ Add defect type</button>
         <datalist id="defect-types-datalist"></datalist>
+        <div class="mt-2 text-xs font-bold text-slate-700">Total Defective: <span id="defect-total" class="text-red-500 text-sm">0</span></div>
       </div>
 
       <div>
@@ -984,14 +985,9 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     let masterTrendChart = null;
     let execMonthlyChart = null;
     let aiChatHistory = []; // NEW: Array to store the conversation
-    let fpyDataCache = []; 
-    let fpQuality = null; 
-    let fpyEntryRows = []; 
-    let defectTypesCache = {};   // {section: [problem types]}
+    let defectTypesCache = {};   // {code: [problem types]}
     let defectRowsCache = [];    // today's/yesterday's defect entries
-    let qualityWatchChart = null;
-    let qualityParetoDim = 'item';   // 'item' | 'line' — Pareto dimension
-    let qualityFpyRows = [];          // cached FPY rows for the Quality tab (used by the Pareto toggle)
+    let qualityFpyRows = [];          // cached FPY rows for the Quality tab
     let qualityDefectRows = [];       // cached defect rows for the Quality tab (problem-type Pareto)
     let sectionFpyRows = [];          // hourly FPY rows for Daily Status FPY metric
     let defectCache = [];             // all recent defect entries (date, line, itemCode, item, time, problemType, defectiveQty)
@@ -1468,7 +1464,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       (data.times || []).forEach(function(t) { timeSelect.add(new Option(t, t)); });
 
       callAPI({ action: "getDefectTypes" }, function(dt) {
-        defectTypesCache = (dt && dt.byPg) ? dt.byPg : {};
+        defectTypesCache = (dt && dt.byCode) ? dt.byCode : {};
         updateDefectTypes();
         addDefectRow();
       });
@@ -1494,9 +1490,15 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       return (item && masterAuthData && masterAuthData.itemPgs) ? (masterAuthData.itemPgs[item] || '') : '';
     }
 
+    function currentDefectCode() {
+      var itemSel = document.getElementById('def-item');
+      var item = itemSel ? itemSel.value : '';
+      return (item && masterAuthData && masterAuthData.itemDefectCodes) ? (masterAuthData.itemDefectCodes[item] || '') : '';
+    }
+
     function updateDefectTypes() {
-      var pg = currentDefectPg();
-      var types = pg ? (defectTypesCache[pg] || []) : [];
+      var code = currentDefectCode();
+      var types = code ? (defectTypesCache[code] || []) : [];
       var dl = document.getElementById('defect-types-datalist');
       if (dl) {
         dl.innerHTML = '';
@@ -1515,10 +1517,21 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       row.className = 'def-type-row flex items-center gap-2';
       row.innerHTML = `
         <input class="def-type-input flex-1 min-w-0 p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none bg-white/80 focus:bg-white text-sm" list="defect-types-datalist" placeholder="Search problem type…">
-        <input type="number" min="1" class="def-qty-input w-20 p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none bg-white/80 focus:bg-white text-sm" placeholder="Qty">
+        <input type="number" min="1" oninput="updateDefectTotal()" class="def-qty-input w-20 p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none bg-white/80 focus:bg-white text-sm" placeholder="Qty">
         <button type="button" onclick="removeDefectRow(this)" class="shrink-0 w-8 h-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 font-bold text-sm">✕</button>
       `;
       rows.appendChild(row);
+      updateDefectTotal();
+    }
+
+    function updateDefectTotal() {
+      var total = 0;
+      document.querySelectorAll('#defect-type-rows .def-qty-input').forEach(function(inp) {
+        var q = parseFloat(inp.value);
+        if (q > 0) total += q;
+      });
+      var el = document.getElementById('defect-total');
+      if (el) el.innerText = total;
     }
 
     function removeDefectRow(btn) {
@@ -1528,9 +1541,11 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       if (rows.children.length <= 1) {
         row.querySelector('.def-type-input').value = '';
         row.querySelector('.def-qty-input').value = '';
+        updateDefectTotal();
         return;
       }
       row.remove();
+      updateDefectTotal();
     }
 
     function submitDefectForm(e) {
@@ -3322,284 +3337,6 @@ let gaugeOptions = {
       URL.revokeObjectURL(url);
     }
 
-    // ===================== FPY / QUALITY FUNCTIONS =====================
-
-    function fetchFPYData(callback) {
-      var d = document.getElementById('filter-date-summary');
-      var startDate = d && d.value ? d.value : null;
-      callAPI({ action: "getFPYData", startDate: startDate, endDate: startDate }, function(data) {
-        if (data && data.rows) fpyDataCache = data.rows;
-        else fpyDataCache = [];
-        if (callback) callback(fpyDataCache);
-      });
-    }
-
-    function loadQualityEntry(dateStr) {
-      document.getElementById('fpy-entry-loader').classList.remove('hidden');
-      document.getElementById('fpy-entry-table-wrap').style.display = 'none';
-      document.getElementById('fpy-entry-cards').style.display = 'none';
-      document.getElementById('fpy-entry-empty').classList.add('hidden');
-
-      callAPI({ action: "getDailyProductionForFPY", date: dateStr }, function(prodData) {
-        if (!prodData || !prodData.rows || prodData.rows.length === 0) {
-          document.getElementById('fpy-entry-loader').classList.add('hidden');
-          document.getElementById('fpy-entry-empty').classList.remove('hidden');
-          fpyEntryRows = [];
-          return;
-        }
-
-        callAPI({ action: "getFPYData", startDate: dateStr, endDate: dateStr }, function(fpyData) {
-          document.getElementById('fpy-entry-loader').classList.add('hidden');
-          var existingMap = {};
-          if (fpyData && fpyData.rows) {
-            fpyData.rows.forEach(function(r) {
-              var key = r.itemCode + '|' + r.line;
-              existingMap[key] = r;
-            });
-          }
-          fpyEntryRows = prodData.rows.map(function(p) {
-            var key = p.itemCode + '|' + p.line;
-            var existing = existingMap[key] || null;
-            return {
-              itemCode: p.itemCode,
-              item: p.item,
-              line: p.line,
-              produced: p.produced,
-              defective: existing ? existing.defective : '',
-              saved: !!existing
-            };
-          });
-          document.getElementById('fpy-entry-table-wrap').style.display = '';
-          document.getElementById('fpy-entry-cards').style.display = '';
-          renderFpyEntryGrid();
-        });
-      });
-    }
-
-    function renderFpyEntryGrid() {
-      var tableBody = document.getElementById('fpy-entry-table');
-      var cardsDiv = document.getElementById('fpy-entry-cards');
-      tableBody.innerHTML = '';
-      cardsDiv.innerHTML = '';
-
-      function getFPYColor(fpy) {
-        if (fpy >= 95) return 'text-emerald-600';
-        if (fpy >= 90) return 'text-amber-600';
-        return 'text-red-500';
-      }
-
-      fpyEntryRows.forEach(function(r, i) {
-        var defVal = parseFloat(r.defective) || 0;
-        var fpy = (r.produced + defVal) > 0 ? ((r.produced / (r.produced + defVal)) * 100) : 0;
-        var fpyColor = r.defective !== '' && r.defective !== null ? getFPYColor(fpy) : 'text-gray-400';
-
-        // Desktop table row
-        tableBody.innerHTML += '<tr class="hover:bg-white/40 transition-colors border-b border-white/50">' +
-          '<td class="p-3 pl-4 font-bold text-slate-800">' + r.item + '</td>' +
-          '<td class="p-3 font-medium text-slate-600">' + r.line + '</td>' +
-          '<td class="p-3 text-center font-bold text-slate-700">' + r.produced.toLocaleString() + '</td>' +
-          '<td class="p-3 text-center"><input type="number" inputmode="decimal" min="0" max="' + r.produced + '" value="' + (r.defective || '') + '" data-idx="' + i + '" class="fpy-def-input w-20 text-center text-xs font-bold border border-gray-300 rounded-lg px-2 py-1.5 outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-300 transition-all" oninput="updateFPYPreview(' + i + ')" placeholder="0"></td>' +
-          '<td class="p-3 text-center"><span id="fpy-preview-' + i + '" class="font-extrabold text-xs ' + fpyColor + '">' + (r.defective !== '' && r.defective !== null ? fpy.toFixed(1) + '%' : '—') + '</span></td>' +
-          '<td class="p-3 pr-4 text-center"><span class="text-[9px] font-bold ' + (r.saved ? 'text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded' : 'text-gray-400') + '">' + (r.saved ? '● Saved' : '○ Pending') + '</span></td>' +
-          '</tr>';
-
-        // Mobile card
-        cardsDiv.innerHTML += '<div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-white/60 shadow-sm">' +
-          '<div class="flex justify-between items-start mb-2"><div><div class="font-extrabold text-slate-800 text-xs">' + r.item + '</div><div class="text-[10px] text-slate-500 font-medium">' + r.line + '</div></div><span class="text-[9px] font-bold ' + (r.saved ? 'text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded' : 'text-gray-400') + '">' + (r.saved ? '● Saved' : '○ Pending') + '</span></div>' +
-          '<div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-bold text-slate-500">Produced:</span><span class="text-[10px] font-extrabold text-slate-800">' + r.produced.toLocaleString() + '</span></div>' +
-          '<div class="flex items-center gap-2"><span class="text-[10px] font-bold text-slate-500">Defective:</span><input type="number" inputmode="decimal" min="0" max="' + r.produced + '" value="' + (r.defective || '') + '" data-idx="' + i + '" class="fpy-def-input flex-1 text-xs font-bold border border-gray-300 rounded-lg px-2 py-2 outline-none focus:border-purple-500 transition-all" oninput="updateFPYPreview(' + i + ')" placeholder="0"><span id="fpy-preview-' + i + '" class="font-extrabold text-xs ' + fpyColor + ' min-w-[45px] text-right">' + (r.defective !== '' && r.defective !== null ? fpy.toFixed(1) + '%' : '—') + '</span></div>' +
-          '</div>';
-      });
-    }
-
-    function updateFPYPreview(idx) {
-      var inputs = document.querySelectorAll('.fpy-def-input[data-idx="' + idx + '"]');
-      var val = inputs.length > 0 ? (parseFloat(inputs[0].value) || 0) : 0;
-      fpyEntryRows[idx].defective = val;
-      var r = fpyEntryRows[idx];
-      var fpy = (r.produced + val) > 0 ? ((r.produced / (r.produced + val)) * 100) : 0;
-      var previews = document.querySelectorAll('#fpy-preview-' + idx);
-      var color = fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500';
-      previews.forEach(function(el) {
-        el.textContent = fpy.toFixed(1) + '%';
-        el.className = 'font-extrabold text-xs ' + color;
-      });
-      r.saved = false;
-      var statusEls = document.querySelectorAll('.fpy-def-input[data-idx="' + idx + '"]');
-      // Update the status badge
-      document.getElementById('fpy-save-status').textContent = 'Unsaved changes';
-    }
-
-    function saveFPY() {
-      openConfirm(t('save_fpy_confirm_title'), t('save_fpy_confirm_msg'), function() {
-        var btn = document.getElementById('fpy-save-btn');
-        var statusEl = document.getElementById('fpy-save-status');
-        btn.disabled = true;
-        btn.innerText = 'Saving…';
-        statusEl.textContent = 'Saving…';
-
-        var dateVal = document.getElementById('fpy-date-picker').value;
-        var entries = fpyEntryRows.map(function(r) {
-          return {
-            date: dateVal,
-            itemCode: r.itemCode,
-            item: r.item,
-            line: r.line,
-            produced: r.produced,
-            defective: parseFloat(r.defective) || 0
-          };
-        });
-
-        callAPI({ action: "submitFPYBatch", entries: entries, email: currentUser.email }, function(res) {
-          btn.disabled = false;
-          btn.innerText = 'Save All FPY';
-          if (res.status === 'Success') {
-            statusEl.textContent = 'Last saved: ' + new Date().toLocaleTimeString();
-            fpyEntryRows.forEach(function(r) { r.saved = true; });
-            renderFpyEntryGrid();
-            fetchFPYData(function() { renderDashboard(); });
-            fpyDataCache = [];
-            fetchFPYData(renderFpyHistory);
-            showToast(t('data_logged'), "success");
-          } else {
-            statusEl.textContent = 'Error: ' + (res.error || 'Unknown');
-            showToast(t('submission_failed') + ": " + (res.error || 'Unknown'), "error");
-          }
-        });
-      });
-    }
-
-    function renderFpyHistory(fpyRows) {
-      fpyDataCache = fpyRows || fpyDataCache;
-      var body = document.getElementById('fpy-history-body');
-      if (!body) return;
-      body.innerHTML = '';
-      var sorted = fpyDataCache.slice().sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
-      var shown = sorted.slice(0, 30);
-      shown.forEach(function(r) {
-        var fpyColor = r.fpy >= 95 ? 'text-emerald-600' : r.fpy >= 90 ? 'text-amber-600' : 'text-red-500';
-        body.innerHTML += '<tr class="hover:bg-white/40 transition-colors border-b border-white/50">' +
-          '<td class="p-2 pl-3 font-medium text-slate-600">' + (r.date || '') + '</td>' +
-          '<td class="p-2 font-medium text-slate-700">' + (r.item || '') + '</td>' +
-          '<td class="p-2 text-slate-600">' + (r.line || '') + '</td>' +
-          '<td class="p-2 text-center font-extrabold ' + fpyColor + '">' + r.fpy.toFixed(1) + '%</td>' +
-          '</tr>';
-      });
-      if (shown.length === 0) body.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-400">No quality data recorded yet.</td></tr>';
-    }
-
-    function renderFPYKPI(fpyRows) {
-      var kpiEl = document.getElementById('summary-kpi-fpy');
-      var trendEl = document.getElementById('trend-fpy');
-      if (!kpiEl) return;
-
-      var todayRows = [];
-      var dateVal = document.getElementById('filter-date-summary');
-      var todayStr = dateVal ? dateVal.value : '';
-      fpyRows.forEach(function(r) {
-        if (r.date === todayStr || (dateVal && r.date && r.date.indexOf(todayStr) >= 0)) todayRows.push(r);
-      });
-
-      if (todayRows.length === 0) {
-        kpiEl.innerText = '—';
-        kpiEl.className = 'text-2xl sm:text-3xl font-black text-slate-400 leading-none';
-        trendEl.innerHTML = '';
-        return;
-      }
-
-      var totalProd = 0, totalDef = 0;
-      todayRows.forEach(function(r) { totalProd += r.produced; totalDef += r.defective; });
-      var fpy = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
-      var color = fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500';
-      kpiEl.innerText = fpy.toFixed(1) + '%';
-      kpiEl.className = 'text-2xl sm:text-3xl font-black ' + color + ' leading-none';
-
-      // Simple delta vs yesterday
-      var yesterdayDate = new Date(dateVal.value);
-      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-      var yesterdayStr = yesterdayDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      var yesterdayRows = fpyRows.filter(function(r) { return r.date && r.date.indexOf(yesterdayStr) >= 0; });
-      if (yesterdayRows.length > 0) {
-        var yProd = 0, yDef = 0;
-        yesterdayRows.forEach(function(r) { yProd += r.produced; yDef += r.defective; });
-        var yFPY = (yProd + yDef) > 0 ? ((yProd / (yProd + yDef)) * 100) : 0;
-        var delta = fpy - yFPY;
-        var deltaColor = delta >= 0 ? 'text-emerald-500' : 'text-red-500';
-        var arrow = delta >= 0 ? '↑' : '↓';
-        trendEl.innerHTML = '<span class="' + deltaColor + '">' + arrow + ' ' + Math.abs(delta).toFixed(1) + '% vs yesterday</span>';
-      } else {
-        trendEl.innerHTML = '<span class="text-gray-400">No prior data</span>';
-      }
-    }
-
-    function renderFPYGauges(fpyRows) {
-      var container = document.getElementById('fpy-gauge-row');
-      if (!container) return;
-
-      var dateVal = document.getElementById('filter-date-summary');
-      var todayStr = dateVal ? dateVal.value : '';
-      var todayRows = fpyRows.filter(function(r) { return r.date === todayStr || (dateVal && r.date && r.date.indexOf(todayStr) >= 0); });
-
-      if (todayRows.length === 0) {
-        container.innerHTML = '<div class="text-gray-400 text-xs py-6 text-center w-full">No FPY data for this date — QA entry pending.</div>';
-        return;
-      }
-
-      // Group by line and compute FPY
-      var lineFPY = {};
-      todayRows.forEach(function(r) {
-        var key = r.line;
-        if (!lineFPY[key]) lineFPY[key] = { line: key, produced: 0, defective: 0 };
-        lineFPY[key].produced += r.produced;
-        lineFPY[key].defective += r.defective;
-      });
-
-      var lines = Object.values(lineFPY);
-      if (lines.length === 0) {
-        container.innerHTML = '<div class="text-gray-400 text-xs py-6 text-center w-full">No FPY data for this date.</div>';
-        return;
-      }
-
-      container.innerHTML = '';
-      lines.forEach(function(l) {
-        var fpy = (l.produced + l.defective) > 0 ? ((l.produced / (l.produced + l.defective)) * 100) : 0;
-        var color = fpy >= 95 ? '#10B981' : fpy >= 90 ? '#F59E0B' : '#EF4444';
-        var circumference = 2 * Math.PI * 15.5;
-        var offset = circumference - (Math.min(fpy, 100) / 100) * circumference;
-
-        container.innerHTML += '<div class="flex-shrink-0 bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-white/60 flex flex-col items-center gap-1 min-w-[110px]">' +
-          '<svg viewBox="0 0 36 36" class="w-16 h-16"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circumference + '" stroke-dashoffset="' + offset + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[11px]" font-weight="800" fill="#374151">' + fpy.toFixed(1) + '%</text></svg>' +
-          '<div class="font-extrabold text-[10px] text-slate-700 text-center leading-tight">' + l.line + '</div>' +
-          '<div class="text-[9px] font-medium ' + (fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500') + '">' + l.defective + ' defective</div>' +
-          '</div>';
-      });
-    }
-
-    function renderFPYScorecard(fpyRows) {
-      var container = document.getElementById('fpy-scorecard');
-      if (!container) return;
-
-      var dateVal = document.getElementById('filter-date-summary');
-      var todayStr = dateVal ? dateVal.value : '';
-      var todayRows = fpyRows.filter(function(r) { return r.date === todayStr || (dateVal && r.date && r.date.indexOf(todayStr) >= 0); });
-
-      if (todayRows.length === 0) {
-        container.innerHTML = '<div class="text-gray-400 text-xs text-center py-4">No FPY data for this date.</div>';
-        return;
-      }
-
-      var sorted = todayRows.slice().sort(function(a, b) { return a.fpy - b.fpy; });
-      container.innerHTML = '';
-      sorted.forEach(function(r) {
-        var borderColor = r.fpy >= 95 ? 'border-l-emerald-500' : r.fpy >= 90 ? 'border-l-amber-500' : 'border-l-red-500';
-        var textColor = r.fpy >= 95 ? 'text-emerald-600' : r.fpy >= 90 ? 'text-amber-600' : 'text-red-500';
-        container.innerHTML += '<div class="border-l-4 ' + borderColor + ' bg-white/40 pl-2.5 py-1.5 rounded-r-lg">' +
-          '<div class="flex justify-between items-center"><span class="font-bold text-slate-700 truncate">' + r.item + '</span><span class="font-extrabold ' + textColor + ' ml-1 shrink-0">' + r.fpy.toFixed(1) + '%</span></div>' +
-          '<div class="flex gap-2 text-[9px] text-slate-500"><span>' + r.line + '</span><span>Def: ' + r.defective + '</span></div>' +
-          '</div>';
-      });
-    }
-
     function renderMasterFPY(fpyRows) {
       setMasterKpiLabels('quality');
       if (fpyRows.length === 0) {
@@ -3663,54 +3400,6 @@ let gaugeOptions = {
         dataLabels: { enabled: true, formatter: function(v) { return v === null || v === undefined ? '' : v + '%'; }, style: { fontSize: '9px', colors: ['#475569'] } },
         tooltip: { y: { formatter: function(v) { return v === null || v === undefined ? 'No data' : v + '%'; } } }
       });
-      window.masterTrendChart.render();
-    }
-
-    function renderFPYTrend(fpyRows) {
-      var chartEl = document.querySelector("#chart-master-trend");
-      if (!chartEl) return;
-
-      var chartTitle = document.getElementById('chart-master-title');
-      if (chartTitle) chartTitle.innerText = 'FPY Quality Trend';
-
-      // Group by date for trend
-      var dateMap = {};
-      fpyRows.forEach(function(r) {
-        var d = r.date || '';
-        if (!dateMap[d]) dateMap[d] = { date: d, produced: 0, defective: 0, lines: {} };
-        dateMap[d].produced += r.produced;
-        dateMap[d].defective += r.defective;
-        if (!dateMap[d].lines[r.line]) dateMap[d].lines[r.line] = { produced: 0, defective: 0 };
-        dateMap[d].lines[r.line].produced += r.produced;
-        dateMap[d].lines[r.line].defective += r.defective;
-      });
-
-      var dates = Object.keys(dateMap).sort();
-      var fpyValues = dates.map(function(d) {
-        var dm = dateMap[d];
-          return (dm.produced + dm.defective) > 0 ? ((dm.produced / (dm.produced + dm.defective)) * 100) : null;
-      });
-
-      if (window.masterTrendChart) window.masterTrendChart.destroy();
-
-      var options = {
-        series: [{ name: 'FPY %', data: fpyValues }],
-        chart: { type: 'line', height: 350, toolbar: { show: true }, animations: { enabled: false } },
-        stroke: { width: 3, curve: 'smooth' },
-        markers: { size: 4 },
-        colors: ['#8B5CF6'],
-        xaxis: { categories: dates, labels: { style: { fontSize: '10px' } } },
-        yaxis: { min: 0, max: 100, tickAmount: 5, labels: { formatter: function(v) { return v + '%'; } } },
-        annotations: {
-          yaxis: [
-            { y: 90, borderColor: '#F59E0B', borderWidth: 1, opacity: 0.5, label: { text: 'Warning 90%', style: { fontSize: '9px', color: '#F59E0B' } } },
-            { y: 95, borderColor: '#10B981', borderWidth: 1, opacity: 0.3, label: { text: 'Target 95%', style: { fontSize: '9px', color: '#10B981' } } }
-          ]
-        },
-        tooltip: { y: { formatter: function(v) { return v ? v.toFixed(1) + '%' : 'N/A'; } } }
-      };
-
-      window.masterTrendChart = new ApexCharts(chartEl, options);
       window.masterTrendChart.render();
     }
 
@@ -3830,14 +3519,14 @@ let gaugeOptions = {
         kpiEl.innerText = fpy.toFixed(1) + '%';
         kpiEl.className = 'text-2xl sm:text-3xl font-black ' + color + ' leading-none';
 
-        if (yrows.length === 0) { if (trendEl) trendEl.innerHTML = '<span class="text-gray-400">No prior data</span>'; return; }
+        if (yrows.length === 0) { if (trendEl) trendEl.innerHTML = '<span class="text-gray-400">' + totalDef + ' defective · no prior data</span>'; return; }
         var yProd = 0, yDef = 0;
         yrows.forEach(function(r) { yProd += r.produced; yDef += r.defective; });
         var yFPY = (yProd + yDef) > 0 ? ((yProd / (yProd + yDef)) * 100) : 0;
         var delta = fpy - yFPY;
         var deltaColor = delta >= 0 ? 'text-emerald-500' : 'text-red-500';
         var arrow = delta >= 0 ? '↑' : '↓';
-        if (trendEl) trendEl.innerHTML = '<span class="' + deltaColor + '">' + arrow + ' ' + Math.abs(delta).toFixed(1) + '% vs yesterday</span>';
+        if (trendEl) trendEl.innerHTML = '<span class="' + deltaColor + '">' + arrow + ' ' + Math.abs(delta).toFixed(1) + '% vs yesterday</span> · <span class="text-red-500">' + totalDef + ' defective</span>';
       }
 
       if (isDateInWindow(dateVal.value)) {
@@ -4061,28 +3750,6 @@ let gaugeOptions = {
           '</div>' +
         '</div>';
       });
-    }
-
-    // ===================== END FPY FUNCTIONS =====================
-
-    function setupQualityTab() {
-      // Initialize flatpickr for quality date picker
-      var yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      var defaultDate = yesterday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-      if (fpQuality) fpQuality.destroy();
-      fpQuality = flatpickr("#fpy-date-picker", {
-        defaultDate: defaultDate,
-        altInput: true,
-        altFormat: "F j, Y",
-        dateFormat: "M d, Y",
-        onChange: function(selectedDates, dateStr) { loadQualityEntry(dateStr); }
-      });
-
-      document.getElementById('fpy-date-picker').value = defaultDate;
-      loadQualityEntry(defaultDate);
-      fetchFPYData(renderFpyHistory);
     }
 
     function callAPI(payload, callback) {
