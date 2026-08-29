@@ -554,7 +554,6 @@
         <label data-i18n="defect_types" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Defect Types (qty per type)</label>
         <div id="defect-type-rows" class="space-y-2"></div>
         <button type="button" onclick="addDefectRow()" data-i18n="add_defect_type" class="mt-2 text-[11px] font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg border border-purple-200 transition-colors">+ Add defect type</button>
-        <datalist id="defect-types-datalist"></datalist>
         <div class="mt-2 text-xs font-bold text-slate-700">Total Defective: <span id="defect-total" class="text-red-500 text-sm">0</span></div>
       </div>
 
@@ -987,6 +986,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     let aiChatHistory = []; // NEW: Array to store the conversation
     let defectTypesCache = {};   // {code: [problem types]}
     let defectRowsCache = [];    // today's/yesterday's defect entries
+    let defTypeSelects = [];     // TomSelect instances for the defect-type rows
     let qualityFpyRows = [];          // cached FPY rows for the Quality tab
     let qualityDefectRows = [];       // cached defect rows for the Quality tab (problem-type Pareto)
     let sectionFpyRows = [];          // hourly FPY rows for Daily Status FPY metric
@@ -1465,7 +1465,6 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
 
       callAPI({ action: "getDefectTypes" }, function(dt) {
         defectTypesCache = (dt && dt.byCode) ? dt.byCode : {};
-        updateDefectTypes();
         addDefectRow();
       });
 
@@ -1496,18 +1495,28 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       return (item && masterAuthData && masterAuthData.itemDefectCodes) ? (masterAuthData.itemDefectCodes[item] || '') : '';
     }
 
-    function updateDefectTypes() {
+    function allDefectTypes() {
       var code = currentDefectCode();
-      var types = code ? (defectTypesCache[code] || []) : [];
-      var dl = document.getElementById('defect-types-datalist');
-      if (dl) {
-        dl.innerHTML = '';
-        types.forEach(function(tp) {
-          var opt = document.createElement('option');
-          opt.value = tp;
-          dl.appendChild(opt);
-        });
-      }
+      return code ? (defectTypesCache[code] || []) : [];
+    }
+
+    // Rebuild each row's dropdown options, excluding types already selected in other rows.
+    function refreshDefectTypeOptions() {
+      var all = allDefectTypes();
+      var selected = {};
+      defTypeSelects.forEach(function(ts) { var v = ts.getValue(); if (v) selected[v] = true; });
+      defTypeSelects.forEach(function(ts) {
+        var cur = ts.getValue();
+        var options = all.filter(function(t) { return t === cur || !selected[t]; });
+        ts.clearOptions();
+        options.forEach(function(t) { ts.addOption({ value: t, text: t }); });
+        ts.refreshOptions(false);
+      });
+    }
+
+    function updateDefectTypes() {
+      defTypeSelects.forEach(function(ts) { ts.clear(); });
+      refreshDefectTypeOptions();
     }
 
     function addDefectRow() {
@@ -1516,11 +1525,17 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       var row = document.createElement('div');
       row.className = 'def-type-row flex items-center gap-2';
       row.innerHTML = `
-        <input class="def-type-input flex-1 min-w-0 p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none bg-white/80 focus:bg-white text-sm" list="defect-types-datalist" placeholder="Search problem type…">
+        <select class="def-type-select flex-1 min-w-0" placeholder="Search problem type…"></select>
         <input type="number" min="1" oninput="updateDefectTotal()" class="def-qty-input w-20 p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none bg-white/80 focus:bg-white text-sm" placeholder="Qty">
         <button type="button" onclick="removeDefectRow(this)" class="shrink-0 w-8 h-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 font-bold text-sm">✕</button>
       `;
       rows.appendChild(row);
+      var sel = row.querySelector('.def-type-select');
+      sel.innerHTML = '<option value="">Search problem type…</option>';
+      var ts = new TomSelect(sel, { allowEmptyOption: true, create: false });
+      ts.on('change', function() { refreshDefectTypeOptions(); });
+      defTypeSelects.push(ts);
+      refreshDefectTypeOptions();
       updateDefectTotal();
     }
 
@@ -1538,14 +1553,13 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       var rows = document.getElementById('defect-type-rows');
       var row = btn.closest('.def-type-row');
       if (!row || !rows) return;
-      if (rows.children.length <= 1) {
-        row.querySelector('.def-type-input').value = '';
-        row.querySelector('.def-qty-input').value = '';
-        updateDefectTotal();
-        return;
-      }
+      var idx = Array.prototype.indexOf.call(rows.children, row);
+      var ts = defTypeSelects[idx];
+      if (ts) ts.destroy();
+      defTypeSelects.splice(idx, 1);
       row.remove();
-      updateDefectTotal();
+      if (rows.children.length === 0) { addDefectRow(); }
+      else { refreshDefectTypeOptions(); updateDefectTotal(); }
     }
 
     function submitDefectForm(e) {
@@ -1557,9 +1571,10 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       if (!itemVal || !lineVal || !timeVal) { showToast(t('complete_dropdowns'), "error"); return; }
 
       var defects = [];
-      document.querySelectorAll('#defect-type-rows .def-type-row').forEach(function(row) {
-        var type = row.querySelector('.def-type-input').value.trim();
-        var qty = parseFloat(row.querySelector('.def-qty-input').value);
+      var qtyInputs = document.querySelectorAll('#defect-type-rows .def-qty-input');
+      defTypeSelects.forEach(function(ts, i) {
+        var type = ts.getValue();
+        var qty = parseFloat(qtyInputs[i] ? qtyInputs[i].value : '');
         if (type && qty > 0) defects.push({ problemType: type, defectiveQty: qty });
       });
       if (defects.length === 0) { showToast(t('complete_dropdowns'), "error"); return; }
@@ -1571,6 +1586,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         callAPI({ action: "submitDefectEntry", formData: formData, email: currentUser.email }, function(res) {
           btn.disabled = false; btn.innerText = t('submit_defect');
           if (res && res.status === "Success") {
+            defTypeSelects.forEach(function(ts) { ts.destroy(); });
+            defTypeSelects = [];
             document.getElementById('defect-type-rows').innerHTML = '';
             addDefectRow();
             document.getElementById('def-remarks').value = '';
