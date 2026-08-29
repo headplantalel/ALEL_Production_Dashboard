@@ -535,33 +535,31 @@
 
     <!-- Defect entry form -->
     <form id="defectForm" onsubmit="submitDefectForm(event)" class="space-y-3 mb-5">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
           <label for="def-item" data-i18n="select_item" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Select Item</label>
-          <select id="def-item" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm"></select>
+          <select id="def-item" onchange="updateDefectTypes()" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm"></select>
         </div>
         <div>
           <label for="def-line" data-i18n="line_name" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Line Name</label>
-          <select id="def-line" onchange="updateDefectTypes()" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm"></select>
+          <select id="def-line" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm"></select>
         </div>
         <div>
           <label for="def-time" data-i18n="time_slot" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Time Slot</label>
           <select id="def-time" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm"></select>
         </div>
-        <div>
-          <label for="def-type" data-i18n="problem_type" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Problem Type</label>
-          <select id="def-type" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm"></select>
-        </div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div>
-          <label for="def-qty" data-i18n="defective_qty" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Defective Qty</label>
-          <input type="number" id="def-qty" min="1" required class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm">
-        </div>
-        <div>
-          <label for="def-remarks" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide"><span data-i18n="remarks">Remarks</span> <span data-i18n="optional" class="text-gray-400 font-normal lowercase">(optional)</span></label>
-          <input type="text" id="def-remarks" placeholder="e.g. tooling issue…" class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm">
-        </div>
+
+      <div>
+        <label data-i18n="defect_types" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Defect Types (qty per type)</label>
+        <div id="defect-type-rows" class="space-y-2"></div>
+        <button type="button" onclick="addDefectRow()" data-i18n="add_defect_type" class="mt-2 text-[11px] font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg border border-purple-200 transition-colors">+ Add defect type</button>
+        <datalist id="defect-types-datalist"></datalist>
+      </div>
+
+      <div>
+        <label for="def-remarks" class="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide"><span data-i18n="remarks">Remarks</span> <span data-i18n="optional" class="text-gray-400 font-normal lowercase">(optional)</span></label>
+        <input type="text" id="def-remarks" placeholder="e.g. tooling issue…" class="w-full p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none transition-all bg-white/80 focus:bg-white text-sm">
       </div>
       <button type="submit" id="def-submit-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm py-3 rounded-xl transition-all shadow-md hover:shadow-lg">Submit Defect</button>
     </form>
@@ -1328,6 +1326,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         delete_failed: "Delete failed",
         save_fpy_confirm_title: "Save FPY", save_fpy_confirm_msg: "Save all First Pass Yield entries?",
         confirm_defect_submit: "Submit this defect entry?", submit_defect: "Submit Defect",
+        defect_types: "Defect Types (qty per type)", add_defect_type: "+ Add defect type",
         avg_daily_manpower: "Avg. Daily Manpower", average_fpy: "Average FPY", worst_fpy: "Worst FPY", total_defectives: "Total Defectives", items_tracked: "Items Tracked", below_threshold: "Below Threshold",
         all_sections: "All Sections", view_productivity: "View: Productivity", view_production_qty: "View: Production Qty", view_fpy: "View: FPY %", filter_charts: "Filter Charts",
         daily_view: "Daily View", monthly_view: "Monthly View", view_production: "View: Production", view_quality_fpy: "View: Quality / FPY", all_pgs: "All PGs",
@@ -1364,6 +1363,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         delete_failed: "মুছতে ব্যর্থ হয়েছে",
         save_fpy_confirm_title: "FPY সংরক্ষণ করুন", save_fpy_confirm_msg: "সব FPY এন্ট্রি সংরক্ষণ করবেন?",
         confirm_defect_submit: "এই ত্রুটি এন্ট্রি জমা দেবেন?", submit_defect: "ত্রুটি জমা দিন",
+        defect_types: "ত্রুটির ধরন (প্রতি ধরনের পরিমাণ)", add_defect_type: "+ ত্রুটির ধরন যোগ করুন",
         avg_daily_manpower: "গড় দৈনিক ম্যানপাওয়ার", average_fpy: "গড় FPY", worst_fpy: "সর্বনিম্ন FPY", total_defectives: "মোট ত্রুটিপূর্ণ", items_tracked: "ট্র্যাক করা আইটেম", below_threshold: "থ্রেশহোল্ডের নিচে",
         all_sections: "সব সেকশন", view_productivity: "দেখুন: উৎপাদনশীলতা", view_production_qty: "দেখুন: উৎপাদনের পরিমাণ", view_fpy: "দেখুন: FPY %", filter_charts: "চার্ট ফিল্টার করুন",
         daily_view: "দৈনিক ভিউ", monthly_view: "মাসিক ভিউ", view_production: "দেখুন: উৎপাদন", view_quality_fpy: "দেখুন: কোয়ালিটি / FPY", all_pgs: "সব PG",
@@ -1468,8 +1468,9 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       (data.times || []).forEach(function(t) { timeSelect.add(new Option(t, t)); });
 
       callAPI({ action: "getDefectTypes" }, function(dt) {
-        defectTypesCache = (dt && dt.bySection) ? dt.bySection : {};
+        defectTypesCache = (dt && dt.byPg) ? dt.byPg : {};
         updateDefectTypes();
+        addDefectRow();
       });
 
       loadQualityDefects();
@@ -1487,14 +1488,49 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       return ('0' + d.getDate()).slice(-2) + '-' + months[d.getMonth()] + '-' + d.getFullYear();
     }
 
+    function currentDefectPg() {
+      var itemSel = document.getElementById('def-item');
+      var item = itemSel ? itemSel.value : '';
+      return (item && masterAuthData && masterAuthData.itemPgs) ? (masterAuthData.itemPgs[item] || '') : '';
+    }
+
     function updateDefectTypes() {
-      var lineSelect = document.getElementById('def-line');
-      var typeSelect = document.getElementById('def-type');
-      typeSelect.innerHTML = '<option value="">' + t('problem_type') + '</option>';
-      var line = lineSelect ? lineSelect.value : '';
-      var section = (line && masterAuthData && masterAuthData.lineSections) ? masterAuthData.lineSections[line] : '';
-      var types = section ? (defectTypesCache[section] || []) : [];
-      types.forEach(function(tp) { typeSelect.add(new Option(tp, tp)); });
+      var pg = currentDefectPg();
+      var types = pg ? (defectTypesCache[pg] || []) : [];
+      var dl = document.getElementById('defect-types-datalist');
+      if (dl) {
+        dl.innerHTML = '';
+        types.forEach(function(tp) {
+          var opt = document.createElement('option');
+          opt.value = tp;
+          dl.appendChild(opt);
+        });
+      }
+    }
+
+    function addDefectRow() {
+      var rows = document.getElementById('defect-type-rows');
+      if (!rows) return;
+      var row = document.createElement('div');
+      row.className = 'def-type-row flex items-center gap-2';
+      row.innerHTML = `
+        <input class="def-type-input flex-1 min-w-0 p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none bg-white/80 focus:bg-white text-sm" list="defect-types-datalist" placeholder="Search problem type…">
+        <input type="number" min="1" class="def-qty-input w-20 p-2.5 rounded-lg border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-300/30 outline-none bg-white/80 focus:bg-white text-sm" placeholder="Qty">
+        <button type="button" onclick="removeDefectRow(this)" class="shrink-0 w-8 h-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 font-bold text-sm">✕</button>
+      `;
+      rows.appendChild(row);
+    }
+
+    function removeDefectRow(btn) {
+      var rows = document.getElementById('defect-type-rows');
+      var row = btn.closest('.def-type-row');
+      if (!row || !rows) return;
+      if (rows.children.length <= 1) {
+        row.querySelector('.def-type-input').value = '';
+        row.querySelector('.def-qty-input').value = '';
+        return;
+      }
+      row.remove();
     }
 
     function submitDefectForm(e) {
@@ -1502,19 +1538,26 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       var itemVal = document.getElementById('def-item').value;
       var lineVal = document.getElementById('def-line').value;
       var timeVal = document.getElementById('def-time').value;
-      var typeVal = document.getElementById('def-type').value;
-      var qtyVal = document.getElementById('def-qty').value;
       var remarksVal = document.getElementById('def-remarks').value;
-      if (!itemVal || !lineVal || !timeVal || !typeVal) { showToast(t('complete_dropdowns'), "error"); return; }
-      if (!qtyVal || Number(qtyVal) <= 0) { showToast(t('complete_dropdowns'), "error"); return; }
-      var section = (masterAuthData && masterAuthData.lineSections) ? (masterAuthData.lineSections[lineVal] || '') : '';
-      var formData = { item: itemVal, line: lineVal, time: timeVal, problemType: typeVal, defectiveQty: Number(qtyVal), remarks: remarksVal, section: section, date: currentQualityDate() };
+      if (!itemVal || !lineVal || !timeVal) { showToast(t('complete_dropdowns'), "error"); return; }
+
+      var defects = [];
+      document.querySelectorAll('#defect-type-rows .def-type-row').forEach(function(row) {
+        var type = row.querySelector('.def-type-input').value.trim();
+        var qty = parseFloat(row.querySelector('.def-qty-input').value);
+        if (type && qty > 0) defects.push({ problemType: type, defectiveQty: qty });
+      });
+      if (defects.length === 0) { showToast(t('complete_dropdowns'), "error"); return; }
+
+      var pg = currentDefectPg();
+      var formData = { item: itemVal, line: lineVal, time: timeVal, defects: defects, remarks: remarksVal, pg: pg, date: currentQualityDate() };
       openConfirm(t('quality_entry'), t('confirm_defect_submit'), function() {
         var btn = document.getElementById('def-submit-btn'); btn.disabled = true; btn.innerText = t('loading') + '…';
         callAPI({ action: "submitDefectEntry", formData: formData, email: currentUser.email }, function(res) {
           btn.disabled = false; btn.innerText = t('submit_defect');
           if (res && res.status === "Success") {
-            document.getElementById('def-qty').value = '';
+            document.getElementById('defect-type-rows').innerHTML = '';
+            addDefectRow();
             document.getElementById('def-remarks').value = '';
             showToast(t('data_logged'), "success");
             loadQualityDefects();
@@ -1541,26 +1584,32 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         list.innerHTML = '<p class="text-gray-400 text-xs text-center py-4">No defect entries for this date.</p>';
         return;
       }
+      // Group by item + line + time so each entry shows all its problem types + total.
+      var groups = {};
       defectRowsCache.forEach(function(r) {
+        var key = r.item + '::' + r.line + '::' + r.time;
+        if (!groups[key]) groups[key] = { item: r.item, line: r.line, time: r.time, types: [], total: 0, remarks: r.remarks || '' };
+        groups[key].types.push(r);
+        groups[key].total += Number(r.defectiveQty) || 0;
+      });
+      Object.keys(groups).forEach(function(key) {
+        var g = groups[key];
         var card = document.createElement('div');
-        card.id = 'defect-card-' + r.rowIndex;
-        card.className = 'p-3 border border-gray-100 rounded-xl bg-gray-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-sm';
-        card.innerHTML = `
-          <div class="flex-1 min-w-0">
-            <p class="font-bold text-gray-800 text-[11px] leading-tight truncate">${r.item}</p>
-            <div class="text-[10px] text-gray-500 mt-0.5 flex flex-wrap gap-1.5">
-              <span class="bg-white px-2 py-0.5 rounded border border-gray-200 font-semibold">${r.line}</span>
-              <span class="bg-white px-2 py-0.5 rounded border border-gray-200 font-semibold">${r.time}</span>
-              <span class="bg-purple-50 text-purple-700 px-2 py-0.5 rounded border border-purple-200 font-semibold">${r.problemType}</span>
-            </div>
-            ${r.remarks ? '<div class="text-[10px] text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100 italic mt-1">' + r.remarks + '</div>' : ''}
-          </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <span class="text-sm font-black text-red-500" id="def-qty-val-${r.rowIndex}">${r.defectiveQty}</span>
-            <button onclick="handleDefectEdit(${r.rowIndex})" class="bg-white border border-gray-200 text-gray-600 text-[10px] font-bold py-1.5 px-3 rounded-lg shadow-sm">Edit</button>
-            <button onclick="handleDefectDelete(${r.rowIndex})" class="bg-white border border-gray-200 text-red-500 text-[10px] font-bold py-1.5 px-3 rounded-lg shadow-sm">Delete</button>
-          </div>
-        `;
+        card.className = 'p-3 border border-gray-100 rounded-xl bg-gray-50/50 shadow-sm';
+        var typeHtml = '';
+        g.types.forEach(function(r) {
+          typeHtml += '<div class="flex items-center justify-between gap-2 py-1 border-b border-gray-100 last:border-0">' +
+            '<span class="text-[10px] text-purple-700 font-semibold flex-1 min-w-0 truncate">' + r.problemType + '</span>' +
+            '<span class="text-[11px] font-bold text-red-500 shrink-0" id="def-qty-val-' + r.rowIndex + '">' + r.defectiveQty + '</span>' +
+            '<button onclick="handleDefectEdit(' + r.rowIndex + ')" class="shrink-0 bg-white border border-gray-200 text-gray-600 text-[10px] font-bold py-1 px-2 rounded shadow-sm">Edit</button>' +
+            '<button onclick="handleDefectDelete(' + r.rowIndex + ')" class="shrink-0 bg-white border border-gray-200 text-red-500 text-[10px] font-bold py-1 px-2 rounded shadow-sm">Delete</button>' +
+          '</div>';
+        });
+        card.innerHTML = '<div class="font-bold text-gray-800 text-[11px] truncate">' + g.item + '</div>' +
+          '<div class="text-[10px] text-gray-500 mb-1">' + g.line + ' · ' + g.time + '</div>' +
+          '<div class="text-[10px] font-black text-gray-700 border-t border-gray-200 pt-1 mb-1">Total Defective: <span class="text-red-500">' + g.total + '</span></div>' +
+          typeHtml +
+          (g.remarks ? '<div class="text-[10px] text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100 italic mt-1">' + g.remarks + '</div>' : '');
         list.appendChild(card);
       });
     }
