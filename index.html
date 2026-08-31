@@ -2760,11 +2760,13 @@ if(fpSummary) fpSummary.destroy();
 
         Object.keys(groups).sort().forEach(function(key, idx) {
           var g = groups[key];
-          var fpyVals = sortedTimes.map(function(t) { var v = g.times[t]; return (v === undefined || v === null) ? null : v; });
+          // Reverse so the 1st hour is at the bottom (matches the Productivity/Production charts)
+          var revTimes = sortedTimes.slice().reverse();
+          var fpyVals = revTimes.map(function(t) { var v = g.times[t]; return (v === undefined || v === null) ? null : v; });
           if (!fpyVals.some(function(v) { return v !== null; })) return;
 
           var colors = fpyVals.map(function(f) { return f === null ? '#e2e8f0' : f >= 95 ? '#10B981' : f >= 90 ? '#F59E0B' : '#EF4444'; });
-          var seriesData = sortedTimes.map(function(t, i) { return { x: getOrdinal(i + 1), y: fpyVals[i] === null ? 0 : fpyVals[i], realTime: t, fpy: fpyVals[i] }; });
+          var seriesData = revTimes.map(function(t, i) { return { x: getOrdinal(sortedTimes.indexOf(t) + 1), y: fpyVals[i] === null ? 0 : fpyVals[i], realTime: t, fpy: fpyVals[i] }; });
           var dayFpy = (g.produced + g.defective) > 0 ? Math.round((g.produced / (g.produced + g.defective)) * 1000) / 10 : null;
 
           var chartId = 'sec-fpy-' + idx;
