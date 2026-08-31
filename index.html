@@ -743,7 +743,20 @@
               <span class="text-[11px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center" data-i18n="first_pass_yield">First Pass Yield</span>
               <span id="summary-kpi-fpy" class="text-2xl sm:text-3xl font-black text-slate-800 leading-none">—</span>
               <div id="trend-fpy" class="mt-1.5 flex items-center gap-1 text-[9px] font-bold"></div>
+            </div>
+        </div>
+
+        <!-- 7-Day Trend -->
+        <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 h-[170px] sm:h-[190px]">
+           <div class="flex items-center justify-between px-3 sm:px-4 pt-2 sm:pt-3 shrink-0">
+              <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">7-Day Trend</h3>
+              <div class="flex items-center gap-3 text-[9px] font-semibold text-slate-500">
+                 <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-enovar inline-block"></span>Production</span>
+                 <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>Productivity</span>
+                 <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>FPY</span>
+              </div>
            </div>
+           <div id="chart-summary-trend" class="w-full flex-1 min-h-0"></div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 flex-1 min-h-0 pb-1">
@@ -3095,17 +3108,21 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
             
             if (bestItem) {
                 let ach = (bestRatio * 100).toFixed(0);
+                let bProd = bestItem.qty > 0 ? (bestItem.prod_x_qty / bestItem.qty).toFixed(1) : '0.0';
                 document.getElementById('summary-top-performer').innerHTML = `
                    <div class="font-black text-gray-800 text-sm truncate" title="${bestItem.line}">${bestItem.line}</div>
                    <div class="text-[10px] text-gray-600 truncate mb-1 font-semibold" title="${bestItem.itemStr}">${bestItem.itemStr}</div>
+                   <div class="text-[9px] text-slate-500 mb-1">Productivity ${bProd}</div>
                    <div class="text-[11px] font-bold text-white bg-green-500 inline-block px-2 py-0.5 rounded shadow-sm">${ach}% Target Achieved</div>
                 `;
             }
             if (worstItem) {
                 let ach = (worstRatio * 100).toFixed(0);
+                let wProd = worstItem.qty > 0 ? (worstItem.prod_x_qty / worstItem.qty).toFixed(1) : '0.0';
                 document.getElementById('summary-worst-performer').innerHTML = `
                    <div class="font-black text-gray-800 text-sm truncate" title="${worstItem.line}">${worstItem.line}</div>
                    <div class="text-[10px] text-gray-600 truncate mb-1 font-semibold" title="${worstItem.itemStr}">${worstItem.itemStr}</div>
+                   <div class="text-[9px] text-slate-500 mb-1">Productivity ${wProd}</div>
                    <div class="text-[11px] font-bold text-white bg-red-500 inline-block px-2 py-0.5 rounded shadow-sm">${ach}% Target Achieved</div>
                 `;
             }
@@ -3142,7 +3159,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         rankedLines.forEach(function(line, i) {
             var barW = Math.min(line.ach, 100);
             var barColor = barW >= 90 ? 'bg-emerald-400' : barW >= 75 ? 'bg-amber-400' : 'bg-red-400';
-            rankHTML += '<div class="flex items-center gap-2"><span class="font-black text-gray-400 w-5 text-right text-[9px]">' + (i < 3 ? medals[i] : (i+1)) + '</span><div class="flex-1 min-w-0"><div class="flex justify-between items-center mb-0.5"><span class="font-bold text-slate-700 truncate text-[10px]">' + line.line + '</span><span class="font-black ' + (barW >= 90 ? 'text-emerald-600' : barW >= 75 ? 'text-amber-600' : 'text-red-500') + ' text-[10px] ml-1 shrink-0">' + line.ach.toFixed(0) + '%</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="h-2 rounded-full ' + barColor + '" style="width:' + barW + '%"></div></div></div></div>';
+            rankHTML += '<div class="flex items-center gap-2"><span class="font-black text-gray-400 w-5 text-right text-[9px]">' + (i < 3 ? medals[i] : (i+1)) + '</span><div class="flex-1 min-w-0"><div class="flex justify-between items-center mb-0.5"><span class="font-bold text-slate-700 truncate text-[10px]">' + line.line + ' <span class="font-normal text-slate-400">· ' + line.qty.toLocaleString() + '</span></span><span class="font-black ' + (barW >= 90 ? 'text-emerald-600' : barW >= 75 ? 'text-amber-600' : 'text-red-500') + ' text-[10px] ml-1 shrink-0">' + line.ach.toFixed(0) + '%</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="h-2 rounded-full ' + barColor + '" style="width:' + barW + '%"></div></div></div></div>';
         });
         document.getElementById('summary-line-ranking').innerHTML = rankHTML || '<div class="text-gray-400 text-center py-2">No data</div>';
 
@@ -3202,6 +3219,7 @@ let gaugeOptions = {
 
         // --- 7. UPDATE FPY KPI CARD ON SUMMARY (hourly FPY) ---
         renderSummaryFPY();
+        renderSummaryTrend(dateVal, secVal);
       }
 
       // Quality tab: render the quality dashboard (uses the same section/date filters as Summary)
@@ -3729,6 +3747,61 @@ let gaugeOptions = {
       });
       rows.sort(function(a, b) { return entryDateTs(b.date) - entryDateTs(a.date); });
       return rows;
+    }
+
+    function renderSummaryTrend(dateVal, secVal) {
+      var el = document.getElementById('chart-summary-trend');
+      if (!el) return;
+      var targetDate = dateVal ? new Date(dateVal) : new Date();
+      if (isNaN(targetDate.getTime())) targetDate = new Date();
+
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var cats = [], prod = [], prodv = [], fpy = [];
+      for (var i = 6; i >= 0; i--) {
+        var d = new Date(targetDate);
+        d.setDate(targetDate.getDate() - i);
+        var dStr = Utilities_formatDateClient(d);
+        cats.push(months[d.getMonth()] + ' ' + d.getDate());
+
+        var rows = rawDashboardData.filter(function(r) { return r.date === dStr && (!secVal || secVal === 'all' || r.section === secVal); });
+        var qty = 0, wprod = 0;
+        rows.forEach(function(r) { qty += r.qty; if (r.productivity > 0) wprod += (r.productivity * r.qty); });
+        prod.push(qty);
+        prodv.push(qty > 0 ? Math.round(wprod / qty * 10) / 10 : 0);
+
+        var eStr = formatEntryDate(d);
+        var defective = 0;
+        defectCache.forEach(function(dd) { if (dd.date === eStr) defective += Number(dd.defectiveQty) || 0; });
+        fpy.push((qty + defective) > 0 ? Math.round(qty / (qty + defective) * 1000) / 10 : null);
+      }
+
+      if (!prod.some(function(v) { return v > 0; })) {
+        el.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">No production data for the last 7 days.</div>';
+        return;
+      }
+
+      var options = {
+        series: [
+          { name: 'Production', type: 'column', data: prod },
+          { name: 'Productivity %', type: 'line', data: prodv },
+          { name: 'FPY %', type: 'line', data: fpy }
+        ],
+        chart: { type: 'line', height: 150, toolbar: { show: false }, animations: { enabled: false } },
+        colors: ['#0D5C58', '#3b82f6', '#f59e0b'],
+        stroke: { width: [0, 2.5, 2.5], curve: 'smooth' },
+        dataLabels: { enabled: false },
+        xaxis: { categories: cats, labels: { style: { fontSize: '9px' } }, tooltip: { enabled: false } },
+        yaxis: [
+          { labels: { style: { fontSize: '9px' }, formatter: function(v) { return v >= 1000 ? (v / 1000) + 'k' : v; } } },
+          { opposite: true, labels: { style: { fontSize: '9px' }, formatter: function(v) { return v + '%'; } } }
+        ],
+        grid: { borderColor: '#f1f5f9' },
+        legend: { show: false },
+        tooltip: { y: { formatter: function(v, opts) { return opts.seriesIndex === 0 ? v.toLocaleString() + ' units' : v + '%'; } } }
+      };
+      if (window.summaryTrendChart) window.summaryTrendChart.destroy();
+      window.summaryTrendChart = new ApexCharts(el, options);
+      window.summaryTrendChart.render();
     }
 
     function renderSummaryFPY() {
