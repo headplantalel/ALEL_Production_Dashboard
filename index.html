@@ -746,24 +746,6 @@
             </div>
         </div>
 
-        <!-- 7-Day Trend -->
-        <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 h-[170px] sm:h-[190px]">
-           <div class="flex items-center justify-between px-3 sm:px-4 pt-2 sm:pt-3 shrink-0">
-              <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">7-Day Trend</h3>
-              <div class="flex items-center gap-2">
-                 <select id="trend-metric-select" onchange="refreshSummaryTrend()" class="text-[9px] font-bold border border-gray-200 rounded-md px-1.5 py-1 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-                    <option value="production">Production</option>
-                    <option value="productivity">Productivity %</option>
-                    <option value="fpy">FPY %</option>
-                 </select>
-                 <select id="trend-pg-select" onchange="refreshSummaryTrend()" class="text-[9px] font-bold border border-gray-200 rounded-md px-1.5 py-1 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[110px]">
-                    <option value="all">All PGs</option>
-                 </select>
-              </div>
-           </div>
-           <div id="chart-summary-trend" class="w-full flex-1 min-h-0"></div>
-        </div>
-
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 flex-1 min-h-0 pb-1">
            <!-- Left Column -->
            <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-2 min-h-[400px] lg:min-h-0">
@@ -3224,7 +3206,6 @@ let gaugeOptions = {
 
         // --- 7. UPDATE FPY KPI CARD ON SUMMARY (hourly FPY) ---
         renderSummaryFPY();
-        renderSummaryTrend(dateVal, secVal);
       }
 
       // Quality tab: render the quality dashboard (uses the same section/date filters as Summary)
@@ -3752,95 +3733,6 @@ let gaugeOptions = {
       });
       rows.sort(function(a, b) { return entryDateTs(b.date) - entryDateTs(a.date); });
       return rows;
-    }
-
-    function renderSummaryTrend(dateVal, secVal) {
-      var el = document.getElementById('chart-summary-trend');
-      if (!el) return;
-      var metricSel = document.getElementById('trend-metric-select');
-      var pgSel = document.getElementById('trend-pg-select');
-      var metric = metricSel ? metricSel.value : 'production';
-      var selectedPg = pgSel ? pgSel.value : 'all';
-
-      var targetDate = dateVal ? new Date(dateVal) : new Date();
-      if (isNaN(targetDate.getTime())) targetDate = new Date();
-
-      // Distinct PGs (by volume) — used for the PG selector + series
-      var pgVol = {};
-      var linePg = {};
-      rawDashboardData.forEach(function(r) {
-        if (r.pg) pgVol[r.pg] = (pgVol[r.pg] || 0) + r.qty;
-        if (r.line && r.pg) linePg[r.line] = r.pg;
-      });
-      var pgs = Object.keys(pgVol).sort(function(a, b) { return pgVol[b] - pgVol[a]; });
-
-      if (pgSel) {
-        var cur = pgSel.value;
-        pgSel.innerHTML = '<option value="all">All PGs</option>' + pgs.map(function(p) { return '<option value="' + p + '">' + p + '</option>'; }).join('');
-        pgSel.value = (cur && pgs.indexOf(cur) >= 0) ? cur : (pgs.indexOf(selectedPg) >= 0 ? selectedPg : 'all');
-      }
-
-      var plotPgs = selectedPg === 'all' ? pgs.slice(0, 6) : (pgs.indexOf(selectedPg) >= 0 ? [selectedPg] : []);
-
-      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      var cats = [], days = [];
-      for (var i = 6; i >= 0; i--) {
-        var d = new Date(targetDate);
-        d.setDate(targetDate.getDate() - i);
-        days.push(Utilities_formatDateClient(d));
-        cats.push(months[d.getMonth()] + ' ' + d.getDate());
-      }
-
-      var isPct = metric !== 'production';
-      var series = plotPgs.map(function(pg) {
-        var data = days.map(function(dStr) {
-          var rows = rawDashboardData.filter(function(r) { return r.date === dStr && r.pg === pg && (!secVal || secVal === 'all' || r.section === secVal); });
-          var qty = 0, wprod = 0;
-          rows.forEach(function(r) { qty += r.qty; if (r.productivity > 0) wprod += (r.productivity * r.qty); });
-          if (metric === 'production') return qty;
-          if (metric === 'productivity') return qty > 0 ? Math.round(wprod / qty * 10) / 10 : 0;
-          var eStr = formatEntryDate(new Date(dStr));
-          var defective = 0;
-          defectCache.forEach(function(dd) {
-            if (dd.date !== eStr) return;
-            var dPg = dd.pg || (dd.line ? linePg[dd.line] : null);
-            if (dPg !== pg) return;
-            defective += Number(dd.defectiveQty) || 0;
-          });
-          return (qty + defective) > 0 ? Math.round(qty / (qty + defective) * 1000) / 10 : null;
-        });
-        return { name: pg, type: 'line', data: data };
-      });
-
-      if (plotPgs.length === 0 || !rawDashboardData.some(function(r) { return r.qty > 0; })) {
-        el.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">No production data for the last 7 days.</div>';
-        return;
-      }
-
-      var options = {
-        series: series,
-        chart: { type: 'line', height: 150, toolbar: { show: false }, animations: { enabled: false } },
-        colors: ['#0D5C58', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444', '#10b981', '#e11d48', '#f97316'],
-        stroke: { width: 2.5, curve: 'smooth' },
-        dataLabels: { enabled: false },
-        xaxis: { categories: cats, labels: { style: { fontSize: '9px' } }, tooltip: { enabled: false } },
-        yaxis: isPct
-          ? [{ min: 0, labels: { style: { fontSize: '9px' }, formatter: function(v) { return v + '%'; } } }]
-          : [{ labels: { style: { fontSize: '9px' }, formatter: function(v) { return v >= 1000 ? (v / 1000) + 'k' : v; } } }],
-        grid: { borderColor: '#f1f5f9' },
-        legend: { show: plotPgs.length > 1, position: 'top', fontSize: '9px', markers: { width: 6, height: 6 }, itemMargin: { horizontal: 6 } },
-        tooltip: { y: { formatter: function(v) { return isPct ? v + '%' : v.toLocaleString() + ' units'; } } }
-      };
-      if (window.summaryTrendChart) window.summaryTrendChart.destroy();
-      window.summaryTrendChart = new ApexCharts(el, options);
-      window.summaryTrendChart.render();
-    }
-
-    function refreshSummaryTrend() {
-      var dateInput = document.getElementById('filter-date-summary');
-      var dateVal = dateInput && dateInput.value ? Utilities_formatDateClient(new Date(dateInput.value)) : Utilities_formatDateClient(new Date());
-      var secVal = document.getElementById('filter-section-summary') ? document.getElementById('filter-section-summary').value : 'all';
-      renderSummaryTrend(dateVal, secVal);
     }
 
     function renderSummaryFPY() {
