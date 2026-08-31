@@ -2099,20 +2099,24 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
          if(dashFilters['mgt_zone']) document.getElementById('filter-section-summary').value = dashFilters['mgt_zone'];
          if(dashFilters['mgt_date']) document.getElementById('filter-date-summary').value = dashFilters['mgt_date'];
          
-if(fpSummary) fpSummary.destroy(); 
-         fpSummary = flatpickr("#filter-date-summary", {
-            dateFormat: "M d, Y",
-            disableMobile: true,
-            enable: Array.from(dates).map(dateStr => new Date(dateStr)), 
-            onReady: function(selectedDates, dateStr, instance) {
-               instance.element.blur();
-               setTimeout(() => instance.close(), 10);
-            },
-             onChange: function(selectedDates, dateStr, instance) { 
-                renderDashboard(); 
-                instance.element.blur(); // Forces the browser to drop focus after selection
-             }
-         });
+         if (activeDashTab === 'quality') {
+            rebuildQualityDatePicker();
+         } else {
+            if(fpSummary) fpSummary.destroy(); 
+            fpSummary = flatpickr("#filter-date-summary", {
+               dateFormat: "M d, Y",
+               disableMobile: true,
+               enable: Array.from(dates).map(dateStr => new Date(dateStr)), 
+               onReady: function(selectedDates, dateStr, instance) {
+                  instance.element.blur();
+                  setTimeout(() => instance.close(), 10);
+               },
+                onChange: function(selectedDates, dateStr, instance) { 
+                   renderDashboard(); 
+                   instance.element.blur(); // Forces the browser to drop focus after selection
+                }
+            });
+         }
       }
       
       if(activeDashTab === 'master') {
@@ -2127,6 +2131,36 @@ if(fpSummary) fpSummary.destroy();
         // Force the dropdown to respect PG if one was already selected
         updateMasterDropdowns(); 
       }
+    }
+
+    // Quality tab date picker: only enable dates that actually have defect (quality) entries.
+    function rebuildQualityDatePicker() {
+      var el = document.getElementById('filter-date-summary');
+      if (!el) return;
+      var defectDates = new Set();
+      (defectCache || []).forEach(function(d) { if (d.date) defectDates.add(d.date); });
+      var enabled = Array.from(defectDates).map(function(ds) { return new Date(ds); });
+      // Always keep the currently-selected date selectable (e.g. today before first entry)
+      var curVal = el.value;
+      if (curVal) {
+        var curDate = new Date(curVal);
+        var found = enabled.some(function(d) { return d.getTime() === curDate.getTime(); });
+        if (!found) enabled.push(curDate);
+      }
+      if (fpSummary) fpSummary.destroy();
+      fpSummary = flatpickr(el, {
+        dateFormat: "M d, Y",
+        disableMobile: true,
+        enable: enabled,
+        onReady: function(selectedDates, dateStr, instance) {
+          instance.element.blur();
+          setTimeout(() => instance.close(), 10);
+        },
+        onChange: function(selectedDates, dateStr, instance) {
+          renderDashboard();
+          instance.element.blur();
+        }
+      });
     }
 
     function toggleMasterDateRange() {
@@ -3496,12 +3530,13 @@ let gaugeOptions = {
       return isNaN(t) ? 0 : t;
     }
 
-    function fetchDefects(callback) {
-      callAPI({ action: "getDefectData" }, function(data) {
-        defectCache = (data && data.rows) ? data.rows : [];
-        if (callback) callback();
-      });
-    }
+     function fetchDefects(callback) {
+       callAPI({ action: "getDefectData" }, function(data) {
+         defectCache = (data && data.rows) ? data.rows : [];
+         if (activeDashTab === 'quality') rebuildQualityDatePicker();
+         if (callback) callback();
+       });
+     }
 
     // Hourly FPY computed locally from cached production + defect data.
     function computeHourlyFPY(dateStr) {
