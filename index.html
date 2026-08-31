@@ -3512,17 +3512,26 @@ let gaugeOptions = {
       if (!el) return null;
       if (typeof html2canvas === 'undefined') { showToast('Export engine loading, please retry.', 'error'); return null; }
       showToast('Preparing export…', 'success');
-      // Temporarily relax height/overflow so the whole tab is captured
-      var prevStyle = el.getAttribute('style') || '';
-      el.style.height = 'auto';
-      el.style.overflow = 'visible';
+      // Temporarily expand the view + inner scroll containers so the FULL tab is captured (not just the visible scroll area)
+      var saved = [];
+      function relax(node) {
+        saved.push([node, node.getAttribute('style')]);
+        node.style.setProperty('height', 'auto', 'important');
+        node.style.setProperty('max-height', 'none', 'important');
+        node.style.setProperty('overflow', 'visible', 'important');
+      }
+      relax(el);
+      el.querySelectorAll('.overflow-y-auto, .overflow-x-auto, [class*="max-h-"]').forEach(relax);
       var canvas;
       try {
         canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#f1f5f9', logging: false });
       } catch (err) {
         canvas = null;
       }
-      el.setAttribute('style', prevStyle);
+      saved.forEach(function(rec) {
+        if (rec[1]) rec[0].setAttribute('style', rec[1]);
+        else rec[0].removeAttribute('style');
+      });
       return canvas;
     }
 
