@@ -749,6 +749,11 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 flex-1 min-h-0 pb-1">
            <!-- Left Column -->
            <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-2 min-h-[400px] lg:min-h-0">
+               <div class="bg-white/80 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 min-h-[120px] max-h-[160px]">
+                  <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-3 shrink-0">Production Alerts</h3>
+                  <div id="summary-alerts-list" class="flex-1 overflow-y-auto space-y-2 text-[11px] pr-2"></div>
+               </div>
+
                <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-[250px] overflow-hidden">
                    <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md z-20 flex justify-between items-center">
                      <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Daily Item Matrix</h3>
@@ -773,24 +778,29 @@
                      </table>
                   </div>
                </div>
-               
-               <div class="bg-white/80 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 min-h-[120px] max-h-[160px]">
-                  <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-3 shrink-0">Production Alerts</h3>
-                  <div id="summary-alerts-list" class="flex-1 overflow-y-auto space-y-2 text-[11px] pr-2"></div>
-               </div>
            </div>
 
            <!-- Right Column -->
            <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-1 min-h-0 overflow-y-auto">
-               <div class="bg-gradient-to-br from-green-100/60 to-white/60 backdrop-blur-xl p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 transition-transform hover:-translate-y-1">
-                   <h3 class="text-[10px] font-black text-green-700 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-                      Star Performer
-                   </h3>
-                    <div id="summary-top-performer" class="text-xs text-slate-700 font-medium">Calculating…</div>
-                </div>
+               <!-- Best / Worst -->
+               <div class="grid grid-cols-2 gap-3 shrink-0">
+                   <div class="bg-gradient-to-br from-green-100/60 to-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col transition-transform hover:-translate-y-1">
+                       <h3 class="text-[10px] font-black text-green-700 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                          Star Performer
+                       </h3>
+                        <div id="summary-top-performer" class="text-xs text-slate-700 font-medium">Calculating…</div>
+                   </div>
+                   <div class="bg-gradient-to-br from-red-100/60 to-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col transition-transform hover:-translate-y-1">
+                       <h3 class="text-[10px] font-black text-red-600 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                          Needs Attention
+                       </h3>
+                        <div id="summary-worst-performer" class="text-xs text-slate-700 font-medium">Calculating…</div>
+                   </div>
+               </div>
 
-                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 transition-transform hover:-translate-y-1 max-h-[280px]">
+               <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 transition-transform hover:-translate-y-1 max-h-[280px]">
                     <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-2 flex items-center gap-1.5">
                        <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                        Line Ranking
@@ -3032,11 +3042,12 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         let sortedKeys = Object.keys(itemMap).sort((a, b) => itemMap[b].qty - itemMap[a].qty);
         const tableBody = document.getElementById('summary-item-table');
         tableBody.innerHTML = '';
-        let bestItem = null, bestRatio = -1;
+        let bestItem = null, bestRatio = -1, worstItem = null, worstRatio = Infinity;
 
         if (sortedKeys.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">No production recorded for this date.</td></tr>`;
             document.getElementById('summary-top-performer').innerHTML = `<span class="text-gray-400">No data available</span>`;
+            document.getElementById('summary-worst-performer').innerHTML = `<span class="text-gray-400">No data available</span>`;
         } else {
             sortedKeys.forEach(key => {
                 let d = itemMap[key];
@@ -3046,6 +3057,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
                 // Top Performer Logic (Highest % of Target Achieved)
                 let ratio = parseFloat(wTgt) > 0 ? (parseFloat(wAct) / parseFloat(wTgt)) : 0;
                 if (ratio > bestRatio && d.qty > 0) { bestRatio = ratio; bestItem = d; }
+                if (ratio < worstRatio && d.qty > 0) { worstRatio = ratio; worstItem = d; }
 
                 if (d.qty === 0) {
                     alerts.push({ priority: 1, html: `<div class="p-2 bg-amber-50 text-amber-800 rounded border border-amber-200 shadow-sm"><span class="font-black mr-1">⚠️ HALT:</span> ${d.line} recorded 0 output for ${d.itemStr}.</div>` });
@@ -3087,6 +3099,14 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
                    <div class="font-black text-gray-800 text-sm truncate" title="${bestItem.line}">${bestItem.line}</div>
                    <div class="text-[10px] text-gray-600 truncate mb-1 font-semibold" title="${bestItem.itemStr}">${bestItem.itemStr}</div>
                    <div class="text-[11px] font-bold text-white bg-green-500 inline-block px-2 py-0.5 rounded shadow-sm">${ach}% Target Achieved</div>
+                `;
+            }
+            if (worstItem) {
+                let ach = (worstRatio * 100).toFixed(0);
+                document.getElementById('summary-worst-performer').innerHTML = `
+                   <div class="font-black text-gray-800 text-sm truncate" title="${worstItem.line}">${worstItem.line}</div>
+                   <div class="text-[10px] text-gray-600 truncate mb-1 font-semibold" title="${worstItem.itemStr}">${worstItem.itemStr}</div>
+                   <div class="text-[11px] font-bold text-white bg-red-500 inline-block px-2 py-0.5 rounded shadow-sm">${ach}% Target Achieved</div>
                 `;
             }
         }
