@@ -44,6 +44,8 @@
   
   <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
   <style>
@@ -876,11 +878,15 @@
 
           <!-- Main Grid -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 flex-1 min-h-0 pb-1">
-             <!-- Scorecard -->
-             <div class="lg:col-span-2 flex flex-col min-h-[300px] lg:min-h-0">
-                <div class="hidden sm:flex bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex-col flex-1 min-h-[250px] overflow-hidden">
-                   <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md">
+             <!-- Left (2/3): Scorecard + Pareto -->
+             <div class="lg:col-span-2 flex flex-col gap-3 sm:gap-4 min-h-[300px] lg:min-h-0">
+                <div class="hidden sm:flex bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex-col flex-1 min-h-[200px] overflow-hidden">
+                   <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md flex items-center justify-between">
                       <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Quality Scorecard</h3>
+                      <button onclick="exportQualityCSV()" class="text-[9px] font-bold text-white bg-enovar hover:bg-enovar-dark px-3 py-1 rounded-lg transition-colors shadow-sm flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        CSV
+                      </button>
                    </div>
                    <div class="flex-1 overflow-y-auto overflow-x-auto bg-white/20">
                       <table class="w-full text-left border-collapse text-[11px] sm:text-xs min-w-[500px]">
@@ -900,9 +906,18 @@
                    </div>
                 </div>
                 <div id="quality-cards-mobile" class="sm:hidden space-y-2 overflow-y-auto"></div>
+
+                <!-- Pareto: prominent, full 2/3 width + taller -->
+                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 h-[280px] sm:h-[320px]">
+                   <div class="flex items-center justify-between pl-3 pr-2 pt-2 mb-1 shrink-0">
+                      <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Defect Pareto by Problem Type</h3>
+                   </div>
+                   <div id="quality-pareto-chart" class="w-full flex-1 min-h-0"></div>
+                   <div id="quality-pareto-insight" class="text-[10px] font-semibold text-slate-500 px-3 pb-2 pt-1 shrink-0"></div>
+                </div>
              </div>
 
-             <!-- Right: Gauges + Pareto + RCA -->
+             <!-- Right (1/3): Gauges + RCA -->
              <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-1 min-h-0 overflow-y-auto pr-1">
                 <div class="hidden sm:flex bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex-col shrink-0 max-h-[220px]">
                    <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-2">Line Gauges</h3>
@@ -910,19 +925,11 @@
                 </div>
                 <div id="quality-gauge-row-mobile" class="sm:hidden flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
 
-                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 min-h-[220px]">
-                   <div class="flex items-center justify-between pl-3 pr-2 pt-2 mb-1">
-                      <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Defect Pareto by Problem Type</h3>
-                   </div>
-                   <div id="quality-pareto-chart" class="w-full flex-1 min-h-[180px]"></div>
-                   <div id="quality-pareto-insight" class="text-[10px] font-semibold text-slate-500 px-3 pb-2 pt-1"></div>
-                </div>
-
-                <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white shrink-0">
+                <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-0">
                    <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md">
                       <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Defect RCA — Top Issues</h3>
                    </div>
-                   <div id="quality-rca-list" class="p-2 sm:p-3 space-y-2 max-h-[220px] overflow-y-auto"></div>
+                   <div id="quality-rca-list" class="p-2 sm:p-3 space-y-2 flex-1 overflow-y-auto"></div>
                 </div>
              </div>
           </div>
@@ -1322,7 +1329,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         defect_types: "Defect Types (qty per type)", add_defect_type: "+ Add defect type",
         defect_qty_required: "Please enter a quantity for every selected problem type.",
         avg_daily_manpower: "Avg. Daily Manpower", average_fpy: "Average FPY", worst_fpy: "Worst FPY", total_defectives: "Total Defectives", items_tracked: "Items Tracked", below_threshold: "Below Threshold",
-        all_sections: "All Sections", view_productivity: "View: Productivity", view_production_qty: "View: Production Qty", view_fpy: "View: FPY %", filter_charts: "Filter Charts",
+        all_sections: "All Sections", view_productivity: "View: Productivity", view_production_qty: "View: Production Qty", view_fpy: "View: FPY %", filter_charts: "Filter Charts", export: "Export",
         daily_view: "Daily View", monthly_view: "Monthly View", view_production: "View: Production", view_quality_fpy: "View: Quality / FPY", all_pgs: "All PGs", pg: "PG",
         today: "Today", yesterday: "Yesterday", last_7_days: "Last 7 Days", last_30_days: "Last 30 Days", all_time: "All Time", date_range: "Date Range",
         last_6_months: "Last 6 Months", last_1_year: "Last 1 Year", month_range: "Month Range", to: "to", search_item: "Search Item…", last_hour: "Last Hour",
@@ -1360,7 +1367,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         defect_types: "ত্রুটির ধরন (প্রতি ধরনের পরিমাণ)", add_defect_type: "+ ত্রুটির ধরন যোগ করুন",
         defect_qty_required: "প্রতিটি নির্বাচিত ত্রুটির ধরনের জন্য পরিমাণ দিন।",
         avg_daily_manpower: "গড় দৈনিক ম্যানপাওয়ার", average_fpy: "গড় FPY", worst_fpy: "সর্বনিম্ন FPY", total_defectives: "মোট ত্রুটিপূর্ণ", items_tracked: "ট্র্যাক করা আইটেম", below_threshold: "থ্রেশহোল্ডের নিচে",
-        all_sections: "সব সেকশন", view_productivity: "দেখুন: উৎপাদনশীলতা", view_production_qty: "দেখুন: উৎপাদনের পরিমাণ", view_fpy: "দেখুন: FPY %", filter_charts: "চার্ট ফিল্টার করুন",
+        all_sections: "সব সেকশন", view_productivity: "দেখুন: উৎপাদনশীলতা", view_production_qty: "দেখুন: উৎপাদনের পরিমাণ", view_fpy: "দেখুন: FPY %", filter_charts: "চার্ট ফিল্টার করুন", export: "এক্সপোর্ট",
         daily_view: "দৈনিক ভিউ", monthly_view: "মাসিক ভিউ", view_production: "দেখুন: উৎপাদন", view_quality_fpy: "দেখুন: কোয়ালিটি / FPY", all_pgs: "সব PG", pg: "PG",
         today: "আজ", yesterday: "গতকাল", last_7_days: "শেষ ৭ দিন", last_30_days: "শেষ ৩০ দিন", all_time: "সব সময়", date_range: "তারিখের পরিসীমা",
         last_6_months: "শেষ ৬ মাস", last_1_year: "শেষ ১ বছর", month_range: "মাসের পরিসীমা", to: "থেকে", search_item: "আইটেম খুঁজুন…", last_hour: "শেষ ঘণ্টা",
@@ -2068,14 +2075,27 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           <div class="w-full md:w-[300px]"><select id="filter-item" placeholder="${t('search_item')}"></select></div>
         `;
        } else if (activeDashTab === 'management' || activeDashTab === 'quality') {
-         html = `
-          <select id="filter-section-summary" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-             <option value="all">${t('all_sections')}</option>
-             ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
-          </select>
-          <input type="text" id="filter-date-summary" value="${todayStr}" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm cursor-pointer w-28 text-center bg-white" readonly>
-         `;
-      }
+          html = `
+           <select id="filter-section-summary" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
+              <option value="all">${t('all_sections')}</option>
+              ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
+           </select>
+           <input type="text" id="filter-date-summary" value="${todayStr}" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm cursor-pointer w-28 text-center bg-white" readonly>
+
+           <div class="relative inline-block text-left">
+             <button onclick="toggleExportMenu()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-3 py-1.5 bg-white text-gray-700 hover:bg-gray-50 shadow-sm flex items-center gap-1.5">
+               <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+               ${t('export')}
+               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+             </button>
+             <div id="export-menu" class="hidden absolute right-0 mt-2 w-48 rounded-lg shadow-xl bg-white ring-1 ring-black ring-opacity-5 z-50 p-1.5">
+               <button onclick="exportActiveCSV()" class="block w-full text-left px-3 py-2 text-[11px] font-semibold text-gray-700 rounded-md hover:bg-gray-50 flex items-center gap-2"><span class="text-enovar">CSV</span> — Excel / spreadsheet</button>
+               <button onclick="exportActivePNG()" class="block w-full text-left px-3 py-2 text-[11px] font-semibold text-gray-700 rounded-md hover:bg-gray-50 flex items-center gap-2"><span class="text-enovar">PNG</span> — image snapshot</button>
+               <button onclick="exportActivePDF()" class="block w-full text-left px-3 py-2 text-[11px] font-semibold text-gray-700 rounded-md hover:bg-gray-50 flex items-center gap-2"><span class="text-enovar">PDF</span> — document</button>
+             </div>
+           </div>
+          `;
+       }
       container.innerHTML = html;
       
       // RESTORE STATE & SECURE FLATPICKR
@@ -3442,6 +3462,96 @@ let gaugeOptions = {
       URL.revokeObjectURL(url);
     }
 
+    function toggleExportMenu() {
+      var menu = document.getElementById('export-menu');
+      if (!menu) return;
+      menu.classList.toggle('hidden');
+    }
+    document.addEventListener('click', function(e) {
+      var menu = document.getElementById('export-menu');
+      if (menu && !menu.classList.contains('hidden') && !e.target.closest('#export-menu') && !e.target.closest('[onclick="toggleExportMenu()"]')) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    function exportDateTag() {
+      var v = document.getElementById('filter-date-summary') ? document.getElementById('filter-date-summary').value : '';
+      return v ? v.replace(/[^a-zA-Z0-9]/g, '_') : 'report';
+    }
+
+    function exportQualityCSV() {
+      var table = document.getElementById('quality-table');
+      if (!table) return;
+      var rows = [['Item', 'Line', 'Time', 'Produced', 'Defective', 'FPY %', 'Status']];
+      table.querySelectorAll('tr').forEach(function(tr) {
+        var tds = tr.querySelectorAll('td');
+        if (tds.length < 7) return;
+        rows.push([tds[0].innerText.trim(), tds[1].innerText.trim(), tds[2].innerText.trim(), tds[3].innerText.trim(), tds[4].innerText.trim(), tds[5].innerText.trim(), tds[6].innerText.trim()]);
+      });
+      var csv = rows.map(function(r) { return r.map(function(c) { return '"' + (c || '').replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+      var blob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'ALEL_Quality_' + exportDateTag() + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportActiveCSV() {
+      if (activeDashTab === 'quality') exportQualityCSV();
+      else exportCSV();
+    }
+
+    function currentExportViewId() {
+      return activeDashTab === 'quality' ? 'view-quality' : 'view-management';
+    }
+
+    async function captureActiveView() {
+      var el = document.getElementById(currentExportViewId());
+      if (!el) return null;
+      if (typeof html2canvas === 'undefined') { showToast('Export engine loading, please retry.', 'error'); return null; }
+      showToast('Preparing export…', 'success');
+      // Temporarily relax height/overflow so the whole tab is captured
+      var prevStyle = el.getAttribute('style') || '';
+      el.style.height = 'auto';
+      el.style.overflow = 'visible';
+      var canvas;
+      try {
+        canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#f1f5f9', logging: false });
+      } catch (err) {
+        canvas = null;
+      }
+      el.setAttribute('style', prevStyle);
+      return canvas;
+    }
+
+    async function exportActivePNG() {
+      var canvas = await captureActiveView();
+      if (!canvas) return;
+      var a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = 'ALEL_' + (activeDashTab === 'quality' ? 'Quality' : 'Summary') + '_' + exportDateTag() + '.png';
+      a.click();
+      showToast('PNG exported.', 'success');
+    }
+
+    async function exportActivePDF() {
+      var canvas = await captureActiveView();
+      if (!canvas) return;
+      if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) { showToast('PDF engine loading, please retry.', 'error'); return; }
+      var img = canvas.toDataURL('image/png');
+      var pdf = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      var pw = pdf.internal.pageSize.getWidth();
+      var ph = pdf.internal.pageSize.getHeight();
+      var ratio = Math.min(pw / canvas.width, ph / canvas.height);
+      var w = canvas.width * ratio;
+      var h = canvas.height * ratio;
+      pdf.addImage(img, 'PNG', (pw - w) / 2, (ph - h) / 2, w, h);
+      pdf.save('ALEL_' + (activeDashTab === 'quality' ? 'Quality' : 'Summary') + '_' + exportDateTag() + '.pdf');
+      showToast('PDF exported.', 'success');
+    }
+
     function renderMasterFPY(fpyRows) {
       setMasterKpiLabels('quality');
       if (fpyRows.length === 0) {
@@ -3806,7 +3916,7 @@ let gaugeOptions = {
           { name: 'Defectives', type: 'bar', data: counts },
           { name: 'Cumulative %', type: 'line', data: cumulative }
         ],
-        chart: { type: 'bar', height: 230, toolbar: { show: false }, animations: { enabled: false } },
+        chart: { type: 'bar', height: 270, toolbar: { show: false }, animations: { enabled: false } },
         colors: ['#EF4444', '#0D5C58'],
         stroke: { width: [0, 3], curve: 'smooth' },
         dataLabels: { enabled: false },
