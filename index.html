@@ -848,16 +848,9 @@
 
        <!-- QUALITY DASHBOARD VIEW -->
        <div id="view-quality" class="w-full sm:h-full flex flex-col space-y-3 hidden max-w-7xl mx-auto">
-          <!-- Date Filter Row -->
-          <div class="flex items-center gap-3 shrink-0">
-              <select id="quality-date-preset" onchange="renderQualityDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-purple-500 shadow-sm">
-                 <option value="today" selected data-i18n="today">Today</option>
-                 <option value="yesterday" data-i18n="yesterday">Yesterday</option>
-              </select>
-          </div>
 
           <!-- KPI Row -->
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 shrink-0">
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4 shrink-0">
              <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
                 <span data-i18n="average_fpy" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Average FPY</span>
                 <span id="quality-kpi-avg" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">—</span>
@@ -865,31 +858,26 @@
              <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
                 <span data-i18n="worst_fpy" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Worst FPY</span>
                 <span id="quality-kpi-worst" class="text-lg sm:text-3xl font-black text-red-500 leading-none">—</span>
+                <span id="quality-kpi-worst-line" class="text-[9px] font-semibold text-gray-400 mt-0.5 truncate max-w-full"></span>
              </div>
              <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
                 <span data-i18n="total_defectives" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Total Defectives</span>
                 <span id="quality-kpi-def" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">0</span>
              </div>
-              <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
-                 <span data-i18n="items_tracked" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Items Tracked</span>
-                 <span id="quality-kpi-items" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">0</span>
-              </div>
-           </div>
-
-           <!-- Defect RCA — Top Issues (item + top problem type) -->
-           <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white shrink-0">
-              <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md flex items-center justify-between">
-                 <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Defect RCA — Top Issues</h3>
-              </div>
-              <div id="quality-rca-list" class="p-2 sm:p-3 space-y-2 max-h-[280px] overflow-y-auto"></div>
-           </div>
-
+             <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
+                <span data-i18n="items_tracked" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Items Tracked</span>
+                <span id="quality-kpi-items" class="text-lg sm:text-3xl font-black text-slate-800 leading-none">0</span>
+             </div>
+             <div class="bg-white/60 backdrop-blur-xl p-2 sm:p-4 rounded-2xl sm:rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col items-center justify-center transition-transform hover:-translate-y-1">
+                <span data-i18n="below_threshold" class="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 text-center">Below Threshold</span>
+                <span id="quality-kpi-below" class="text-lg sm:text-3xl font-black text-red-500 leading-none">0</span>
+             </div>
+          </div>
 
           <!-- Main Grid -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 flex-1 min-h-0 pb-1">
              <!-- Scorecard -->
              <div class="lg:col-span-2 flex flex-col min-h-[300px] lg:min-h-0">
-                <!-- Desktop Table -->
                 <div class="hidden sm:flex bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex-col flex-1 min-h-[250px] overflow-hidden">
                    <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md">
                       <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Quality Scorecard</h3>
@@ -911,30 +899,34 @@
                       </table>
                    </div>
                 </div>
-                <!-- Mobile Cards -->
                 <div id="quality-cards-mobile" class="sm:hidden space-y-2 overflow-y-auto"></div>
              </div>
 
-             <!-- Right: Gauges + Trend -->
-             <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-1 min-h-0">
-                <!-- Desktop gauges (vertical) -->
-                <div class="hidden sm:flex bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex-col flex-1 min-h-0">
+             <!-- Right: Gauges + Pareto + RCA -->
+             <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-1 min-h-0 overflow-y-auto pr-1">
+                <div class="hidden sm:flex bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex-col shrink-0 max-h-[220px]">
                    <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-2">Line Gauges</h3>
                    <div id="quality-gauge-row" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
                 </div>
-                <!-- Mobile gauges (horizontal scroll) -->
                 <div id="quality-gauge-row-mobile" class="sm:hidden flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
 
-                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 min-h-[200px] sm:min-h-[250px]">
+                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 min-h-[220px]">
                    <div class="flex items-center justify-between pl-3 pr-2 pt-2 mb-1">
                       <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Defect Pareto by Problem Type</h3>
                    </div>
                    <div id="quality-pareto-chart" class="w-full flex-1 min-h-[180px]"></div>
                    <div id="quality-pareto-insight" class="text-[10px] font-semibold text-slate-500 px-3 pb-2 pt-1"></div>
                 </div>
+
+                <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white shrink-0">
+                   <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md">
+                      <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Defect RCA — Top Issues</h3>
+                   </div>
+                   <div id="quality-rca-list" class="p-2 sm:p-3 space-y-2 max-h-[220px] overflow-y-auto"></div>
+                </div>
              </div>
           </div>
-        </div>
+       </div>
       </div>
     </div>
 
@@ -1946,9 +1938,6 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       // Crucial fix for ApexCharts rendering in hidden divs
       setTimeout(() => {
         buildDashboardFilters();
-        if (tab === 'quality') {
-          renderQualityDashboard();
-        }
         renderDashboard(); 
          window.dispatchEvent(new Event('resize'));
       }, 50);
@@ -2078,11 +2067,11 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           </div>
           <div class="w-full md:w-[300px]"><select id="filter-item" placeholder="${t('search_item')}"></select></div>
         `;
-       } else if (activeDashTab === 'management') {
+       } else if (activeDashTab === 'management' || activeDashTab === 'quality') {
          html = `
           <select id="filter-section-summary" onchange="renderDashboard()" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm">
-            <option value="all">${t('all_sections')}</option>
-            ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
+             <option value="all">${t('all_sections')}</option>
+             ${Array.from(sections).sort().map(s => `<option value="${s}">${s}</option>`).join('')}
           </select>
           <input type="text" id="filter-date-summary" value="${todayStr}" class="text-[11px] sm:text-xs font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm cursor-pointer w-28 text-center bg-white" readonly>
          `;
@@ -2106,7 +2095,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           });
       }
       
-      if (activeDashTab === 'management') {
+      if (activeDashTab === 'management' || activeDashTab === 'quality') {
          if(dashFilters['mgt_zone']) document.getElementById('filter-section-summary').value = dashFilters['mgt_zone'];
          if(dashFilters['mgt_date']) document.getElementById('filter-date-summary').value = dashFilters['mgt_date'];
          
@@ -2331,7 +2320,7 @@ if(fpSummary) fpSummary.destroy();
     function renderDashboard() {
       // Analytics tab is server-aggregated, so it must render even without raw rows.
       // FPY metrics are also server-computed, so they render without raw rows too.
-      if((!rawDashboardData || rawDashboardData.length === 0) && activeDashTab !== 'master' && !(activeDashTab === 'section' && currentMetric === 'fpy')) return;
+      if((!rawDashboardData || rawDashboardData.length === 0) && activeDashTab !== 'master' && !(activeDashTab === 'section' && currentMetric === 'fpy') && activeDashTab !== 'quality') return;
       const font = 'Inter, sans-serif';
       // SAVE STATE TO MEMORY
       if(document.getElementById('filter-section')) dashFilters['sec_zone'] = document.getElementById('filter-section').value;
@@ -3141,6 +3130,10 @@ let gaugeOptions = {
         renderSummaryFPY();
       }
 
+      // Quality tab: render the quality dashboard (uses the same section/date filters as Summary)
+      if (activeDashTab === 'quality') {
+        renderQualityDashboard();
+      }
     }
 
     function renderAIChatHistory() {
@@ -3481,13 +3474,6 @@ let gaugeOptions = {
       window.masterTrendChart.render();
     }
 
-    function qualityDateStr(dayOffset) {
-      var d = new Date();
-      d.setDate(d.getDate() + (dayOffset || 0));
-      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      return ('0' + d.getDate()).slice(-2) + '-' + months[d.getMonth()] + '-' + d.getFullYear();
-    }
-
     function formatEntryDate(d) {
       var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       return ('0' + d.getDate()).slice(-2) + '-' + months[d.getMonth()] + '-' + d.getFullYear();
@@ -3620,102 +3606,131 @@ let gaugeOptions = {
     }
 
     function renderQualityDashboard() {
-      var preset = document.getElementById('quality-date-preset') ? document.getElementById('quality-date-preset').value : 'today';
-      var dateStr = qualityDateStr(preset === 'yesterday' ? -1 : 0);
+      var secVal = document.getElementById('filter-section-summary') ? document.getElementById('filter-section-summary').value : 'all';
+      var dateInput = document.getElementById('filter-date-summary');
+      var d = dateInput && dateInput.value ? new Date(dateInput.value) : new Date();
+      if (isNaN(d.getTime())) d = new Date();
+      var dateStr = formatEntryDate(d);
 
-      // today/yesterday are always within the cached window — compute FPY locally (instant)
-      var fpyRows = computeHourlyFPY(dateStr);
-      var defectRows = defectCache.filter(function(d) { return d.date === dateStr; });
-      qualityFpyRows = fpyRows;
-      qualityDefectRows = defectRows;
+      // line -> section map (from production data, same sections as Summary)
+      var lineSectionMap = {};
+      (rawDashboardData || []).forEach(function(r) { if (r.line && r.section) lineSectionMap[r.line] = r.section; });
 
-          var totalProd = 0, totalDef = 0, itemsSet = {};
-          var lineData = {};
-          fpyRows.forEach(function(r) {
-            totalProd += r.produced;
-            totalDef += r.defective;
-            itemsSet[r.itemCode + '|' + r.line] = true;
-            if (!lineData[r.line]) lineData[r.line] = { produced: 0, defective: 0 };
-            lineData[r.line].produced += r.produced;
-            lineData[r.line].defective += r.defective;
+      function renderQualityData(fpyRows, defectRows) {
+        // Section filter
+        if (secVal !== 'all') {
+          fpyRows = fpyRows.filter(function(r) { return lineSectionMap[r.line] === secVal; });
+          defectRows = defectRows.filter(function(dd) { return lineSectionMap[dd.line] === secVal; });
+        }
+        qualityFpyRows = fpyRows;
+        qualityDefectRows = defectRows;
+
+        var totalProd = 0, totalDef = 0, itemsSet = {};
+        var lineData = {};
+        fpyRows.forEach(function(r) {
+          totalProd += r.produced;
+          totalDef += r.defective;
+          itemsSet[r.itemCode + '|' + r.line] = true;
+          if (!lineData[r.line]) lineData[r.line] = { produced: 0, defective: 0 };
+          lineData[r.line].produced += r.produced;
+          lineData[r.line].defective += r.defective;
+        });
+
+        var kpiAvg = document.getElementById('quality-kpi-avg');
+        var kpiWorst = document.getElementById('quality-kpi-worst');
+        var kpiWorstLine = document.getElementById('quality-kpi-worst-line');
+        var kpiBelow = document.getElementById('quality-kpi-below');
+
+        if (fpyRows.length === 0 && defectRows.length === 0) {
+          kpiAvg.innerText = '—';
+          kpiWorst.innerText = '—';
+          if (kpiWorstLine) kpiWorstLine.innerText = '';
+          document.getElementById('quality-kpi-def').innerText = '0';
+          document.getElementById('quality-kpi-items').innerText = '0';
+          if (kpiBelow) kpiBelow.innerText = '0';
+          document.getElementById('quality-table').innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-500">No quality data for this date.</td></tr>';
+          document.getElementById('quality-cards-mobile').innerHTML = '<div class="text-gray-400 text-xs text-center py-6">No quality data for this date.</div>';
+          document.getElementById('quality-gauge-row').innerHTML = '<div class="text-gray-400 text-xs py-6 text-center">No data recorded.</div>';
+          document.getElementById('quality-gauge-row-mobile').innerHTML = '<div class="text-gray-400 text-xs py-4 text-center w-full">No data recorded.</div>';
+          var paretoEl = document.getElementById('quality-pareto-chart');
+          if (paretoEl) paretoEl.innerHTML = '';
+          var insightEl = document.getElementById('quality-pareto-insight');
+          if (insightEl) insightEl.innerText = '';
+          var rcaList = document.getElementById('quality-rca-list');
+          if (rcaList) rcaList.innerHTML = '<p class="text-gray-400 text-xs text-center py-6">No defects recorded for this date — nothing to analyse yet.</p>';
+          if (window.qualityParetoChart) { window.qualityParetoChart.destroy(); window.qualityParetoChart = null; }
+          return;
+        }
+
+        var avgFPY = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
+        var worstLine = '', worstFPY = 100, belowCount = 0;
+        Object.keys(lineData).forEach(function(l) {
+          var f = (lineData[l].produced + lineData[l].defective) > 0 ? ((lineData[l].produced / (lineData[l].produced + lineData[l].defective)) * 100) : 100;
+          if (f < 90) belowCount++;
+          if (f < worstFPY) { worstFPY = f; worstLine = l; }
+        });
+
+        kpiAvg.innerText = avgFPY.toFixed(1) + '%';
+        kpiAvg.className = 'text-lg sm:text-3xl font-black leading-none ' + (avgFPY >= 95 ? 'text-emerald-600' : avgFPY >= 90 ? 'text-amber-600' : 'text-red-500');
+        kpiWorst.innerText = worstLine ? worstFPY.toFixed(1) + '%' : '—';
+        kpiWorst.className = 'text-lg sm:text-3xl font-black leading-none ' + (worstFPY >= 95 ? 'text-emerald-600' : worstFPY >= 90 ? 'text-amber-600' : 'text-red-500');
+        if (kpiWorstLine) kpiWorstLine.innerText = worstLine || '';
+        document.getElementById('quality-kpi-def').innerText = totalDef.toLocaleString();
+        document.getElementById('quality-kpi-items').innerText = Object.keys(itemsSet).length;
+        if (kpiBelow) kpiBelow.innerText = belowCount;
+
+        // Per-line gauges
+        var gaugeRow = document.getElementById('quality-gauge-row');
+        gaugeRow.innerHTML = '';
+        var gaugeRowMobile = document.getElementById('quality-gauge-row-mobile');
+        gaugeRowMobile.innerHTML = '';
+        Object.keys(lineData).forEach(function(l) {
+          var dL = lineData[l];
+          var fpy = (dL.produced + dL.defective) > 0 ? ((dL.produced / (dL.produced + dL.defective)) * 100) : 0;
+          var color = fpy >= 95 ? '#10B981' : fpy >= 90 ? '#F59E0B' : '#EF4444';
+          var circ = 2 * Math.PI * 15.5;
+          var off = circ - (Math.min(fpy, 100) / 100) * circ;
+          gaugeRow.innerHTML += '<div class="flex items-center gap-3 bg-white/30 rounded-lg p-2.5">' +
+            '<svg viewBox="0 0 36 36" class="w-12 h-12 shrink-0"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circ + '" stroke-dashoffset="' + off + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[10px]" font-weight="800" fill="#374151">' + fpy.toFixed(0) + '%</text></svg>' +
+            '<div><div class="font-extrabold text-[10px] text-slate-700">' + l + '</div><div class="text-[9px] font-medium ' + (fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500') + '">' + dL.defective + ' defective</div></div></div>';
+          gaugeRowMobile.innerHTML += '<div class="flex-shrink-0 bg-white/40 rounded-xl p-2.5 border border-white/60 flex flex-col items-center gap-1 min-w-[95px]">' +
+            '<svg viewBox="0 0 36 36" class="w-10 h-10"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circ + '" stroke-dashoffset="' + off + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[9px]" font-weight="800" fill="#374151">' + fpy.toFixed(0) + '%</text></svg>' +
+            '<div class="font-extrabold text-[9px] text-slate-700 text-center leading-tight">' + l + '</div></div>';
+        });
+
+        // Scorecard table (hourly rows)
+        var tb = document.getElementById('quality-table');
+        tb.innerHTML = '';
+        var mc = document.getElementById('quality-cards-mobile');
+        mc.innerHTML = '';
+        var sorted = fpyRows.slice().sort(function(a, b) { var af = (a.fpy === null || a.fpy === undefined) ? 101 : a.fpy; var bf = (b.fpy === null || b.fpy === undefined) ? 101 : b.fpy; return af - bf; });
+        sorted.forEach(function(r) {
+          var fpyVal = (r.fpy === null || r.fpy === undefined) ? null : r.fpy;
+          var tc = fpyVal === null ? 'text-slate-400' : fpyVal >= 95 ? 'text-emerald-600' : fpyVal >= 90 ? 'text-amber-600' : 'text-red-500';
+          var fpyTxt = fpyVal === null ? '—' : fpyVal.toFixed(1) + '%';
+          var statusTxt = fpyVal === null ? 'No prod' : fpyVal >= 95 ? 'Good' : fpyVal >= 90 ? 'OK' : 'Poor';
+          var bg = (fpyVal === null || fpyVal >= 90) ? 'bg-white/40' : 'bg-red-50/40';
+          tb.innerHTML += '<tr class="hover:bg-white/60 transition-colors border-b border-white/50 ' + bg + '"><td class="py-1.5 pl-3 sm:pl-5 font-medium text-slate-700 text-[10px]">' + r.item + '</td><td class="py-1.5 text-slate-500 text-[10px]">' + r.line + '</td><td class="py-1.5 text-slate-500 text-[10px]">' + (r.time || '') + '</td><td class="py-1.5 text-center font-bold text-slate-700 text-[10px]">' + r.produced.toLocaleString() + '</td><td class="py-1.5 text-center font-bold ' + (r.defective > 0 ? 'text-red-600' : 'text-slate-400') + ' text-[10px]">' + r.defective + '</td><td class="py-1.5 text-right font-extrabold ' + tc + ' text-[10px]">' + fpyTxt + '</td><td class="py-1.5 pr-3 sm:pr-5 text-right text-[9px] text-slate-400">' + statusTxt + '</td></tr>';
+          var bc = fpyVal === null ? 'border-l-slate-300' : fpyVal >= 95 ? 'border-l-emerald-500' : fpyVal >= 90 ? 'border-l-amber-500' : 'border-l-red-500';
+          mc.innerHTML += '<div class="border-l-4 ' + bc + ' bg-white/40 backdrop-blur-sm rounded-lg p-2.5">' +
+            '<div class="flex justify-between items-start"><span class="font-bold text-slate-700 text-[11px]">' + r.item + '</span><span class="font-extrabold ' + tc + ' text-xs ml-1">' + fpyTxt + '</span></div>' +
+            '<div class="flex gap-3 text-[9px] text-slate-500 mt-1"><span>' + r.line + '</span><span>' + (r.time || '') + '</span><span>Prod: ' + r.produced + '</span><span>Def: ' + r.defective + '</span></div></div>';
+        });
+
+        renderQualityPareto();
+        renderQualityRCA();
+      }
+
+      if (isDateInWindow(dateInput && dateInput.value ? dateInput.value : '')) {
+        renderQualityData(computeHourlyFPY(dateStr), defectCache.filter(function(dd) { return dd.date === dateStr; }));
+      } else {
+        callAPI({ action: "getHourlyFPY", date: dateStr }, function(res) {
+          var fpy = (res && res.rows) ? res.rows : [];
+          callAPI({ action: "getDefectData", date: dateStr }, function(dres) {
+            renderQualityData(fpy, (dres && dres.rows) ? dres.rows : []);
           });
-
-          var kpiAvg = document.getElementById('quality-kpi-avg');
-          var kpiWorst = document.getElementById('quality-kpi-worst');
-
-          if (fpyRows.length === 0 && defectRows.length === 0) {
-            kpiAvg.innerText = '—';
-            kpiWorst.innerText = '—';
-            document.getElementById('quality-kpi-def').innerText = '0';
-            document.getElementById('quality-kpi-items').innerText = '0';
-            document.getElementById('quality-table').innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-500">No quality data for this date.</td></tr>';
-            document.getElementById('quality-cards-mobile').innerHTML = '<div class="text-gray-400 text-xs text-center py-6">No quality data for this date.</div>';
-            document.getElementById('quality-gauge-row').innerHTML = '<div class="text-gray-400 text-xs py-6 text-center">No data recorded.</div>';
-            document.getElementById('quality-gauge-row-mobile').innerHTML = '<div class="text-gray-400 text-xs py-4 text-center w-full">No data recorded.</div>';
-            var paretoEl = document.getElementById('quality-pareto-chart');
-            if (paretoEl) paretoEl.innerHTML = '';
-            var insightEl = document.getElementById('quality-pareto-insight');
-            if (insightEl) insightEl.innerText = '';
-            if (window.qualityParetoChart) { window.qualityParetoChart.destroy(); window.qualityParetoChart = null; }
-            return;
-          }
-
-          var avgFPY = (totalProd + totalDef) > 0 ? ((totalProd / (totalProd + totalDef)) * 100) : 0;
-          var worstLine = '', worstFPY = 100;
-          Object.keys(lineData).forEach(function(l) {
-            var f = (lineData[l].produced + lineData[l].defective) > 0 ? ((lineData[l].produced / (lineData[l].produced + lineData[l].defective)) * 100) : 100;
-            if (f < worstFPY) { worstFPY = f; worstLine = l; }
-          });
-
-          kpiAvg.innerText = avgFPY.toFixed(1) + '%';
-          kpiAvg.className = 'text-lg sm:text-3xl font-black leading-none ' + (avgFPY >= 95 ? 'text-emerald-600' : avgFPY >= 90 ? 'text-amber-600' : 'text-red-500');
-          kpiWorst.innerText = worstLine ? worstFPY.toFixed(1) + '%' : '—';
-          kpiWorst.className = 'text-lg sm:text-3xl font-black leading-none ' + (worstFPY >= 95 ? 'text-emerald-600' : worstFPY >= 90 ? 'text-amber-600' : 'text-red-500');
-          document.getElementById('quality-kpi-def').innerText = totalDef.toLocaleString();
-          document.getElementById('quality-kpi-items').innerText = Object.keys(itemsSet).length;
-
-          // Per-line gauges
-          var gaugeRow = document.getElementById('quality-gauge-row');
-          gaugeRow.innerHTML = '';
-          var gaugeRowMobile = document.getElementById('quality-gauge-row-mobile');
-          gaugeRowMobile.innerHTML = '';
-          Object.keys(lineData).forEach(function(l) {
-            var d = lineData[l];
-            var fpy = (d.produced + d.defective) > 0 ? ((d.produced / (d.produced + d.defective)) * 100) : 0;
-            var color = fpy >= 95 ? '#10B981' : fpy >= 90 ? '#F59E0B' : '#EF4444';
-            var circ = 2 * Math.PI * 15.5;
-            var off = circ - (Math.min(fpy, 100) / 100) * circ;
-            gaugeRow.innerHTML += '<div class="flex items-center gap-3 bg-white/30 rounded-lg p-2.5">' +
-              '<svg viewBox="0 0 36 36" class="w-12 h-12 shrink-0"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circ + '" stroke-dashoffset="' + off + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[10px]" font-weight="800" fill="#374151">' + fpy.toFixed(0) + '%</text></svg>' +
-              '<div><div class="font-extrabold text-[10px] text-slate-700">' + l + '</div><div class="text-[9px] font-medium ' + (fpy >= 95 ? 'text-emerald-600' : fpy >= 90 ? 'text-amber-600' : 'text-red-500') + '">' + d.defective + ' defective</div></div></div>';
-            gaugeRowMobile.innerHTML += '<div class="flex-shrink-0 bg-white/40 rounded-xl p-2.5 border border-white/60 flex flex-col items-center gap-1 min-w-[95px]">' +
-              '<svg viewBox="0 0 36 36" class="w-10 h-10"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#f3f4f6" stroke-width="3"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="' + color + '" stroke-width="3" stroke-dasharray="' + circ + '" stroke-dashoffset="' + off + '" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="21" text-anchor="middle" class="text-[9px]" font-weight="800" fill="#374151">' + fpy.toFixed(0) + '%</text></svg>' +
-              '<div class="font-extrabold text-[9px] text-slate-700 text-center leading-tight">' + l + '</div></div>';
-          });
-
-          // Scorecard table (hourly rows)
-          var tb = document.getElementById('quality-table');
-          tb.innerHTML = '';
-          var mc = document.getElementById('quality-cards-mobile');
-          mc.innerHTML = '';
-          var sorted = fpyRows.slice().sort(function(a, b) { var af = (a.fpy === null || a.fpy === undefined) ? 101 : a.fpy; var bf = (b.fpy === null || b.fpy === undefined) ? 101 : b.fpy; return af - bf; });
-          sorted.forEach(function(r) {
-            var fpyVal = (r.fpy === null || r.fpy === undefined) ? null : r.fpy;
-            var tc = fpyVal === null ? 'text-slate-400' : fpyVal >= 95 ? 'text-emerald-600' : fpyVal >= 90 ? 'text-amber-600' : 'text-red-500';
-            var fpyTxt = fpyVal === null ? '—' : fpyVal.toFixed(1) + '%';
-            var statusTxt = fpyVal === null ? 'No prod' : fpyVal >= 95 ? 'Good' : fpyVal >= 90 ? 'OK' : 'Poor';
-            var bg = (fpyVal === null || fpyVal >= 90) ? 'bg-white/40' : 'bg-red-50/40';
-            tb.innerHTML += '<tr class="hover:bg-white/60 transition-colors border-b border-white/50 ' + bg + '"><td class="py-1.5 pl-3 sm:pl-5 font-medium text-slate-700 text-[10px]">' + r.item + '</td><td class="py-1.5 text-slate-500 text-[10px]">' + r.line + '</td><td class="py-1.5 text-slate-500 text-[10px]">' + (r.time || '') + '</td><td class="py-1.5 text-center font-bold text-slate-700 text-[10px]">' + r.produced.toLocaleString() + '</td><td class="py-1.5 text-center font-bold ' + (r.defective > 0 ? 'text-red-600' : 'text-slate-400') + ' text-[10px]">' + r.defective + '</td><td class="py-1.5 text-right font-extrabold ' + tc + ' text-[10px]">' + fpyTxt + '</td><td class="py-1.5 pr-3 sm:pr-5 text-right text-[9px] text-slate-400">' + statusTxt + '</td></tr>';
-            var bc = fpyVal === null ? 'border-l-slate-300' : fpyVal >= 95 ? 'border-l-emerald-500' : fpyVal >= 90 ? 'border-l-amber-500' : 'border-l-red-500';
-            mc.innerHTML += '<div class="border-l-4 ' + bc + ' bg-white/40 backdrop-blur-sm rounded-lg p-2.5">' +
-              '<div class="flex justify-between items-start"><span class="font-bold text-slate-700 text-[11px]">' + r.item + '</span><span class="font-extrabold ' + tc + ' text-xs ml-1">' + fpyTxt + '</span></div>' +
-              '<div class="flex gap-3 text-[9px] text-slate-500 mt-1"><span>' + r.line + '</span><span>' + (r.time || '') + '</span><span>Prod: ' + r.produced + '</span><span>Def: ' + r.defective + '</span></div></div>';
-          });
-
-          // Problem-type Pareto
-          renderQualityPareto();
-          // RCA — top defect items with their top problem type
-          renderQualityRCA();
+        });
+      }
     }
 
     function renderQualityPareto() {
