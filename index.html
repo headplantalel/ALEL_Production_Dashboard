@@ -749,11 +749,6 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 flex-1 min-h-0 pb-1">
            <!-- Left Column -->
            <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-2 min-h-[400px] lg:min-h-0">
-               <div class="bg-white/80 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 min-h-[120px] max-h-[160px]">
-                  <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-3 shrink-0">Production Alerts</h3>
-                  <div id="summary-alerts-list" class="flex-1 overflow-y-auto space-y-2 text-[11px] pr-2"></div>
-               </div>
-
                <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-[250px] overflow-hidden">
                    <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md z-20 flex justify-between items-center">
                      <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Daily Item Matrix</h3>
@@ -801,23 +796,18 @@
                    </div>
                </div>
 
-               <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 transition-transform hover:-translate-y-1 max-h-[280px]">
-                    <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-2 flex items-center gap-1.5">
-                       <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                       Line Ranking
-                    </h3>
-                    <div id="summary-line-ranking" class="flex-1 overflow-y-auto space-y-1.5 pr-2 text-[10px]"></div>
+                <div class="bg-white/80 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 max-h-[220px]">
+                   <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-3 shrink-0">Production Alerts</h3>
+                   <div id="summary-alerts-list" class="flex-1 overflow-y-auto space-y-2 text-[11px] pr-2"></div>
                 </div>
 
-                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-[250px] transition-transform hover:-translate-y-1">
-                   <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-1">Volume by Line</h3>
-                   <div id="chart-summary-donut" class="w-full flex-1 flex justify-center items-center"></div>
-               </div>
-
-               <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 h-[110px] overflow-hidden transition-transform hover:-translate-y-1">
-                   <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-1 z-10 relative">Daily Target Health</h3>
-                   <div id="chart-summary-gauge" class="w-full flex justify-center -mt-5"></div>
-             </div>
+                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 transition-transform hover:-translate-y-1 max-h-[280px]">
+                     <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-2 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        Line Ranking
+                     </h3>
+                     <div id="summary-line-ranking" class="flex-1 overflow-y-auto space-y-1.5 pr-2 text-[10px]"></div>
+                </div>
           </div>
          </div>
       </div>
@@ -3014,7 +3004,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
 
           let iKey = `${r.line}::${r.itemCode ? '['+r.itemCode+'] - '+r.item : r.item}`;
           if(!itemMap[iKey]) {
-              itemMap[iKey] = { line: r.line, itemStr: r.itemCode ? `[${r.itemCode}] - ${r.item}` : r.item, qty: 0, mp: 0, prod_x_qty: 0, tgt_x_qty: 0, minutes: 0 };
+              itemMap[iKey] = { line: r.line, itemStr: r.itemCode ? `[${r.itemCode}] - ${r.item}` : r.item, qty: 0, mp: 0, prod_x_qty: 0, tgt_x_qty: 0, minutes: 0, section: r.section || '', pg: r.pg || '' };
           }
           itemMap[iKey].qty += r.qty;
           itemMap[iKey].mp = Math.max(itemMap[iKey].mp, r.mp); // Capture max MP for this item matrix
@@ -3051,7 +3041,12 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         updateTrend('trend-actual', parseFloat(globalActual), prevActual);
 
         // --- 5. MATRIX TABLE & TOP PERFORMER ---
-        let sortedKeys = Object.keys(itemMap).sort((a, b) => itemMap[b].qty - itemMap[a].qty);
+        let sortedKeys = Object.keys(itemMap).sort((a, b) => {
+            let da = itemMap[a], db = itemMap[b];
+            if (da.section !== db.section) return da.section < db.section ? -1 : 1;
+            if (da.pg !== db.pg) return da.pg < db.pg ? -1 : 1;
+            return itemMap[b].qty - itemMap[a].qty;
+        });
         const tableBody = document.getElementById('summary-item-table');
         tableBody.innerHTML = '';
         let bestItem = null, bestRatio = -1, worstItem = null, worstRatio = Infinity;
@@ -3162,62 +3157,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
             rankHTML += '<div class="flex items-center gap-2"><span class="font-black text-gray-400 w-5 text-right text-[9px]">' + (i < 3 ? medals[i] : (i+1)) + '</span><div class="flex-1 min-w-0"><div class="flex justify-between items-center mb-0.5"><span class="font-bold text-slate-700 truncate text-[10px]">' + line.line + ' <span class="font-normal text-slate-400">· ' + line.qty.toLocaleString() + '</span></span><span class="font-black ' + (barW >= 90 ? 'text-emerald-600' : barW >= 75 ? 'text-amber-600' : 'text-red-500') + ' text-[10px] ml-1 shrink-0">' + line.ach.toFixed(0) + '%</span></div><div class="w-full bg-gray-200 rounded-full h-2"><div class="h-2 rounded-full ' + barColor + '" style="width:' + barW + '%"></div></div></div></div>';
         });
         document.getElementById('summary-line-ranking').innerHTML = rankHTML || '<div class="text-gray-400 text-center py-2">No data</div>';
-
-// --- 6. RENDER GAUGE AND DONUT CHARTS ---
-        let achievementPct = parseFloat(globalTarget) > 0 ? ((parseFloat(globalActual) / parseFloat(globalTarget)) * 100).toFixed(1) : 0;
-        let pctVal = parseFloat(achievementPct);
-        
-        // FIXED COLOR LOGIC: >= 90% Green, >= 75% Yellow, else Red
-        let gaugeColor = pctVal >= 90 ? '#10B981' : pctVal >= 75 ? '#F59E0B' : '#EF4444';
-
-let gaugeOptions = {
-            series: [pctVal],
-            labels: ['Target Achieved'],
-            chart: { type: 'radialBar', height: 130, sparkline: { enabled: true }, animations: { enabled: false } }, // Reduced height heavily
-            plotOptions: {
-                radialBar: {
-                    startAngle: -90, endAngle: 90,
-                    hollow: { size: '60%' },
-                    track: { background: '#f3f4f6', strokeWidth: '100%', margin: 0 },
-                    dataLabels: {
-                        // Pushed name DOWN (offsetY: 25) and value UP (offsetY: -10) to create a clear gap
-                        name: { show: true, fontSize: '9px', fontWeight: 700, color: '#9CA3AF', offsetY: 25 },
-                        value: { offsetY: -10, fontSize: '24px', fontWeight: 800, color: '#374151', formatter: function(val) { return val + "%"; } }
-                    }
-                }
-            },
-            fill: { type: 'solid', colors: [gaugeColor] },
-            stroke: { lineCap: 'round' }
-        };
-        
-        if(window.summaryGaugeChart) window.summaryGaugeChart.destroy();
-        window.summaryGaugeChart = new ApexCharts(document.querySelector("#chart-summary-gauge"), gaugeOptions);
-        window.summaryGaugeChart.render();
-
-        let donutOptions = {
-            series: Object.values(lineOutput),
-            labels: Object.keys(lineOutput),
-            chart: { type: 'donut', height: 230, animations: { enabled: false } },
-            plotOptions: { donut: { size: '65%' } },
-            dataLabels: { enabled: false },
-            legend: { 
-                show: true, 
-                position: 'right', // <--- Moves legend to the right
-                offsetY: 10,
-                fontSize: '10px',
-                fontFamily: 'Inter, sans-serif',
-                markers: { width: 8, height: 8 },
-                itemMargin: { vertical: 4 } // Adds spacing between items
-            },
-            tooltip: { y: { formatter: function(val) { return val.toLocaleString() + " units"; } } },
-            colors: ['#0D5C58', '#13827d', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444', '#10b981']
-        };
-        
-        if(window.summaryDonutChart) window.summaryDonutChart.destroy();
-        window.summaryDonutChart = new ApexCharts(document.querySelector("#chart-summary-donut"), donutOptions);
-        window.summaryDonutChart.render();
-
-        // --- 7. UPDATE FPY KPI CARD ON SUMMARY (hourly FPY) ---
+        // --- 6. UPDATE FPY KPI CARD ON SUMMARY (hourly FPY) ---
         renderSummaryFPY();
       }
 
