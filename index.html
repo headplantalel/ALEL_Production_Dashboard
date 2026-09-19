@@ -766,12 +766,13 @@
                      <table class="w-full text-left border-collapse text-[11px] sm:text-xs">
                        <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm border-b border-white">
                          <tr class="text-slate-500 uppercase tracking-wider">
-                           <th class="p-3 pl-3 sm:pl-5 font-extrabold w-[25%]">Line</th>
-                           <th class="p-3 font-extrabold w-[33%]">Item</th>
-                           <th class="p-3 font-extrabold text-center w-[12%]">MP</th>
-                           <th class="p-3 font-extrabold text-right w-[10%]">Qty</th>
-                           <th class="p-3 font-extrabold text-right text-enovar w-[10%]">Act.</th>
-                           <th class="p-3 pr-3 sm:pr-5 font-extrabold text-right text-slate-400 w-[10%]">Tgt.</th>
+                          <th class="p-3 pl-3 sm:pl-5 font-extrabold w-[20%]">Line</th>
+                          <th class="p-3 font-extrabold w-[30%]">Item</th>
+                          <th class="p-3 font-extrabold text-center w-[9%]">MP</th>
+                          <th class="p-3 font-extrabold text-center w-[13%]">Run</th>
+                          <th class="p-3 font-extrabold text-right w-[9%]">Qty</th>
+                          <th class="p-3 font-extrabold text-right text-enovar w-[9%]">Act.</th>
+                          <th class="p-3 pr-3 sm:pr-5 font-extrabold text-right text-slate-400 w-[10%]">Tgt.</th>
                          </tr>
                        </thead>
                        <tbody id="summary-item-table" class="text-slate-700 divide-y divide-white/50"></tbody>
@@ -2215,6 +2216,16 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
        return `${months[d.getMonth()]} ${d.getDate().toString().padStart(2, '0')}, ${d.getFullYear()}`;
     }
 
+    function formatRunTime(mins) {
+       mins = Math.round(Number(mins) || 0);
+       if (mins <= 0) return '0m';
+       var h = Math.floor(mins / 60);
+       var m = mins % 60;
+       if (h === 0) return m + 'm';
+       if (m === 0) return h + 'h';
+       return h + 'h ' + m + 'm';
+    }
+
     function toggleChartVis(checkbox) {
       const wrapper = document.querySelector(`.sec-chart-wrapper[data-key="${checkbox.value}"]`);
       if(wrapper) {
@@ -3003,10 +3014,11 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
 
           let iKey = `${r.line}::${r.itemCode ? '['+r.itemCode+'] - '+r.item : r.item}`;
           if(!itemMap[iKey]) {
-              itemMap[iKey] = { line: r.line, itemStr: r.itemCode ? `[${r.itemCode}] - ${r.item}` : r.item, qty: 0, mp: 0, prod_x_qty: 0, tgt_x_qty: 0 };
+              itemMap[iKey] = { line: r.line, itemStr: r.itemCode ? `[${r.itemCode}] - ${r.item}` : r.item, qty: 0, mp: 0, prod_x_qty: 0, tgt_x_qty: 0, minutes: 0 };
           }
           itemMap[iKey].qty += r.qty;
           itemMap[iKey].mp = Math.max(itemMap[iKey].mp, r.mp); // Capture max MP for this item matrix
+          itemMap[iKey].minutes += (Number(r.minutes) || 0); // total operating minutes
           if(r.productivity > 0) itemMap[iKey].prod_x_qty += (r.productivity * r.qty);
           if(r.targetProductivity > 0) itemMap[iKey].tgt_x_qty += (r.targetProductivity * r.qty);
         });
@@ -3045,7 +3057,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         let bestItem = null, bestRatio = -1, worstItem = null, worstRatio = Infinity;
 
         if (sortedKeys.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">No production recorded for this date.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">No production recorded for this date.</td></tr>`;
             document.getElementById('summary-top-performer').innerHTML = `<span class="text-gray-400">No data available</span>`;
             document.getElementById('summary-worst-performer').innerHTML = `<span class="text-gray-400">No data available</span>`;
         } else {
@@ -3081,6 +3093,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
                     <td class="py-1.5 pl-3 sm:pl-5 font-bold text-slate-800 break-words align-middle text-[11px] sm:text-xs">${d.line}</td>
                     <td class="py-1.5 font-medium text-slate-600 break-words align-middle text-[11px] sm:text-xs">${d.itemStr}</td>
                     <td class="py-1.5 text-center font-bold text-slate-700 align-middle text-[11px] sm:text-xs">${d.mp}</td>
+                    <td class="py-1.5 text-center font-semibold text-slate-500 align-middle text-[11px] sm:text-xs whitespace-nowrap">${formatRunTime(d.minutes)}</td>
                     <td class="py-1.5 text-right font-semibold text-slate-700 align-middle text-[11px] sm:text-xs whitespace-nowrap">${d.qty.toLocaleString()}</td>
                     <td class="py-1.5 pr-2 text-right align-middle">
                        <div class="relative inline-flex items-center justify-end min-w-[3.5rem] h-5 px-1.5 rounded overflow-hidden border border-white/50 shadow-sm bg-white/40" title="${pct.toFixed(1)}% Achieved">
@@ -3456,25 +3469,26 @@ let gaugeOptions = {
       });
     }
 
-    function exportCSV() {
-      var rows = [['Line', 'Item', 'MP', 'Qty', 'Actual', 'Target', 'Achievement %']];
-      var table = document.getElementById('summary-item-table');
-      if (!table) return;
-      var trs = table.querySelectorAll('tr');
-      trs.forEach(function(tr) {
-        var tds = tr.querySelectorAll('td');
-        if (tds.length < 6) return;
-        var achievementText = tds[4].querySelector('span') ? tds[4].querySelector('span').getAttribute('title') || '' : '';
-        rows.push([
-          tds[0].innerText.trim(),
-          tds[1].innerText.trim(),
-          tds[2].innerText.trim(),
-          tds[3].innerText.trim(),
-          tds[4].innerText.trim(),
-          tds[5].innerText.trim(),
-          achievementText
-        ]);
-      });
+     function exportCSV() {
+       var rows = [['Line', 'Item', 'MP', 'Run Time', 'Qty', 'Actual', 'Target', 'Achievement %']];
+       var table = document.getElementById('summary-item-table');
+       if (!table) return;
+       var trs = table.querySelectorAll('tr');
+       trs.forEach(function(tr) {
+         var tds = tr.querySelectorAll('td');
+         if (tds.length < 7) return;
+         var achievementText = tds[5].querySelector('span') ? tds[5].querySelector('span').getAttribute('title') || '' : '';
+         rows.push([
+           tds[0].innerText.trim(),
+           tds[1].innerText.trim(),
+           tds[2].innerText.trim(),
+           tds[3].innerText.trim(),
+           tds[4].innerText.trim(),
+           tds[5].innerText.trim(),
+           tds[6].innerText.trim(),
+           achievementText
+         ]);
+       });
       var csv = rows.map(function(r) { return r.map(function(c) { return '"' + (c || '').replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
       var blob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8'});
       var url = URL.createObjectURL(blob);
