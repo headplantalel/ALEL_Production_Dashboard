@@ -1867,24 +1867,35 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     }
 
     function fetchDashboardData(mode, callback) {
-      // mode: 'initial' (small window, fast first paint), 'full' (full 60-day + snapshot), 'sync' (today merge)
-      if (mode === 'initial' || mode === 'full') {
-        var windowDays = (mode === 'initial') ? INITIAL_WINDOW_DAYS : CACHE_WINDOW_DAYS;
-        const start = new Date(); start.setHours(0,0,0,0); start.setDate(start.getDate() - (windowDays - 1));
+      // mode: 'initial' (7-day production only, fast first paint — defects + full window backfill later),
+      //       'full' (60-day production + defects, background), 'sync' (today merge)
+      if (mode === 'initial') {
+        const start = new Date(); start.setHours(0,0,0,0); start.setDate(start.getDate() - (INITIAL_WINDOW_DAYS - 1));
         const end = new Date(); end.setHours(23,59,59,999);
-        if (mode === 'full') { windowStartDate = start; windowEndDate = end; }
-        var payload = { action: "getDashboardRawData", startDate: Utilities_formatDateClient(start), endDate: Utilities_formatDateClient(end) };
-        callAPI(payload, function(data) {
+        windowStartDate = start; windowEndDate = end;
+        callAPI({ action: "getDashboardRawData", startDate: Utilities_formatDateClient(start), endDate: Utilities_formatDateClient(end) }, function(data) {
           if (data.error) { if (callback) callback(); return; }
+          rawDashboardData = data.raw || [];
+          lastRawFingerprint = computeFingerprint(rawDashboardData);
+          if (callback) callback();
+        });
+        return;
+      }
+
+      if (mode === 'full') {
+        const start = new Date(); start.setHours(0,0,0,0); start.setDate(start.getDate() - (CACHE_WINDOW_DAYS - 1));
+        const end = new Date(); end.setHours(23,59,59,999);
+        windowStartDate = start; windowEndDate = end;
+        callAPI({ action: "getDashboardRawData", startDate: Utilities_formatDateClient(start), endDate: Utilities_formatDateClient(end) }, function(data) {
+          if (data.error) return;
           var newRaw = data.raw || [];
           var fp = computeFingerprint(newRaw);
           var changed = (fp !== lastRawFingerprint);
           rawDashboardData = newRaw;
           lastRawFingerprint = fp;
           fetchDefects(function() {
-            if (mode === 'full') saveSnapshot();
-            if (callback) callback();
-            if (mode === 'full' && changed) renderDashboard();
+            saveSnapshot();
+            if (changed) renderDashboard();
           });
         });
         return;
