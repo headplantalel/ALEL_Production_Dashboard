@@ -746,70 +746,69 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 flex-1 min-h-0 pb-1">
-           <!-- Left Column -->
-           <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-2 min-h-[400px] lg:min-h-0">
-               <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-[250px] overflow-hidden">
-                   <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md z-20 flex justify-between items-center">
-                     <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Daily Item Matrix</h3>
-                     <button onclick="exportCSV()" class="text-[9px] font-bold text-white bg-enovar hover:bg-enovar-dark px-3 py-1 rounded-lg transition-colors shadow-sm flex items-center gap-1">
-                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                       CSV
-                     </button>
-                   </div>
-                  <div class="flex-1 overflow-y-auto p-0 m-0 bg-white/20">
-                     <table class="w-full text-left border-collapse text-[11px] sm:text-xs">
-                       <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm border-b border-white">
-                         <tr class="text-slate-500 uppercase tracking-wider">
-                          <th class="p-3 pl-3 sm:pl-5 font-extrabold w-[20%]">Line</th>
-                          <th class="p-3 font-extrabold w-[30%]">Item</th>
-                          <th class="p-3 font-extrabold text-center w-[9%]">MP</th>
-                          <th class="p-3 font-extrabold text-center w-[13%]">Run</th>
-                          <th class="p-3 font-extrabold text-right w-[9%]">Qty</th>
-                          <th class="p-3 font-extrabold text-right text-enovar w-[9%]">Act.</th>
-                          <th class="p-3 pr-3 sm:pr-5 font-extrabold text-right text-slate-400 w-[10%]">Tgt.</th>
-                         </tr>
-                       </thead>
-                       <tbody id="summary-item-table" class="text-slate-700 divide-y divide-white/50"></tbody>
-                     </table>
-                  </div>
-               </div>
-           </div>
+        <!-- Full-width Daily Item Matrix -->
+        <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-0 overflow-hidden">
+            <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md z-20 flex items-center gap-2 flex-wrap">
+              <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest mr-auto">Daily Item Matrix</h3>
+              <select id="summary-line-filter" onchange="renderDashboard()" class="text-[10px] sm:text-[11px] font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[150px]">
+                <option value="all">All Lines</option>
+              </select>
+              <select id="summary-item-filter" onchange="renderDashboard()" class="text-[10px] sm:text-[11px] font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[200px]">
+                <option value="all">All Items</option>
+              </select>
+              <button onclick="exportCSV()" class="text-[9px] font-bold text-white bg-enovar hover:bg-enovar-dark px-3 py-1 rounded-lg transition-colors shadow-sm flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                CSV
+              </button>
+            </div>
+            <div class="flex-1 overflow-y-auto overflow-x-auto p-0 m-0 bg-white/20">
+               <table class="w-full text-left border-collapse text-[11px] sm:text-xs min-w-[720px]">
+                 <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm border-b border-white">
+                   <tr class="text-slate-500 uppercase tracking-wider">
+                     <th class="p-2 sm:p-3 pl-3 sm:pl-5 font-extrabold w-[12%]">Line</th>
+                     <th class="p-2 sm:p-3 font-extrabold w-[20%]">Item</th>
+                     <th class="p-2 sm:p-3 font-extrabold w-[11%]">PG</th>
+                     <th class="p-2 sm:p-3 font-extrabold text-center w-[6%]">MP</th>
+                     <th class="p-2 sm:p-3 font-extrabold text-center w-[9%]">Run</th>
+                     <th class="p-2 sm:p-3 font-extrabold text-right w-[10%]">Qty</th>
+                     <th class="p-2 sm:p-3 font-extrabold text-right text-enovar w-[10%]">Act.</th>
+                     <th class="p-2 sm:p-3 font-extrabold text-right text-slate-400 w-[9%]">Tgt.</th>
+                     <th class="p-2 sm:p-3 pr-3 sm:pr-5 font-extrabold text-right text-slate-500 w-[13%]">Tgt Qty</th>
+                   </tr>
+                 </thead>
+                 <tbody id="summary-item-table" class="text-slate-700 divide-y divide-white/50"></tbody>
+               </table>
+            </div>
+        </div>
 
-           <!-- Right Column -->
-           <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-1 min-h-0 overflow-y-auto">
-               <!-- Best / Worst -->
-               <div class="grid grid-cols-2 gap-3 shrink-0">
-                   <div class="bg-gradient-to-br from-green-100/60 to-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col transition-transform hover:-translate-y-1">
-                       <h3 class="text-[10px] font-black text-green-700 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-                          Star Performer
-                       </h3>
-                        <div id="summary-top-performer" class="text-xs text-slate-700 font-medium">Calculating…</div>
-                   </div>
-                   <div class="bg-gradient-to-br from-red-100/60 to-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col transition-transform hover:-translate-y-1">
-                       <h3 class="text-[10px] font-black text-red-600 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                          Needs Attention
-                       </h3>
-                        <div id="summary-worst-performer" class="text-xs text-slate-700 font-medium">Calculating…</div>
-                   </div>
-               </div>
-
-                <div class="bg-white/80 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 max-h-[220px]">
-                   <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-3 shrink-0">Production Alerts</h3>
-                   <div id="summary-alerts-list" class="flex-1 overflow-y-auto space-y-2 text-[11px] pr-2"></div>
-                </div>
-
-                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 transition-transform hover:-translate-y-1 max-h-[280px]">
-                     <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-2 flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                        Line Ranking
-                     </h3>
-                     <div id="summary-line-ranking" class="flex-1 overflow-y-auto space-y-1.5 pr-2 text-[10px]"></div>
-                </div>
-          </div>
-         </div>
+        <!-- Bottom row: Best/Worst + Alerts + Line Ranking -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 shrink-0 pb-1">
+            <div class="bg-gradient-to-br from-green-100/60 to-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col transition-transform hover:-translate-y-1">
+                <h3 class="text-[10px] font-black text-green-700 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                   Star Performer
+                </h3>
+                 <div id="summary-top-performer" class="text-xs text-slate-700 font-medium">Calculating…</div>
+            </div>
+            <div class="bg-gradient-to-br from-red-100/60 to-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col transition-transform hover:-translate-y-1">
+                <h3 class="text-[10px] font-black text-red-600 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                   Needs Attention
+                </h3>
+                 <div id="summary-worst-performer" class="text-xs text-slate-700 font-medium">Calculating…</div>
+            </div>
+            <div class="bg-white/80 backdrop-blur-xl p-3 sm:p-4 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col max-h-[220px]">
+               <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-3 shrink-0">Production Alerts</h3>
+               <div id="summary-alerts-list" class="flex-1 overflow-y-auto space-y-2 text-[11px] pr-2"></div>
+            </div>
+            <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col transition-transform hover:-translate-y-1 max-h-[220px]">
+                 <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-2 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-enovar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Line Ranking
+                 </h3>
+                 <div id="summary-line-ranking" class="flex-1 overflow-y-auto space-y-1.5 pr-2 text-[10px]"></div>
+            </div>
+        </div>
       </div>
 
       <!-- AI INSIGHTS VIEW -->
@@ -877,64 +876,66 @@
              </div>
           </div>
 
-          <!-- Main Grid -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 flex-1 min-h-0 pb-1">
-             <!-- Left (2/3): Scorecard + Pareto -->
-             <div class="lg:col-span-2 flex flex-col gap-3 sm:gap-4 min-h-[300px] lg:min-h-0">
-                <div class="hidden sm:flex bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex-col flex-1 min-h-[200px] overflow-hidden">
-                   <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md flex items-center justify-between">
-                      <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Quality Scorecard</h3>
-                      <button onclick="exportQualityCSV()" class="text-[9px] font-bold text-white bg-enovar hover:bg-enovar-dark px-3 py-1 rounded-lg transition-colors shadow-sm flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        CSV
-                      </button>
-                   </div>
-                   <div class="flex-1 overflow-y-auto overflow-x-auto bg-white/20">
-                      <table class="w-full text-left border-collapse text-[11px] sm:text-xs min-w-[500px]">
-                         <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm border-b border-white">
-                            <tr class="text-slate-500 uppercase tracking-wider">
-                               <th class="p-2 sm:p-3 pl-3 sm:pl-5 font-extrabold">Item</th>
-                               <th class="p-2 sm:p-3 font-extrabold">Line</th>
-                               <th class="p-2 sm:p-3 font-extrabold">Time</th>
-                               <th class="p-2 sm:p-3 font-extrabold text-center">Prod</th>
-                               <th class="p-2 sm:p-3 font-extrabold text-center">Def</th>
-                               <th class="p-2 sm:p-3 font-extrabold text-right">FPY%</th>
-                               <th class="p-2 sm:p-3 pr-3 sm:pr-5 font-extrabold text-right">Status</th>
-                            </tr>
-                         </thead>
-                         <tbody id="quality-table" class="text-slate-700 divide-y divide-white/50"></tbody>
-                      </table>
-                   </div>
-                </div>
-                <div id="quality-cards-mobile" class="sm:hidden space-y-2 overflow-y-auto"></div>
+          <!-- Full-width Quality Scorecard -->
+          <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-0 overflow-hidden">
+             <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md flex items-center gap-2 flex-wrap">
+                <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest mr-auto">Quality Scorecard</h3>
+                <select id="quality-line-filter" onchange="renderQualityDashboard()" class="text-[10px] sm:text-[11px] font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[140px]">
+                   <option value="all">All Lines</option>
+                </select>
+                <select id="quality-item-filter" onchange="renderQualityDashboard()" class="text-[10px] sm:text-[11px] font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[190px]">
+                   <option value="all">All Items</option>
+                </select>
+                <button onclick="exportQualityCSV()" class="text-[9px] font-bold text-white bg-enovar hover:bg-enovar-dark px-3 py-1 rounded-lg transition-colors shadow-sm flex items-center gap-1">
+                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                   CSV
+                </button>
+             </div>
+             <div class="hidden sm:block flex-1 overflow-y-auto overflow-x-auto bg-white/20">
+                <table class="w-full text-left border-collapse text-[11px] sm:text-xs min-w-[560px]">
+                   <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm border-b border-white">
+                      <tr class="text-slate-500 uppercase tracking-wider">
+                         <th class="p-2 sm:p-3 pl-3 sm:pl-5 font-extrabold">Item</th>
+                         <th class="p-2 sm:p-3 font-extrabold">Line</th>
+                         <th class="p-2 sm:p-3 font-extrabold">Time</th>
+                         <th class="p-2 sm:p-3 font-extrabold text-center">Prod</th>
+                         <th class="p-2 sm:p-3 font-extrabold text-center">Def</th>
+                         <th class="p-2 sm:p-3 font-extrabold text-right">FPY%</th>
+                         <th class="p-2 sm:p-3 pr-3 sm:pr-5 font-extrabold text-right">Status</th>
+                      </tr>
+                   </thead>
+                   <tbody id="quality-table" class="text-slate-700 divide-y divide-white/50"></tbody>
+                </table>
+             </div>
+             <div id="quality-cards-mobile" class="sm:hidden space-y-2 overflow-y-auto p-2"></div>
+          </div>
 
-                <!-- Pareto: prominent, full 2/3 width + taller -->
-                <div class="bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 h-[280px] sm:h-[320px]">
-                   <div class="flex items-center justify-between pl-3 pr-2 pt-2 mb-1 shrink-0">
-                      <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Defect Pareto by Problem Type</h3>
-                   </div>
-                   <div id="quality-pareto-chart" class="w-full flex-1 min-h-0"></div>
-                   <div id="quality-pareto-insight" class="text-[10px] font-semibold text-slate-500 px-3 pb-2 pt-1 shrink-0"></div>
+          <!-- Bottom: Pareto + RCA + Gauges -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 shrink-0 pb-1">
+             <div class="lg:col-span-2 bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col shrink-0 h-[260px] sm:h-[300px]">
+                <div class="flex items-center justify-between pl-3 pr-2 pt-2 mb-1 shrink-0">
+                   <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Defect Pareto by Problem Type</h3>
                 </div>
+                <div id="quality-pareto-chart" class="w-full flex-1 min-h-0"></div>
+                <div id="quality-pareto-insight" class="text-[10px] font-semibold text-slate-500 px-3 pb-2 pt-1 shrink-0"></div>
              </div>
 
-             <!-- Right (1/3): RCA + Gauges -->
-             <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-1 min-h-0 overflow-y-auto pr-1">
-                <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-[200px]">
+             <div class="flex flex-col gap-3 sm:gap-4 lg:col-span-1 min-h-0">
+                <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-[160px]">
                    <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md">
                       <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest">Defect RCA — Top Issues</h3>
                    </div>
                    <div id="quality-rca-list" class="p-2 sm:p-3 space-y-2 flex-1 overflow-y-auto"></div>
                 </div>
 
-                <div class="hidden sm:flex bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex-col shrink-0 max-h-[220px]">
+                <div class="hidden sm:flex bg-white/60 backdrop-blur-xl p-3 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex-col shrink-0 max-h-[200px]">
                    <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-widest w-full text-left pl-3 pt-2 mb-2">Line Gauges</h3>
                    <div id="quality-gauge-row" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
                 </div>
                 <div id="quality-gauge-row-mobile" class="sm:hidden flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
              </div>
           </div>
-       </div>
+        </div>
       </div>
     </div>
 
@@ -3052,67 +3053,98 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         updateTrend('trend-mp', peakMp, prevPeakMp, true); // True = Reverse logic for MP
         updateTrend('trend-actual', parseFloat(globalActual), prevActual);
 
-        // --- 5. MATRIX TABLE & TOP PERFORMER ---
-        let sortedKeys = Object.keys(itemMap).sort((a, b) => {
-            let da = itemMap[a], db = itemMap[b];
-            if (da.section !== db.section) return da.section < db.section ? -1 : 1;
-            if (da.pg !== db.pg) return da.pg < db.pg ? -1 : 1;
-            return itemMap[b].qty - itemMap[a].qty;
-        });
-        const tableBody = document.getElementById('summary-item-table');
-        tableBody.innerHTML = '';
-        let bestItem = null, bestRatio = -1, worstItem = null, worstRatio = Infinity;
+         // --- 5. MATRIX TABLE & TOP PERFORMER ---
+         let sortedKeys = Object.keys(itemMap).sort((a, b) => {
+             let da = itemMap[a], db = itemMap[b];
+             if (da.section !== db.section) return da.section < db.section ? -1 : 1;
+             if (da.pg !== db.pg) return da.pg < db.pg ? -1 : 1;
+             return itemMap[b].qty - itemMap[a].qty;
+         });
 
-        if (sortedKeys.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">No production recorded for this date.</td></tr>`;
-            document.getElementById('summary-top-performer').innerHTML = `<span class="text-gray-400">No data available</span>`;
-            document.getElementById('summary-worst-performer').innerHTML = `<span class="text-gray-400">No data available</span>`;
-        } else {
-            sortedKeys.forEach(key => {
-                let d = itemMap[key];
-                let wAct = d.qty > 0 ? (d.prod_x_qty / d.qty).toFixed(1) : "0.0";
-                let wTgt = d.qty > 0 ? (d.tgt_x_qty / d.qty).toFixed(1) : "0.0";
+         // Populate Line + Item filter dropdowns (preserve current selection)
+         var lineSet = {}, itemSet = {};
+         sortedKeys.forEach(function(k) { lineSet[itemMap[k].line] = true; itemSet[itemMap[k].itemStr] = true; });
+         var lineSel = document.getElementById('summary-line-filter');
+         var itemSel = document.getElementById('summary-item-filter');
+         var curLine = lineSel ? lineSel.value : 'all';
+         var curItem = itemSel ? itemSel.value : 'all';
+         if (lineSel) {
+             lineSel.innerHTML = '<option value="all">All Lines</option>' + Object.keys(lineSet).sort().map(function(l) { return '<option value="' + l + '">' + l + '</option>'; }).join('');
+             lineSel.value = (curLine && lineSet[curLine]) ? curLine : 'all';
+         }
+         if (itemSel) {
+             itemSel.innerHTML = '<option value="all">All Items</option>' + Object.keys(itemSet).sort().map(function(i) { return '<option value="' + i + '">' + i + '</option>'; }).join('');
+             itemSel.value = (curItem && itemSet[curItem]) ? curItem : 'all';
+         }
+         var filteredKeys = sortedKeys.filter(function(k) {
+             var d = itemMap[k];
+             if (lineSel && lineSel.value !== 'all' && d.line !== lineSel.value) return false;
+             if (itemSel && itemSel.value !== 'all' && d.itemStr !== itemSel.value) return false;
+             return true;
+         });
 
-                // Top Performer Logic (Highest % of Target Achieved)
-                let ratio = parseFloat(wTgt) > 0 ? (parseFloat(wAct) / parseFloat(wTgt)) : 0;
-                if (ratio > bestRatio && d.qty > 0) { bestRatio = ratio; bestItem = d; }
-                if (ratio < worstRatio && d.qty > 0) { worstRatio = ratio; worstItem = d; }
+         const tableBody = document.getElementById('summary-item-table');
+         tableBody.innerHTML = '';
+         let bestItem = null, bestRatio = -1, worstItem = null, worstRatio = Infinity;
 
-                if (d.qty === 0) {
-                    alerts.push({ priority: 1, html: `<div class="p-2 bg-amber-50 text-amber-800 rounded border border-amber-200 shadow-sm"><span class="font-black mr-1">⚠️ HALT:</span> ${d.line} recorded 0 output for ${d.itemStr}.</div>` });
-                } else if (parseFloat(wAct) < (parseFloat(wTgt) * 0.90)) {
-                    alerts.push({ priority: 2, html: `<div class="p-2 bg-red-50 text-red-700 rounded border border-red-100 shadow-sm"><span class="font-black mr-1">📉 BOTTLENECK:</span> ${d.line} is underperforming on ${d.itemStr}.</div>` });
-                }
+         if (sortedKeys.length === 0) {
+             tableBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-gray-500">No production recorded for this date.</td></tr>`;
+             document.getElementById('summary-top-performer').innerHTML = `<span class="text-gray-400">No data available</span>`;
+             document.getElementById('summary-worst-performer').innerHTML = `<span class="text-gray-400">No data available</span>`;
+         } else {
+             // Best/worst + alerts computed from the FULL dataset
+             sortedKeys.forEach(key => {
+                 let d = itemMap[key];
+                 let wAct = d.qty > 0 ? (d.prod_x_qty / d.qty).toFixed(1) : "0.0";
+                 let wTgt = d.qty > 0 ? (d.tgt_x_qty / d.qty).toFixed(1) : "0.0";
+                 let ratio = parseFloat(wTgt) > 0 ? (parseFloat(wAct) / parseFloat(wTgt)) : 0;
+                 if (ratio > bestRatio && d.qty > 0) { bestRatio = ratio; bestItem = d; }
+                 if (ratio < worstRatio && d.qty > 0) { worstRatio = ratio; worstItem = d; }
+                 if (d.qty === 0) {
+                     alerts.push({ priority: 1, html: `<div class="p-2 bg-amber-50 text-amber-800 rounded border border-amber-200 shadow-sm"><span class="font-black mr-1">⚠️ HALT:</span> ${d.line} recorded 0 output for ${d.itemStr}.</div>` });
+                 } else if (parseFloat(wAct) < (parseFloat(wTgt) * 0.90)) {
+                     alerts.push({ priority: 2, html: `<div class="p-2 bg-red-50 text-red-700 rounded border border-red-100 shadow-sm"><span class="font-black mr-1">📉 BOTTLENECK:</span> ${d.line} is underperforming on ${d.itemStr}.</div>` });
+                 }
+             });
 
-                // Calculate achievement percentage and dynamic colors
-                let pct = ratio * 100;
-                let displayPct = pct > 100 ? 100 : pct; 
-                let isGood = pct >= 90;
-                let isWarn = pct >= 75 && pct < 90;
-                
-                // Deepened the text colors so they remain highly readable over the background fill
-                let actColor = isGood ? 'text-emerald-800' : isWarn ? 'text-amber-800' : 'text-red-800';
-                // Made the background fill soft and translucent
-                let barColor = isGood ? 'bg-emerald-300' : isWarn ? 'bg-amber-300' : 'bg-red-300';
+             // Table rows from the FILTERED dataset
+             if (filteredKeys.length === 0) {
+                 tableBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-gray-500">No items match the selected filters.</td></tr>`;
+             } else {
+                 filteredKeys.forEach(key => {
+                     let d = itemMap[key];
+                     let wAct = d.qty > 0 ? (d.prod_x_qty / d.qty).toFixed(1) : "0.0";
+                     let wTgt = d.qty > 0 ? (d.tgt_x_qty / d.qty).toFixed(1) : "0.0";
+                     let ratio = parseFloat(wTgt) > 0 ? (parseFloat(wAct) / parseFloat(wTgt)) : 0;
+                     let tgtQty = Math.round(parseFloat(wTgt) * d.mp * (d.minutes || 0) / 60);
+                     let pct = ratio * 100;
+                     let displayPct = pct > 100 ? 100 : pct; 
+                     let isGood = pct >= 90;
+                     let isWarn = pct >= 75 && pct < 90;
+                     let actColor = isGood ? 'text-emerald-800' : isWarn ? 'text-amber-800' : 'text-red-800';
+                     let barColor = isGood ? 'bg-emerald-300' : isWarn ? 'bg-amber-300' : 'bg-red-300';
 
-                tableBody.innerHTML += `
-                  <tr class="hover:bg-white/60 transition-colors border-b border-white/50 group">
-                    <td class="py-1.5 pl-3 sm:pl-5 font-bold text-slate-800 break-words align-middle text-[11px] sm:text-xs">${d.line}</td>
-                    <td class="py-1.5 font-medium text-slate-600 break-words align-middle text-[11px] sm:text-xs">${d.itemStr}</td>
-                    <td class="py-1.5 text-center font-bold text-slate-700 align-middle text-[11px] sm:text-xs">${d.mp}</td>
-                    <td class="py-1.5 text-center font-semibold text-slate-500 align-middle text-[11px] sm:text-xs whitespace-nowrap">${formatRunTime(d.minutes)}</td>
-                    <td class="py-1.5 text-right font-semibold text-slate-700 align-middle text-[11px] sm:text-xs whitespace-nowrap">${d.qty.toLocaleString()}</td>
-                    <td class="py-1.5 pr-2 text-right align-middle">
-                       <div class="relative inline-flex items-center justify-end min-w-[3.5rem] h-5 px-1.5 rounded overflow-hidden border border-white/50 shadow-sm bg-white/40" title="${pct.toFixed(1)}% Achieved">
-                         <div class="absolute left-0 top-0 h-full ${barColor} opacity-50 transition-all duration-1000 ease-out" style="width: ${displayPct}%"></div>
-                         <span class="relative z-10 font-extrabold ${actColor} text-[11px] sm:text-xs">${wAct}</span>
-                       </div>
-                    </td>
-                    <td class="py-1.5 pr-3 sm:pr-5 text-right text-slate-400 font-bold align-middle text-[11px] sm:text-xs">${wTgt}</td>
-                  </tr>
-                `;
-            });
-            
+                     tableBody.innerHTML += `
+                       <tr class="hover:bg-white/60 transition-colors border-b border-white/50 group">
+                         <td class="py-1.5 pl-3 sm:pl-5 font-bold text-slate-800 break-words align-middle text-[11px] sm:text-xs">${d.line}</td>
+                         <td class="py-1.5 font-medium text-slate-600 break-words align-middle text-[11px] sm:text-xs">${d.itemStr}</td>
+                         <td class="py-1.5 text-slate-500 align-middle text-[11px] sm:text-xs">${d.pg || '—'}</td>
+                         <td class="py-1.5 text-center font-bold text-slate-700 align-middle text-[11px] sm:text-xs">${d.mp}</td>
+                         <td class="py-1.5 text-center font-semibold text-slate-500 align-middle text-[11px] sm:text-xs whitespace-nowrap">${formatRunTime(d.minutes)}</td>
+                         <td class="py-1.5 text-right font-semibold text-slate-700 align-middle text-[11px] sm:text-xs whitespace-nowrap">${d.qty.toLocaleString()}</td>
+                         <td class="py-1.5 pr-2 text-right align-middle">
+                            <div class="relative inline-flex items-center justify-end min-w-[3.5rem] h-5 px-1.5 rounded overflow-hidden border border-white/50 shadow-sm bg-white/40" title="${pct.toFixed(1)}% Achieved">
+                              <div class="absolute left-0 top-0 h-full ${barColor} opacity-50 transition-all duration-1000 ease-out" style="width: ${displayPct}%"></div>
+                              <span class="relative z-10 font-extrabold ${actColor} text-[11px] sm:text-xs">${wAct}</span>
+                            </div>
+                         </td>
+                         <td class="py-1.5 text-right text-slate-400 font-bold align-middle text-[11px] sm:text-xs">${wTgt}</td>
+                         <td class="py-1.5 pr-3 sm:pr-5 text-right text-slate-600 font-semibold align-middle text-[11px] sm:text-xs whitespace-nowrap">${tgtQty.toLocaleString()}</td>
+                       </tr>
+                     `;
+                 });
+             }
+
             if (bestItem) {
                 let ach = (bestRatio * 100).toFixed(0);
                 let bProd = bestItem.qty > 0 ? (bestItem.prod_x_qty / bestItem.qty).toFixed(1) : '0.0';
@@ -3422,14 +3454,14 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     }
 
      function exportCSV() {
-       var rows = [['Line', 'Item', 'MP', 'Run Time', 'Qty', 'Actual', 'Target', 'Achievement %']];
+       var rows = [['Line', 'Item', 'PG', 'MP', 'Run Time', 'Qty', 'Actual', 'Target', 'Tgt Qty', 'Achievement %']];
        var table = document.getElementById('summary-item-table');
        if (!table) return;
        var trs = table.querySelectorAll('tr');
        trs.forEach(function(tr) {
          var tds = tr.querySelectorAll('td');
-         if (tds.length < 7) return;
-         var achievementText = tds[5].querySelector('span') ? tds[5].querySelector('span').getAttribute('title') || '' : '';
+         if (tds.length < 9) return;
+         var achievementText = tds[6].querySelector('span') ? tds[6].querySelector('span').getAttribute('title') || '' : '';
          rows.push([
            tds[0].innerText.trim(),
            tds[1].innerText.trim(),
@@ -3438,6 +3470,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
            tds[4].innerText.trim(),
            tds[5].innerText.trim(),
            tds[6].innerText.trim(),
+           tds[7].innerText.trim(),
+           tds[8].innerText.trim(),
            achievementText
          ]);
        });
@@ -3847,12 +3881,33 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
             '<div class="font-extrabold text-[9px] text-slate-700 text-center leading-tight">' + l + '</div></div>';
         });
 
+        // Line + Item filters for the scorecard (populate + apply)
+        var qLineSet = {}, qItemSet = {};
+        fpyRows.forEach(function(r) { if (r.line) qLineSet[r.line] = true; if (r.item) qItemSet[r.item] = true; });
+        var qLineSel = document.getElementById('quality-line-filter');
+        var qItemSel = document.getElementById('quality-item-filter');
+        var curQLine = qLineSel ? qLineSel.value : 'all';
+        var curQItem = qItemSel ? qItemSel.value : 'all';
+        if (qLineSel) {
+          qLineSel.innerHTML = '<option value="all">All Lines</option>' + Object.keys(qLineSet).sort().map(function(l) { return '<option value="' + l + '">' + l + '</option>'; }).join('');
+          qLineSel.value = (curQLine && qLineSet[curQLine]) ? curQLine : 'all';
+        }
+        if (qItemSel) {
+          qItemSel.innerHTML = '<option value="all">All Items</option>' + Object.keys(qItemSet).sort().map(function(i) { return '<option value="' + i + '">' + i + '</option>'; }).join('');
+          qItemSel.value = (curQItem && qItemSet[curQItem]) ? curQItem : 'all';
+        }
+        var filteredFpy = fpyRows.filter(function(r) {
+          if (qLineSel && qLineSel.value !== 'all' && r.line !== qLineSel.value) return false;
+          if (qItemSel && qItemSel.value !== 'all' && r.item !== qItemSel.value) return false;
+          return true;
+        });
+
         // Scorecard table (hourly rows)
         var tb = document.getElementById('quality-table');
         tb.innerHTML = '';
         var mc = document.getElementById('quality-cards-mobile');
         mc.innerHTML = '';
-        var sorted = fpyRows.slice().sort(function(a, b) { var af = (a.fpy === null || a.fpy === undefined) ? 101 : a.fpy; var bf = (b.fpy === null || b.fpy === undefined) ? 101 : b.fpy; return af - bf; });
+        var sorted = filteredFpy.slice().sort(function(a, b) { var af = (a.fpy === null || a.fpy === undefined) ? 101 : a.fpy; var bf = (b.fpy === null || b.fpy === undefined) ? 101 : b.fpy; return af - bf; });
         sorted.forEach(function(r) {
           var fpyVal = (r.fpy === null || r.fpy === undefined) ? null : r.fpy;
           var tc = fpyVal === null ? 'text-slate-400' : fpyVal >= 95 ? 'text-emerald-600' : fpyVal >= 90 ? 'text-amber-600' : 'text-red-500';
