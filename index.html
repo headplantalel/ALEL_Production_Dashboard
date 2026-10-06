@@ -996,6 +996,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     let qualityDefectRows = [];       // cached defect rows for the Quality tab (problem-type Pareto)
     let sectionFpyRows = [];          // hourly FPY rows for Daily Status FPY metric
     let defectCache = [];             // all recent defect entries (date, line, itemCode, item, time, problemType, defectiveQty)
+    let defectsLoaded = false;        // true once the defect window has been fetched (avoids false 100% FPY on first paint)
 
     window.onload = function() {
       // Pre-warm the Apps Script instance so sign-in → dashboard has no cold-start latency.
@@ -3642,11 +3643,12 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
        var d = new Date();
        d.setDate(d.getDate() - CACHE_WINDOW_DAYS);
        var startDate = formatEntryDate(d);
-       callAPI({ action: "getDefectData", startDate: startDate }, function(data) {
-         defectCache = (data && data.rows) ? data.rows : [];
-         if (activeDashTab === 'quality') rebuildQualityDatePicker();
-         if (callback) callback();
-       });
+        callAPI({ action: "getDefectData", startDate: startDate }, function(data) {
+          defectCache = (data && data.rows) ? data.rows : [];
+          defectsLoaded = true;
+          if (activeDashTab === 'quality') rebuildQualityDatePicker();
+          if (callback) callback();
+        });
      }
 
     // Hourly FPY computed locally from cached production + defect data.
@@ -3707,6 +3709,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       var kpiEl = document.getElementById('summary-kpi-fpy');
       var trendEl = document.getElementById('trend-fpy');
       if (!kpiEl) return;
+      if (!defectsLoaded) { kpiEl.innerText = '—'; kpiEl.className = 'text-2xl sm:text-3xl font-black text-slate-400 leading-none'; if (trendEl) trendEl.innerHTML = ''; return; }
       var dateVal = document.getElementById('filter-date-summary');
       if (!dateVal || !dateVal.value) { kpiEl.innerText = '—'; if (trendEl) trendEl.innerHTML = ''; return; }
       var d = new Date(dateVal.value);
