@@ -3628,7 +3628,10 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     }
 
      function fetchDefects(callback) {
-       callAPI({ action: "getDefectData" }, function(data) {
+       var d = new Date();
+       d.setDate(d.getDate() - CACHE_WINDOW_DAYS);
+       var startDate = formatEntryDate(d);
+       callAPI({ action: "getDefectData", startDate: startDate }, function(data) {
          defectCache = (data && data.rows) ? data.rows : [];
          if (activeDashTab === 'quality') rebuildQualityDatePicker();
          if (callback) callback();
