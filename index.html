@@ -777,6 +777,7 @@
               <select id="summary-pg-filter" onchange="renderDashboard()" class="text-[10px] sm:text-[11px] font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[140px]">
                 <option value="all">All PGs</option>
               </select>
+              <button onclick="clearSummaryFilters()" class="text-[9px] font-bold text-slate-500 bg-white/70 hover:bg-white border border-gray-200 px-3 py-1 rounded-lg transition-colors shadow-sm">Clear</button>
               <button onclick="exportCSV()" class="text-[9px] font-bold text-white bg-enovar hover:bg-enovar-dark px-3 py-1 rounded-lg transition-colors shadow-sm flex items-center gap-1">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 CSV
@@ -2250,6 +2251,16 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
        return h + 'h ' + m + 'm';
     }
 
+    function clearSummaryFilters() {
+      var lf = document.getElementById('summary-line-filter');
+      var it = document.getElementById('summary-item-filter');
+      var pf = document.getElementById('summary-pg-filter');
+      if (lf) lf.value = 'all';
+      if (it) it.value = 'all';
+      if (pf) pf.value = 'all';
+      renderDashboard();
+    }
+
     function toggleChartVis(checkbox) {
       const wrapper = document.querySelector(`.sec-chart-wrapper[data-key="${checkbox.value}"]`);
       if(wrapper) {
@@ -3049,32 +3060,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           if(r.targetProductivity > 0) itemMap[iKey].tgt_x_qty += (r.targetProductivity * r.qty);
         });
 
-        // --- 4. CALC KPIs & RENDER TRENDS ---
-        let peakMp = Object.values(lineMp).reduce((a, b) => a + b, 0);
-        let globalActual = totalQty > 0 ? (weightedProdSum / totalQty).toFixed(1) : "0.0";
-        let globalTarget = totalQty > 0 ? (weightedTgtSum / totalQty).toFixed(1) : "0.0";
-
-        document.getElementById('summary-kpi-output').innerText = totalQty.toLocaleString();
-        document.getElementById('summary-kpi-mp').innerText = peakMp.toLocaleString();
-        document.getElementById('summary-kpi-actual').innerText = globalActual;
-        document.getElementById('summary-kpi-target').innerText = globalTarget;
-
-        const updateTrend = (elId, curr, prev, reverseLogic = false) => {
-            let el = document.getElementById(elId);
-            if(!el) return;
-            if(!prev || prev === 0) { el.innerHTML = `<span class="text-gray-400">No prev. data</span>`; return; }
-            let diff = curr - prev;
-            let percent = ((diff / prev) * 100).toFixed(1);
-            let isPositive = diff >= 0;
-            // MP logic: Increase in MP is usually bad (red), decrease is good (green)
-            let colorClass = isPositive ? (reverseLogic ? 'text-red-500' : 'text-green-500') : (reverseLogic ? 'text-green-500' : 'text-red-500');
-            let icon = isPositive ? '▲' : '▼';
-            el.innerHTML = `<span class="${colorClass}">${icon} ${Math.abs(percent)}%</span> <span class="text-gray-400 font-normal">vs Prev</span>`;
-        };
-
-        updateTrend('trend-output', totalQty, prevTotalQty);
-        updateTrend('trend-mp', peakMp, prevPeakMp, true); // True = Reverse logic for MP
-        updateTrend('trend-actual', parseFloat(globalActual), prevActual);
+        // KPIs are computed after the filter dropdowns (below) so they reflect Line/Item/PG selection.
 
          // --- 5. MATRIX TABLE & TOP PERFORMER ---
          let sortedKeys = Object.keys(itemMap).sort((a, b) => {
@@ -3112,6 +3098,45 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
               if (pgSel && pgSel.value !== 'all' && d.pg !== pgSel.value) return false;
               return true;
           });
+
+          // --- 4. CALC KPIs from the FILTERED dataset (filters update the KPI cards too) ---
+          var isFiltered = (lineSel && lineSel.value !== 'all') || (itemSel && itemSel.value !== 'all') || (pgSel && pgSel.value !== 'all');
+          var fTotalQty = 0, fWeightedProd = 0, fWeightedTgt = 0, fLineMp = {};
+          filteredKeys.forEach(function(k) {
+              var d = itemMap[k];
+              fTotalQty += d.qty;
+              fWeightedProd += d.prod_x_qty;
+              fWeightedTgt += d.tgt_x_qty;
+              fLineMp[d.line] = Math.max(fLineMp[d.line] || 0, d.mp);
+          });
+          var fPeakMp = Object.values(fLineMp).reduce(function(a, b) { return a + b; }, 0);
+          var fActual = fTotalQty > 0 ? (fWeightedProd / fTotalQty).toFixed(1) : "0.0";
+          var fTarget = fTotalQty > 0 ? (fWeightedTgt / fTotalQty).toFixed(1) : "0.0";
+          document.getElementById('summary-kpi-output').innerText = fTotalQty.toLocaleString();
+          document.getElementById('summary-kpi-mp').innerText = fPeakMp.toLocaleString();
+          document.getElementById('summary-kpi-actual').innerText = fActual;
+          document.getElementById('summary-kpi-target').innerText = fTarget;
+
+          const updateTrend = (elId, curr, prev, reverseLogic = false) => {
+              let el = document.getElementById(elId);
+              if (!el) return;
+              if (!prev || prev === 0) { el.innerHTML = `<span class="text-gray-400">No prev. data</span>`; return; }
+              let diff = curr - prev;
+              let percent = ((diff / prev) * 100).toFixed(1);
+              let isPositive = diff >= 0;
+              let colorClass = isPositive ? (reverseLogic ? 'text-red-500' : 'text-green-500') : (reverseLogic ? 'text-green-500' : 'text-red-500');
+              let icon = isPositive ? '▲' : '▼';
+              el.innerHTML = `<span class="${colorClass}">${icon} ${Math.abs(percent)}%</span> <span class="text-gray-400 font-normal">vs Prev</span>`;
+          };
+          if (isFiltered) {
+              document.getElementById('trend-output').innerHTML = '<span class="text-gray-400">Filtered</span>';
+              document.getElementById('trend-mp').innerHTML = '<span class="text-gray-400">Filtered</span>';
+              document.getElementById('trend-actual').innerHTML = '<span class="text-gray-400">Filtered</span>';
+          } else {
+              updateTrend('trend-output', fTotalQty, prevTotalQty);
+              updateTrend('trend-mp', fPeakMp, prevPeakMp, true);
+              updateTrend('trend-actual', parseFloat(fActual), prevActual);
+          }
 
          const tableBody = document.getElementById('summary-item-table');
          tableBody.innerHTML = '';
