@@ -774,6 +774,9 @@
               <select id="summary-item-filter" onchange="renderDashboard()" class="text-[10px] sm:text-[11px] font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[200px]">
                 <option value="all">All Items</option>
               </select>
+              <select id="summary-pg-filter" onchange="renderDashboard()" class="text-[10px] sm:text-[11px] font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[140px]">
+                <option value="all">All PGs</option>
+              </select>
               <button onclick="exportCSV()" class="text-[9px] font-bold text-white bg-enovar hover:bg-enovar-dark px-3 py-1 rounded-lg transition-colors shadow-sm flex items-center gap-1">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 CSV
@@ -3033,9 +3036,11 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           lineMp[r.line] = Math.max(lineMp[r.line] || 0, r.mp);
           lineOutput[r.line] = (lineOutput[r.line] || 0) + r.qty;
 
-          let iKey = `${r.line}::${r.itemCode ? '['+r.itemCode+'] - '+r.item : r.item}`;
+          let itemStr = r.itemCode ? `[${r.itemCode}] - ${r.item}` : r.item;
+          let iKey = `${r.line}::${itemStr}`;
           if(!itemMap[iKey]) {
-              itemMap[iKey] = { line: r.line, itemStr: r.itemCode ? `[${r.itemCode}] - ${r.item}` : r.item, qty: 0, mp: 0, prod_x_qty: 0, tgt_x_qty: 0, minutes: 0, section: r.section || '', pg: r.pg || '' };
+              var pgVal = r.pg || ((masterAuthData && masterAuthData.itemPgs && masterAuthData.itemPgs[itemStr]) ? masterAuthData.itemPgs[itemStr] : '');
+              itemMap[iKey] = { line: r.line, itemStr: itemStr, qty: 0, mp: 0, prod_x_qty: 0, tgt_x_qty: 0, minutes: 0, section: r.section || '', pg: pgVal };
           }
           itemMap[iKey].qty += r.qty;
           itemMap[iKey].mp = Math.max(itemMap[iKey].mp, r.mp); // Capture max MP for this item matrix
@@ -3079,27 +3084,34 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
              return itemMap[b].qty - itemMap[a].qty;
          });
 
-         // Populate Line + Item filter dropdowns (preserve current selection)
-         var lineSet = {}, itemSet = {};
-         sortedKeys.forEach(function(k) { lineSet[itemMap[k].line] = true; itemSet[itemMap[k].itemStr] = true; });
-         var lineSel = document.getElementById('summary-line-filter');
-         var itemSel = document.getElementById('summary-item-filter');
-         var curLine = lineSel ? lineSel.value : 'all';
-         var curItem = itemSel ? itemSel.value : 'all';
-         if (lineSel) {
-             lineSel.innerHTML = '<option value="all">All Lines</option>' + Object.keys(lineSet).sort().map(function(l) { return '<option value="' + l + '">' + l + '</option>'; }).join('');
-             lineSel.value = (curLine && lineSet[curLine]) ? curLine : 'all';
-         }
-         if (itemSel) {
-             itemSel.innerHTML = '<option value="all">All Items</option>' + Object.keys(itemSet).sort().map(function(i) { return '<option value="' + i + '">' + i + '</option>'; }).join('');
-             itemSel.value = (curItem && itemSet[curItem]) ? curItem : 'all';
-         }
-         var filteredKeys = sortedKeys.filter(function(k) {
-             var d = itemMap[k];
-             if (lineSel && lineSel.value !== 'all' && d.line !== lineSel.value) return false;
-             if (itemSel && itemSel.value !== 'all' && d.itemStr !== itemSel.value) return false;
-             return true;
-         });
+          // Populate Line + Item + PG filter dropdowns (preserve current selection)
+          var lineSet = {}, itemSet = {}, pgSet = {};
+          sortedKeys.forEach(function(k) { lineSet[itemMap[k].line] = true; itemSet[itemMap[k].itemStr] = true; if (itemMap[k].pg) pgSet[itemMap[k].pg] = true; });
+          var lineSel = document.getElementById('summary-line-filter');
+          var itemSel = document.getElementById('summary-item-filter');
+          var pgSel = document.getElementById('summary-pg-filter');
+          var curLine = lineSel ? lineSel.value : 'all';
+          var curItem = itemSel ? itemSel.value : 'all';
+          var curPg = pgSel ? pgSel.value : 'all';
+          if (lineSel) {
+              lineSel.innerHTML = '<option value="all">All Lines</option>' + Object.keys(lineSet).sort().map(function(l) { return '<option value="' + l + '">' + l + '</option>'; }).join('');
+              lineSel.value = (curLine && lineSet[curLine]) ? curLine : 'all';
+          }
+          if (itemSel) {
+              itemSel.innerHTML = '<option value="all">All Items</option>' + Object.keys(itemSet).sort().map(function(i) { return '<option value="' + i + '">' + i + '</option>'; }).join('');
+              itemSel.value = (curItem && itemSet[curItem]) ? curItem : 'all';
+          }
+          if (pgSel) {
+              pgSel.innerHTML = '<option value="all">All PGs</option>' + Object.keys(pgSet).sort().map(function(p) { return '<option value="' + p + '">' + p + '</option>'; }).join('');
+              pgSel.value = (curPg && pgSet[curPg]) ? curPg : 'all';
+          }
+          var filteredKeys = sortedKeys.filter(function(k) {
+              var d = itemMap[k];
+              if (lineSel && lineSel.value !== 'all' && d.line !== lineSel.value) return false;
+              if (itemSel && itemSel.value !== 'all' && d.itemStr !== itemSel.value) return false;
+              if (pgSel && pgSel.value !== 'all' && d.pg !== pgSel.value) return false;
+              return true;
+          });
 
          const tableBody = document.getElementById('summary-item-table');
          tableBody.innerHTML = '';
