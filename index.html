@@ -635,7 +635,11 @@
         <div class="w-px h-5 bg-slate-300 hidden sm:block shrink-0"></div>
         <span class="text-base sm:text-lg font-bold text-slate-800 tracking-wide flex items-center gap-1.5">
           Dashboard
-          <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 live-pulse shrink-0 ml-1 mr-2" title="Live Auto-Sync"></span>
+          <span id="live-dot" class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 live-pulse shrink-0 ml-1 mr-1" title="Live Auto-Sync"></span>
+          <span id="sync-indicator" class="hidden items-center gap-1 text-[10px] font-bold text-enovar shrink-0">
+            <svg class="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span>Syncing…</span>
+          </span>
         </span>
       </div>
       
@@ -1900,6 +1904,21 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       });
     }
 
+    function setSyncing(on) {
+      var ind = document.getElementById('sync-indicator');
+      var dot = document.getElementById('live-dot');
+      if (!ind) return;
+      if (on) {
+        ind.classList.remove('hidden');
+        ind.classList.add('flex');
+        if (dot) dot.classList.add('hidden');
+      } else {
+        ind.classList.add('hidden');
+        ind.classList.remove('flex');
+        if (dot) dot.classList.remove('hidden');
+      }
+    }
+
     function fetchDashboardData(mode, callback) {
       // mode: 'initial' (7-day production only, fast first paint — defects + full window backfill later),
       //       'full' (60-day production + defects, background), 'sync' (today merge)
@@ -1917,11 +1936,12 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       }
 
       if (mode === 'full') {
+        setSyncing(true);
         const start = new Date(); start.setHours(0,0,0,0); start.setDate(start.getDate() - (CACHE_WINDOW_DAYS - 1));
         const end = new Date(); end.setHours(23,59,59,999);
         windowStartDate = start; windowEndDate = end;
         callAPI({ action: "getDashboardRawData", startDate: Utilities_formatDateClient(start), endDate: Utilities_formatDateClient(end) }, function(data) {
-          if (data.error) return;
+          if (data.error) { setSyncing(false); return; }
           var newRaw = data.raw || [];
           var fp = computeFingerprint(newRaw);
           var changed = (fp !== lastRawFingerprint);
@@ -1929,6 +1949,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           lastRawFingerprint = fp;
           fetchDefects(function() {
             saveSnapshot();
+            setSyncing(false);
             if (changed) renderDashboard();
           });
         });
