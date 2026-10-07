@@ -4124,10 +4124,26 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       });
     }
 
-    function callAPI(payload, callback) {
-      fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
-      .then(res => res.json()).then(data => callback(data)).catch(err => { console.error(err); });
-    }
+     function callAPI(payload, callback, retries) {
+       retries = (retries === undefined) ? 2 : retries;
+       fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
+       .then(function(res) {
+         return res.text().then(function(txt) {
+           var data;
+           try { data = JSON.parse(txt); } catch (e) { throw new Error('non-json'); }
+           return data;
+         });
+       })
+       .then(function(data) { callback(data); })
+       .catch(function(err) {
+         console.error('callAPI failed, retries left:', retries, err.message);
+         if (retries > 0) {
+           setTimeout(function() { callAPI(payload, callback, retries - 1); }, 1500);
+         } else {
+           callback({ error: 'network' });
+         }
+       });
+     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
