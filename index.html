@@ -1020,6 +1020,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     let sectionFpyRows = [];          // hourly FPY rows for Daily Status FPY metric
     let defectCache = [];             // all recent defect entries (date, line, itemCode, item, time, problemType, defectiveQty)
     let defectsLoaded = false;        // true once the defect window has been fetched (avoids false 100% FPY on first paint)
+    let defectWindowStart = null;     // Date — start of the fetched defect window (used for FPY server fallback)
+    let defectWindowEnd = null;       // Date — end of the fetched defect window
 
     window.onload = function() {
       // Pre-warm the Apps Script instance so sign-in → dashboard has no cold-start latency.
@@ -1879,6 +1881,14 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       return d.getTime() >= windowStartDate.getTime() && d.getTime() <= windowEndDate.getTime();
     }
 
+    // True when a date's defects are present in the fetched defect window
+    function isDefectInWindow(dateStr) {
+      if (!defectWindowStart || !defectWindowEnd) return false;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return false;
+      return d.getTime() >= defectWindowStart.getTime() && d.getTime() <= defectWindowEnd.getTime();
+    }
+
     // Fetch a single out-of-window date and merge it into the cache
     function fetchDateIntoCache(dateStr, callback) {
       callAPI({ action: "getDashboardRawData", startDate: dateStr, endDate: dateStr }, function(data) {
@@ -2456,7 +2466,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         // FPY metric: hourly first-pass-yield per line/item per hour
         if (currentMetric === 'fpy') {
           var fpyDateStr = formatEntryDate(new Date(fdEl.value));
-          if (isDateInWindow(fdEl.value)) {
+          if (isDefectInWindow(fdEl.value)) {
             sectionFpyRows = computeHourlyFPY(fpyDateStr);
             renderSectionFPY(secVal);
           } else {
@@ -3730,14 +3740,17 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
 
      function fetchDefects(callback) {
        var d = new Date();
-       d.setDate(d.getDate() - CACHE_WINDOW_DAYS);
+       d.setDate(d.getDate() - 14);   // 14-day defect window (fast load; older dates use server fallback)
        var startDate = formatEntryDate(d);
-        callAPI({ action: "getDefectData", startDate: startDate }, function(data) {
-          defectCache = (data && data.rows) ? data.rows : [];
-          defectsLoaded = true;
-          if (activeDashTab === 'quality') rebuildQualityDatePicker();
-          if (callback) callback();
-        });
+       defectWindowStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+       defectWindowEnd = new Date();
+       defectWindowEnd.setHours(23, 59, 59, 999);
+       callAPI({ action: "getDefectData", startDate: startDate }, function(data) {
+         defectCache = (data && data.rows) ? data.rows : [];
+         defectsLoaded = true;
+         if (activeDashTab === 'quality') rebuildQualityDatePicker();
+         if (callback) callback();
+       });
      }
 
     // Hourly FPY computed locally from cached production + defect data.
@@ -3831,7 +3844,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         if (trendEl) trendEl.innerHTML = '<span class="' + deltaColor + '">' + arrow + ' ' + Math.abs(delta).toFixed(1) + '% vs yesterday</span> · <span class="text-red-500">' + totalDef + ' defective</span>';
       }
 
-      if (isDateInWindow(dateVal.value)) {
+      if (isDefectInWindow(dateVal.value)) {
         applyFPY(computeHourlyFPY(dateStr), computeHourlyFPY(yStr));
       } else {
         callAPI({ action: "getHourlyFPY", date: dateStr }, function(res) {
@@ -3980,7 +3993,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         renderQualityRCA();
       }
 
-      if (isDateInWindow(dateInput && dateInput.value ? dateInput.value : '')) {
+      if (isDefectInWindow(dateInput && dateInput.value ? dateInput.value : '')) {
         renderQualityData(computeHourlyFPY(dateStr), defectCache.filter(function(dd) { return dd.date === dateStr; }));
       } else {
         callAPI({ action: "getHourlyFPY", date: dateStr }, function(res) {
