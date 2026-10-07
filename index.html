@@ -1161,33 +1161,14 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     function verifyAndRoute() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('loader-text').innerText = "Authenticating…";
-      // For quality portal, always fetch fresh data (localStorage cache may lack authorizedFPY)
-      if (masterAuthData && targetPortal !== 'quality') {
-        routeUser(masterAuthData);
-        callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, data => {
-          localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
-          masterAuthData = data;
-          if (data.authorizedDashboard) {
-            var dashBtn = document.getElementById('btn-goto-dash');
-            if (dashBtn) dashBtn.classList.remove('hidden');
-          }
-          if (data.authorizedFPY) {
-            var fpyBtn = document.getElementById('btn-goto-fpy');
-            if (fpyBtn) fpyBtn.classList.remove('hidden');
-          }
-          // Refresh entry dropdowns with fresh master data (times/lines/items may have changed)
-          if (targetPortal === 'entry' && !document.getElementById('app').classList.contains('hidden')) {
-            refreshEntryDropdowns(data);
-          }
-        });
-      } else {
-        document.getElementById('loader').classList.remove('hidden');
-        callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, function(data) {
-          localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
-          masterAuthData = data;
-          routeUser(data);
-        });
-      }
+      // Always fetch fresh auth (the localStorage cache can be stale and wrongly deny
+      // users who were just added to the Master_Data auth columns).
+      document.getElementById('loader').classList.remove('hidden');
+      callAPI({ action: "getData", email: currentUser.email, name: currentUser.name }, function(data) {
+        localStorage.setItem('master_data_cache_' + currentUser.email, JSON.stringify(data));
+        masterAuthData = data;
+        routeUser(data);
+      });
     }
 
     function routeUser(data) {
