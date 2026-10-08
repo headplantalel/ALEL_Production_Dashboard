@@ -993,7 +993,7 @@
     let lastRawFingerprint = '';
     let productionMetadata = null; // {pgs, items, dates, sections} — cached, for Analytics dropdowns
     let activeDashTab = localStorage.getItem('activeDashTab') || 'section';
-    const CACHE_WINDOW_DAYS = 60;           // client-side rolling window (days)
+    const CACHE_WINDOW_DAYS = 35;           // client-side rolling window (days) — covers Analytics' last-30-days
     const INITIAL_WINDOW_DAYS = 7;          // small window fetched first for a fast first paint (then backfilled)
     const FULL_REFRESH_MS = 10 * 60 * 1000; // periodic full window re-fetch (10 min)
     const SNAPSHOT_KEY = 'alel_dash_snapshot';   // localStorage key for the cached window snapshot
@@ -1023,6 +1023,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     let qualityDefectRows = [];       // cached defect rows for the Quality tab (problem-type Pareto)
     let sectionFpyRows = [];          // hourly FPY rows for Daily Status FPY metric
     let defectCache = [];             // all recent defect entries (date, line, itemCode, item, time, problemType, defectiveQty)
+    let defectDates = [];             // distinct defect dates ("dd-MMM-yyyy") for the quality date picker
     let defectsLoaded = false;        // true once the defect window has been fetched (avoids false 100% FPY on first paint)
     let defectWindowStart = null;     // Date — start of the fetched defect window (used for FPY server fallback)
     let defectWindowEnd = null;       // Date — end of the fetched defect window
@@ -2205,9 +2206,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     function rebuildQualityDatePicker() {
       var el = document.getElementById('filter-date-summary');
       if (!el) return;
-      var defectDates = new Set();
-      (defectCache || []).forEach(function(d) { if (d.date) defectDates.add(d.date); });
-      var enabled = Array.from(defectDates).map(function(ds) { return new Date(ds); });
+      // Use the lightweight distinct-dates list (fetched via getDefectDates)
+      var enabled = (defectDates || []).map(function(ds) { return new Date(ds); });
       // Always keep the currently-selected date selectable (e.g. today before first entry)
       var curVal = el.value;
       if (curVal) {
@@ -3741,17 +3741,22 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
     }
 
      function fetchDefects(callback) {
-       var d = new Date();
-       d.setDate(d.getDate() - 14);   // 14-day defect window (fast load; older dates use server fallback)
-       var startDate = formatEntryDate(d);
-       defectWindowStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+       var y = new Date(); y.setDate(y.getDate() - 1);
+       var yStr = formatEntryDate(y);
+       defectWindowStart = new Date(y.getFullYear(), y.getMonth(), y.getDate());
        defectWindowEnd = new Date();
        defectWindowEnd.setHours(23, 59, 59, 999);
-       callAPI({ action: "getDefectData", startDate: startDate }, function(data) {
+       // Fetch only yesterday+today's defect rows (fast); older dates use the per-date server fallback.
+       callAPI({ action: "getDefectData", startDate: yStr }, function(data) {
          defectCache = (data && data.rows) ? data.rows : [];
          defectsLoaded = true;
          if (activeDashTab === 'quality') rebuildQualityDatePicker();
          if (callback) callback();
+       });
+       // Lightweight distinct-date list (Date column only) for the quality date picker.
+       callAPI({ action: "getDefectDates" }, function(data) {
+         defectDates = (data && data.dates) ? data.dates : [];
+         if (activeDashTab === 'quality') rebuildQualityDatePicker();
        });
      }
 
