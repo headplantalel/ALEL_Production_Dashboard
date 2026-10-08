@@ -1,4 +1,4 @@
-var CACHE = 'alel-pulse-v9';
+var CACHE = 'alel-pulse-v10';
 var URLS = [
   '/',
   '/index.html',
