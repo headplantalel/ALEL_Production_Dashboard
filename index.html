@@ -1064,6 +1064,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         total_production: "Total Production", peak_manpower: "Peak Manpower", actual_productivity: "Actual Productivity",
         target_productivity: "Target Productivity", first_pass_yield: "First Pass Yield",
         save_all_fpy: "Save All FPY", loading: "Loading", no_data: "No data", logout: "Log Out",
+        quality_load_failed: "Data could not be loaded — check your connection and try again.",
         entry_history: "Entry History", back_to_input: "Back to Input",
         data_logged: "Data logged successfully", entry_deleted: "Entry deleted", undo: "Undo",
         entry_updated: "Entry updated", update_failed: "Update failed", conversation_cleared: "Conversation cleared",
@@ -1102,6 +1103,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         total_production: "মোট উৎপাদন", peak_manpower: "সর্বোচ্চ ম্যানপাওয়ার", actual_productivity: "প্রকৃত উৎপাদনশীলতা",
         target_productivity: "লক্ষ্য উৎপাদনশীলতা", first_pass_yield: "ফার্স্ট পাস ইল্ড",
         save_all_fpy: "সব FPY সংরক্ষণ করুন", loading: "লোড হচ্ছে", no_data: "ডেটা নেই", logout: "লগ আউট",
+        quality_load_failed: "তথ্য লোড করা যায়নি — সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
         entry_history: "এন্ট্রির ইতিহাস", back_to_input: "ইনপুটে ফিরুন",
         data_logged: "ডেটা সফলভাবে লগ হয়েছে", entry_deleted: "এন্ট্রি মুছে ফেলা হয়েছে", undo: "পূর্বাবস্থায় ফেরান",
         entry_updated: "এন্ট্রি আপডেট হয়েছে", update_failed: "আপডেট ব্যর্থ হয়েছে", conversation_cleared: "কথোপকথন মুছে ফেলা হয়েছে",
@@ -1550,6 +1552,7 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           maybeRender();
         });
         fetchDashboardData('initial', function() { rawDone = true; maybeRender(); });
+        fetchDefects();
       }
     }
 
@@ -1566,6 +1569,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
           version: SNAPSHOT_VERSION,
           windowStartDate: windowStartDate ? windowStartDate.getTime() : null,
           windowEndDate: windowEndDate ? windowEndDate.getTime() : null,
+          defectWindowStart: defectWindowStart ? defectWindowStart.getTime() : null,
+          defectWindowEnd: defectWindowEnd ? defectWindowEnd.getTime() : null,
           lastRawFingerprint: lastRawFingerprint,
           raw: rawDashboardData,
           defects: defectCache
@@ -1583,6 +1588,9 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         lastRawFingerprint = s.lastRawFingerprint || '';
         windowStartDate = s.windowStartDate ? new Date(s.windowStartDate) : null;
         windowEndDate = s.windowEndDate ? new Date(s.windowEndDate) : null;
+        defectWindowStart = s.defectWindowStart ? new Date(s.defectWindowStart) : null;
+        defectWindowEnd = s.defectWindowEnd ? new Date(s.defectWindowEnd) : null;
+        defectsLoaded = true;
         return true;
       } catch (e) { return false; }
     }
@@ -3736,14 +3744,41 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         renderQualityRCA();
       }
 
-      if (isDefectInWindow(dateInput && dateInput.value ? dateInput.value : '')) {
-        renderQualityData(computeHourlyFPY(dateStr), defectCache.filter(function(dd) { return dd.date === dateStr; }));
+      function loadDefectsThenRender(fpyRows) {
+        if (isDefectInWindow(dateStr)) {
+          renderQualityData(fpyRows, defectCache.filter(function(dd) { return dd.date === dateStr; }));
+          return;
+        }
+        callAPI({ action: "getDefectData", date: dateStr }, function(dres) {
+          var rows = (dres && dres.rows) ? dres.rows : [];
+          renderQualityData(fpyRows, rows);
+        });
+      }
+
+      function renderQualityError() {
+        var tb = document.getElementById('quality-table');
+        var mc = document.getElementById('quality-cards-mobile');
+        var msg = t('quality_load_failed');
+        if (tb) tb.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400 text-xs">' + msg + '</td></tr>';
+        if (mc) mc.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">' + msg + '</div>';
+        ['quality-kpi-avg', 'quality-kpi-worst', 'quality-kpi-worst-line', 'quality-kpi-below'].forEach(function(id) {
+          var el = document.getElementById(id); if (el) el.innerText = '—';
+        });
+        var pe = document.getElementById('quality-pareto-chart');
+        if (pe) pe.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400 text-xs text-center px-4">' + msg + '</div>';
+        var rc = document.getElementById('quality-rca-list');
+        if (rc) rc.innerHTML = '';
+      }
+
+      if (isDateInWindow(dateStr)) {
+        // Production rows are already cached — render the scorecard immediately,
+        // defects fill in as soon as they arrive (no blocking wait).
+        loadDefectsThenRender(computeHourlyFPY(dateStr));
       } else {
         callAPI({ action: "getHourlyFPY", date: dateStr }, function(res) {
           var fpy = (res && res.rows) ? res.rows : [];
-          callAPI({ action: "getDefectData", date: dateStr }, function(dres) {
-            renderQualityData(fpy, (dres && dres.rows) ? dres.rows : []);
-          });
+          if ((res && res.error) && fpy.length === 0) { renderQualityError(); return; }
+          loadDefectsThenRender(fpy);
         });
       }
     }
