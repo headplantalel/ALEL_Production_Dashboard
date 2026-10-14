@@ -252,3 +252,23 @@ margin-bottom: 0rem !important;
 .markdown-content strong {
   font-weight: 600;
 }
+
+/* --- Sticky table headers (border-collapse is unreliable with position:sticky) --- */
+.table-sticky-header thead th {
+  background-color: #f1f5f9;
+  border-bottom: 1px solid rgba(13, 92, 88, 0.10);
+}
+[data-theme="dark"] .table-sticky-header thead th {
+  background-color: #1e293b;
+  border-bottom-color: rgba(148, 163, 184, 0.25);
+}
+[data-theme="sepia"] .table-sticky-header thead th {
+  background-color: #f3e8d2;
+  border-bottom-color: rgba(139, 122, 92, 0.25);
+}
+
+/* --- Mobile performance: cap backdrop blur & disable full-screen glass blur --- */
+@media (max-width: 639px) {
+  #dashboard-app { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .backdrop-blur-xl, .backdrop-blur-2xl, .backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur, .backdrop-blur-sm { --tw-backdrop-blur: blur(3px); }
+}

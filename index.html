@@ -473,7 +473,7 @@
       </div>
 
       <!-- SUMMARY / MANAGEMENT VIEW -->
-      <div id="view-management" class="w-full sm:h-full flex flex-col space-y-3 hidden max-w-7xl mx-auto">
+      <div id="view-management" class="w-full min-h-full flex flex-col space-y-3 hidden max-w-7xl mx-auto">
         
         <!-- KPI Row -->
         <div class="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 shrink-0">
@@ -506,8 +506,8 @@
 
         <!-- Full-width Daily Item Matrix -->
         <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white flex flex-col flex-1 min-h-0 overflow-hidden">
-            <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md z-20 flex items-center gap-2 flex-wrap">
-              <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest mr-auto">Daily Item Matrix</h3>
+            <div class="p-3 sm:p-4 border-b border-white/80 shrink-0 bg-white/40 backdrop-blur-md z-20 flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <h3 class="text-[11px] sm:text-xs font-black text-slate-800 uppercase tracking-widest mr-auto w-full sm:w-auto">Daily Item Matrix</h3>
               <select id="summary-line-filter" onchange="renderDashboard()" class="text-[10px] sm:text-[11px] font-bold border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 outline-none focus:border-enovar shadow-sm max-w-[150px]">
                 <option value="all">All Lines</option>
               </select>
@@ -523,9 +523,9 @@
                 CSV
               </button>
             </div>
-            <div class="flex-1 overflow-y-auto overflow-x-auto p-0 m-0 bg-white/20">
-               <table class="w-full text-left border-collapse text-[11px] sm:text-xs min-w-[720px]">
-                 <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm border-b border-white">
+            <div class="flex-1 overflow-y-auto overflow-x-auto p-0 m-0 bg-white/20 min-h-[220px] max-h-[60vh] xl:max-h-none">
+               <table class="w-full text-left border-separate border-spacing-0 table-sticky-header text-[11px] sm:text-xs min-w-[720px]">
+                 <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm">
                     <tr class="text-slate-500 uppercase tracking-wider">
                       <th class="p-2 sm:p-3 pl-3 sm:pl-5 font-extrabold w-[9%]">Line</th>
                       <th class="p-2 sm:p-3 font-extrabold w-[28%]">Item</th>
@@ -611,7 +611,7 @@
        </div>
 
        <!-- QUALITY DASHBOARD VIEW -->
-       <div id="view-quality" class="w-full sm:h-full flex flex-col space-y-3 hidden max-w-7xl mx-auto">
+       <div id="view-quality" class="w-full min-h-full flex flex-col space-y-3 hidden max-w-7xl mx-auto">
 
           <!-- KPI Row -->
           <div class="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4 shrink-0">
@@ -653,9 +653,9 @@
                    CSV
                 </button>
              </div>
-             <div class="hidden sm:block flex-1 overflow-y-auto overflow-x-auto bg-white/20">
-                <table class="w-full text-left border-collapse text-[11px] sm:text-xs min-w-[560px]">
-                   <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm border-b border-white">
+             <div class="hidden sm:block flex-1 overflow-y-auto overflow-x-auto bg-white/20 min-h-[220px] max-h-[60vh] xl:max-h-none">
+                <table class="w-full text-left border-separate border-spacing-0 table-sticky-header text-[11px] sm:text-xs min-w-[560px]">
+                   <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm">
                       <tr class="text-slate-500 uppercase tracking-wider">
                          <th class="p-2 sm:p-3 pl-3 sm:pl-5 font-extrabold">Item</th>
                          <th class="p-2 sm:p-3 font-extrabold">Line</th>
@@ -1146,6 +1146,18 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         b.textContent = lang === 'bn' ? 'EN' : 'বাং';
       });
       document.body.style.fontFamily = lang === 'bn' ? "'Noto Sans Bengali', Inter, system-ui, sans-serif" : '';
+      // Re-render the Google sign-in button in the app language (Google renders its own label)
+      try {
+        var onloadEl = document.getElementById('g_id_onload');
+        if (onloadEl) onloadEl.setAttribute('data-locale', lang === 'bn' ? 'bn' : 'en');
+        var signinEl = document.querySelector('.g_id_signin');
+        if (window.google && window.google.accounts && window.google.accounts.id && signinEl) {
+          window.google.accounts.id.renderButton(signinEl, {
+            type: 'standard', size: 'large', theme: 'outline',
+            locale: lang === 'bn' ? 'bn' : 'en'
+          });
+        }
+      } catch (e) { /* GSI may not be loaded yet — safe to ignore */ }
       if (activeDashTab === 'master' && productionMetadata) buildDashboardFilters();
       else if (rawDashboardData && rawDashboardData.length > 0) buildDashboardFilters();
       renderDashboard();
@@ -1721,16 +1733,16 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       if (scrollContainer && mobileFooter) {
         // Reset defaults for normal tabs
         scrollContainer.classList.add('overflow-y-auto', 'pb-16');
-        scrollContainer.classList.remove('overflow-hidden', 'sm:overflow-hidden', 'flex', 'flex-col');
+        scrollContainer.classList.remove('overflow-hidden', 'sm:overflow-hidden', 'xl:overflow-hidden', 'flex', 'flex-col');
         mobileFooter.classList.remove('hidden');
 
         if (tab === 'ai') {
           scrollContainer.classList.remove('pb-16');
           mobileFooter.classList.add('hidden');
         } else if (tab === 'management' || tab === 'quality') {
-          // HYBRID: Scroll on Mobile (overflow-y-auto), Lock on Desktop (sm:overflow-hidden)
+          // HYBRID: Scroll on mobile/medium screens; lock only on xl where everything fits.
           scrollContainer.classList.remove('pb-16');
-          scrollContainer.classList.add('overflow-y-auto', 'sm:overflow-hidden', 'flex', 'flex-col');
+          scrollContainer.classList.add('overflow-y-auto', 'xl:overflow-hidden', 'flex', 'flex-col');
           mobileFooter.classList.add('hidden');
         }
       }
