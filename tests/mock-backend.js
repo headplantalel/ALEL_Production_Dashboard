@@ -108,6 +108,7 @@ async function injectFakeAuth(page, email = 'head.plant@akijlightengineering.com
   const fakeJwt = 'h.' + Buffer.from(JSON.stringify(jwtPayload)).toString('base64') + '.s';
   await page.evaluate(token => {
     localStorage.removeItem('alel_dash_snapshot');
+    if (typeof openLogin === 'function') openLogin('dashboard');
     handleCredentialResponse({ credential: token });
   }, fakeJwt);
 }

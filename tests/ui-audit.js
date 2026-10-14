@@ -13,13 +13,48 @@ const results = [];
 const check = (name, pass, detail) => { results.push({ name, pass, detail: detail || '' }); console.log(`${pass ? 'PASS' : 'FAIL'}  ${name}${detail ? ' — ' + detail : ''}`); };
 
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  const fs = require('fs');
+  const path = require('path');
+  const os = require('os');
+  function findChromium() {
+    const roots = [process.env.PW_EXEC, process.env.PLAYWRIGHT_EXECUTABLE].filter(Boolean);
+    if (roots.length) return roots[0];
+    const bases = [path.join(os.homedir(), 'Library/Caches/ms-playwright'), path.join(os.homedir(), '.cache/ms-playwright')];
+    const candidates = [];
+    for (const base of bases) {
+      if (!fs.existsSync(base)) continue;
+      for (const d of fs.readdirSync(base).filter(x => x.startsWith('chromium-') && !x.startsWith('chromium_headless'))) {
+        const subs = ['chrome-mac', 'chrome-mac-arm64', 'chrome-linux', 'chrome-linux64'];
+        const appNames = ['Chromium', 'Google Chrome for Testing'];
+        for (const sub of subs) for (const app of appNames) {
+          candidates.push(path.join(base, d, sub, app + '.app', 'Contents', 'MacOS', app));
+          candidates.push(path.join(base, d, sub, app));
+        }
+      }
+    }
+    return candidates.find(p => fs.existsSync(p)) || null;
+  }
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+  } catch (e) {
+    const exe = findChromium();
+    if (!exe) throw e;
+    browser = await chromium.launch({ headless: true, executablePath: exe });
+  }
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const appErrors = [];
   page.on('console', msg => {
     if (msg.type() === 'error') {
       const t = msg.text();
-      if (!t.includes('play.google.com') && !t.includes('favicon')) appErrors.push(t);
+      if (!t.includes('play.google.com') && !t.includes('favicon') && !t.includes('Failed to load resource')) appErrors.push(t);
+    }
+  });
+  const badResponses = [];
+  page.on('response', res => {
+    if (res.status() === 404) {
+      const u = res.url();
+      if (!u.includes('favicon')) badResponses.push(u.split('?')[0]);
     }
   });
 
@@ -100,6 +135,7 @@ const check = (name, pass, detail) => { results.push({ name, pass, detail: detai
 
   // --- 5. No app console errors ---
   check('no unexpected console errors', appErrors.length === 0, appErrors.slice(0, 3).join(' | '));
+  check('no unexpected 404 resources', badResponses.length === 0, badResponses.slice(0, 3).join(' | '));
 
   await browser.close();
   const failed = results.filter(r => !r.pass).length;
