@@ -5,7 +5,12 @@ Deterministic UI checks against the deployed app using a **mock backend**
 
 ## Requirements
 - Node 18+
-- `npm i -g playwright@1.49.1` and `npx playwright install chromium` (one-time)
+- `npm i -g playwright@1.49.1 pngjs` and `npx playwright install chromium` (one-time)
+- If the headless shell download is interrupted (slow network), point the test at any locally installed Chromium:
+  ```bash
+  PW_EXEC="/path/to/Chromium" node tests/ui-audit.js
+  ```
+  (On this Mac: `/Users/mushfiq/Library/Caches/ms-playwright/chromium-1243/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`)
 
 ## Run
 

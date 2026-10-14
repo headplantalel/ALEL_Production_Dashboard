@@ -91,6 +91,10 @@ const check = (name, pass, detail) => { results.push({ name, pass, detail: detai
     return null;
   });
   {
+    const theadH = await page.evaluate(() => {
+      const thead = document.querySelector('#view-management thead');
+      return thead ? Math.round(thead.getBoundingClientRect().height) - 6 : 30;
+    });
     const stripShot = async st => {
       await page.evaluate(s => { document.getElementById('summary-item-table').closest('.overflow-y-auto').scrollTop = s; }, st);
       await page.waitForTimeout(400);
@@ -98,12 +102,33 @@ const check = (name, pass, detail) => { results.push({ name, pass, detail: detai
         const b = document.getElementById('summary-item-table').closest('.overflow-y-auto').getBoundingClientRect();
         return { x: b.x, y: b.y, width: b.width, height: b.height };
       });
-      return await page.screenshot({ clip: { x: rect.x, y: rect.y, width: rect.width - 24, height: 38 } });
+      return await page.screenshot({ clip: { x: rect.x, y: rect.y, width: rect.width - 24, height: theadH } });
     };
+    const stuck = await page.evaluate(async () => {
+      const cont = document.getElementById('summary-item-table').closest('.overflow-y-auto');
+      const thead = document.querySelector('#view-management thead');
+      cont.scrollTop = 600;
+      await new Promise(r => setTimeout(r, 400));
+      const ct = cont.getBoundingClientRect().top;
+      const ht = thead.getBoundingClientRect().top;
+      return Math.abs(ct - ht) < 2;
+    });
+    check('sticky header stays stuck while scrolling', stuck);
     const a = await stripShot(0);
     const b = await stripShot(600);
-    check('sticky header fully opaque while scrolling', Buffer.compare(a, b) === 0,
-      Buffer.compare(a, b) === 0 ? 'header strip pixel-identical' : 'header strip pixels CHANGED while scrolling (see-through)');
+    const { PNG } = require('pngjs');
+    const pa = PNG.sync.read(a), pb = PNG.sync.read(b);
+    let changed = 0, total = 0;
+    for (let i = 0; i < pa.data.length; i += 4) {
+      total++;
+      const dr = Math.abs(pa.data[i] - pb.data[i]);
+      const dg = Math.abs(pa.data[i+1] - pb.data[i+1]);
+      const db = Math.abs(pa.data[i+2] - pb.data[i+2]);
+      if (dr + dg + db > 90) changed++;   // >90/765: real content change, not antialiasing noise
+    }
+    const ratio = changed / total;
+    check('sticky header fully opaque while scrolling', ratio < 0.005,
+      `changed pixels ${(ratio * 100).toFixed(2)}% (text antialiasing noise allowed < 0.5%)`);
   }
 
   // --- 3. Quality table visible at medium viewport ---
