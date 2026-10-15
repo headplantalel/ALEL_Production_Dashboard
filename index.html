@@ -2772,7 +2772,8 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
       if (activeDashTab === 'management') {
         const secVal = document.getElementById('filter-section-summary') ? document.getElementById('filter-section-summary').value : 'all';
         const dateVal = (document.getElementById('filter-date-summary') && document.getElementById('filter-date-summary').value)
-          ? Utilities_formatDateClient(new Date(document.getElementById('filter-date-summary').value)) : '';
+          ? Utilities_formatDateClient(new Date(document.getElementById('filter-date-summary').value))
+          : Utilities_formatDateClient(new Date());
         
         // --- 1. FIND PREVIOUS DATE FOR TRENDS ---
         let availableDates = [...new Set(rawDashboardData.map(r => r.date))].sort((a,b) => new Date(b) - new Date(a));
