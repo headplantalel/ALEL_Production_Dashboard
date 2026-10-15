@@ -359,3 +359,8 @@ margin-bottom: 0rem !important;
 [data-theme="sepia"] .hover\:bg-gray-50:hover { background-color: #e9dabc; }
 [data-theme="sepia"] .divide-white\/50 > * + * { border-top-color: rgba(160, 138, 100, 0.35); }
 [data-theme="sepia"] .bg-white\/70 { background-color: rgba(253, 247, 234, 0.75); }
+
+/* --- Dark mode: buttons/badges that carry white text need darker fills --- */
+[data-theme="dark"] .bg-enovar { background-color: #0f766e; }
+[data-theme="dark"] .bg-green-500 { background-color: #15803d; }
+[data-theme="dark"] .bg-red-500 { background-color: #b91c1c; }

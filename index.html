@@ -2176,12 +2176,13 @@ let currentMetric = localStorage.getItem('currentMetric') || 'productivity';
         stroke: { width: [3, 3], curve: 'smooth', dashArray: [0, 4] },
         markers: { size: 5, hover: { size: 7 } },
         colors: ['#0D5C58', '#EF4444'],
+        legend: { labels: { colors: barLabelColor() } },
         grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } },
-        xaxis: { categories: categories, labels: { style: { colors: '#6B7280' } } },
+        xaxis: { categories: categories, labels: { style: { colors: barLabelColor() } } },
         yaxis: {
           min: chartMin,
           max: chartMax,
-          labels: { style: { colors: '#6B7280' } }
+          labels: { style: { colors: barLabelColor() } }
         },
         fill: {
           type: ['gradient', 'solid'],
